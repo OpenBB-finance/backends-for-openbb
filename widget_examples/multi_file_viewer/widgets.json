@@ -3,7 +3,7 @@
     "type": "multi_file_viewer",
     "name": "Whitepapers",
     "description": "List of available whitepapers",
-    "endpoint": "/random/whitepapers/view-url",
+    "endpoint": "/random/whitepapers/view-base64",
     "gridData": {
       "w": 40,
       "h": 10
