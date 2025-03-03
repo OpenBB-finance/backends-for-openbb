@@ -1,56 +1,13 @@
 {
-  "whitepapers": {
-    "name": "Whitepapers",
-    "description": "List of available whitepapers",
-    "category": "Documents",
-    "endpoint": "/random/whitepapers/view-base64",
+  "test_metric": {
+    "name": "Metric Widget",
+    "description": "A metric widget example",
+    "category": "Test",
+    "endpoint": "test_metric",
     "gridData": {
-      "w": 40,
-      "h": 10
+      "w": 5,
+      "h": 5
     },
-    "type": "multi_file_viewer",
-    "params": [
-      {
-        "type": "endpoint",
-        "paramName": "whitepaper",
-        "value": "http://localhost:3000/random/whitepapers",
-        "label": "Whitepaper",
-        "description": "Whitepaper to display.",
-        "optionsEndpoint": "/random/whitepapers",
-        "show": false,
-        "optionsParams": {
-          "type": "$type"
-        }
-      },
-      {
-        "type": "text",
-        "paramName": "type",
-        "value": "all",
-        "label": "Type of whitepaper",
-        "description": "Type of whitepaper to fetch.",
-        "options": [
-          {
-            "label": "All",
-            "value": "all"
-          },
-          {
-            "label": "L1",
-            "value": "l1"
-          },
-          {
-            "label": "L2",
-            "value": "l2"
-          },
-          {
-            "label": "Oracles",
-            "value": "oracles"
-          },
-          {
-            "label": "Defi",
-            "value": "defi"
-          }
-        ]
-      }
-    ]
+    "type": "metric"
   }
 }

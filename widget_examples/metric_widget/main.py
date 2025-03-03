@@ -41,12 +41,12 @@ def test_metric():
     data = [{
         "label": "Example Label",
         "value": "12345",
-        "delta": "5.67"
+        "delta": "0.01"
     },
     {
         "label": "Example Label 2",
         "value": "12345",
-        "delta": "5.67"
+        "delta": "-0.01"
     },
     {
         "label": "Example Label 3",
@@ -54,6 +54,11 @@ def test_metric():
         "delta": "5.67"
     },
     {
+        "label": "Example Label 4",
+        "value": "12345",
+        "delta": "0.00"
+    },
+        {
         "label": "Example Label 4",
         "value": "12345"
     }

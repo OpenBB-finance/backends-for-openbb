@@ -76,19 +76,25 @@
     "params": [
       {
         "paramName": "chain",
-        "description": "Select a chain to get historical TVL",
+        "description": "Select a chain to get historical TVL11",
         "value": "Ethereum",
         "label": "Chain",
         "type": "endpoint",
-        "optionsEndpoint": "get_chains_list"
+        "optionsEndpoint": "get_chains_list",
+        "style": {
+          "popupWidth": 950
+        }
       },
       {
         "paramName": "chain2",
-        "description": "Select a chain to get historical TVL",
+        "description": "Select a chain to get historical TVL22",
         "value": "Ethereum",
         "label": "Chain",
         "type": "endpoint",
-        "optionsEndpoint": "get_chains_list_advanced"
+        "optionsEndpoint": "get_chains_list_advanced",
+        "style": {
+          "popupWidth": 200
+        }
       },
       {
         "paramName": "tickerPicker",
