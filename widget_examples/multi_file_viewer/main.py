@@ -61,8 +61,8 @@ def get_widgets():
 @app.get("/random/whitepapers")
 async def get_whitepapers(type: str = Query("all")):
     if type == "all":
-        return [{"name": wp["name"]} for wp in whitepapers]
-    return [{"name": wp["name"]} for wp in whitepapers if wp["type"] == type]
+        return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers]
+    return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers if wp["type"] == type]
 
 
 # This is a simple example of how to return a base64 encoded pdf.
