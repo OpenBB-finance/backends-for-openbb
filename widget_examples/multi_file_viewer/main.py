@@ -106,15 +106,3 @@ async def view_whitepaper_url(whitepaper: str):
         "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
         "file_reference": presigned_url
     })
-
-@app.get("/random/whitepapers/{name}")
-async def get_whitepaper(name: str):
-    wp = next((wp for wp in whitepapers if wp["name"] == name), None)
-    if not wp:
-        raise HTTPException(status_code=404, detail="Whitepaper not found")
-
-    file_path = Path.cwd() / wp["location"]
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Whitepaper file not found")
-
-    return FileResponse(file_path, media_type='application/pdf', filename=f"{wp['name']}.pdf")

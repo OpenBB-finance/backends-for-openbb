@@ -41,47 +41,51 @@ def get_widgets():
     )
 
 
-# Endpoint to handle form submission - this is a simple example but you can handle more complex forms here
-@app.post("/form-example")
-def form_example(data: dict):
-    print(data)
-    return data
+ALL_FORMS = []
 
 
-# Example of how to get historical TVL of a chain using Defi LLama
-@app.get("/historical_chains")
-def get_historical_chains(chain: str = None):
-    """Get historical TVL of a chain using Defi LLama"""
+@app.post("/form_submit")
+async def form_submit(params: dict) -> JSONResponse:
+    global ALL_FORMS
+    
+    # Check if first name and last name are provided
+    if not params.get("client_first_name") or not params.get("client_last_name"):
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Client first name and last name are required"}
+        )
+    
+    # Check if investment types and risk profile are provided
+    if not params.get("investment_types") or not params.get("risk_profile"):
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Investment types and risk profile are required"}
+        )
 
-    if chain is None:
-        chain = "Ethereum"
-    response = requests.get(f'https://api.llama.fi/v2/historicalChainTvl/{chain}')
+    # Check if add_record or update_record is provided
+    add_record = params.pop("add_record", None)
+    if add_record:
+        ALL_FORMS.append(
+            {k: ",".join(v) if isinstance(v, list) else v for k, v in params.items()}
+        )
+    update_record = params.pop("update_record", None)
+    if update_record:
+        for record in ALL_FORMS:
+            if record["client_first_name"] == params.get("client_first_name") and record[
+                "client_last_name"
+            ] == params.get("client_last_name"):
+                record.update(params)
+    return JSONResponse(content={"success": True})
 
-    if response.status_code == 200:
-        return response.json()
 
-    print(f"Request error {response.status_code}: {response.text}")
-    return JSONResponse(
-        content={"error": response.text}, status_code=response.status_code
-    )
-
-
-# example of how to get a dropdown list of chains
-@app.get("/get_chains_list")
-def get_chains_list():
-    """Get list of chains using Defi LLama"""
-    response = requests.get("https://api.llama.fi/v2/chains")
-
-    if response.status_code == 200:
-        data = response.json()
-        # can pass as list of {label, value} for dropdown or list of strings
-        #  [
-        #   {"label": chain.get("name"), "value": chain.get("name")}
-        #   for chain in data if chain.get("name")
-        #  ]
-        return [chain.get("name") for chain in data if chain.get("name")]
-
-    print(f"Request error {response.status_code}: {response.text}")
-    return JSONResponse(
-        content={"error": response.text}, status_code=response.status_code
+# Get all forms
+@app.get("/all_forms")
+async def all_forms() -> list:
+    print(ALL_FORMS)
+    return (
+        ALL_FORMS
+        if ALL_FORMS
+        else [
+            {"client_first_name": None, "client_last_name": None, "investment_types": None, "risk_profile": None}
+        ]
     )
