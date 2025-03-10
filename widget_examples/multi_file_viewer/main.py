@@ -30,19 +30,19 @@ whitepapers = [
         "name": "Sample_1",
         "location": "sample.pdf",
         "url": "http://localhost:5011/random/whitepapers/Sample_1",
-        "type": "l1",
+        "category": "l1",
     },
     {
         "name": "Sample_2",
         "location": "other-sample.pdf",
         "url": "http://localhost:5011/random/whitepapers/Sample_2",
-        "type": "oracles",
+        "category": "oracles",
     },
     {
         "name": "Sample_3",
         "location": "other-sample.pdf",
         "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        "type": "defi",
+        "category": "defi",
     }
 ]
 
@@ -59,10 +59,10 @@ def get_widgets():
     )
 
 @app.get("/random/whitepapers")
-async def get_whitepapers(type: str = Query("all")):
-    if type == "all":
+async def get_whitepapers(category: str = Query("all")):
+    if category == "all":
         return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers]
-    return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers if wp["type"] == type]
+    return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers if wp["category"] == category]
 
 
 # This is a simple example of how to return a base64 encoded pdf.

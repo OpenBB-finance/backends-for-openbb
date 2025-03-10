@@ -43,13 +43,15 @@ def get_widgets():
 
 ALL_FORMS = []
 
-
+# Submit form endpoint to handle the form submission
 @app.post("/form_submit")
 async def form_submit(params: dict) -> JSONResponse:
     global ALL_FORMS
     
     # Check if first name and last name are provided
     if not params.get("client_first_name") or not params.get("client_last_name"):
+        # IMPORTANT: Even with a 400 status code, the error message is passed to the frontend
+        # and can be displayed to the user in the OpenBB widget
         return JSONResponse(
             status_code=400,
             content={"error": "Client first name and last name are required"}
@@ -75,6 +77,11 @@ async def form_submit(params: dict) -> JSONResponse:
                 "client_last_name"
             ] == params.get("client_last_name"):
                 record.update(params)
+    
+    # IMPORTANT: The OpenBB Workspace only checks for a 200 status code from this endpoint
+    # The actual content returned doesn't matter for the widget refresh mechanism
+    # After a successful submission, Workspace will automatically refresh the widget
+    # by calling the GET endpoint defined in the widget configuration
     return JSONResponse(content={"success": True})
 
 
@@ -82,6 +89,12 @@ async def form_submit(params: dict) -> JSONResponse:
 @app.get("/all_forms")
 async def all_forms() -> list:
     print(ALL_FORMS)
+    # IMPORTANT: This GET endpoint is called by the OpenBB widget after form submission
+    # The widget refresh mechanism works by:
+    # 1. User submits form (POST to /form_submit)
+    # 2. If POST returns 200, widget automatically refreshes
+    # 3. Widget refresh calls this GET endpoint to fetch updated data
+    # 4. This function must return ALL data needed to display the updated widget
     return (
         ALL_FORMS
         if ALL_FORMS
