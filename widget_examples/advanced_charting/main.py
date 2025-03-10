@@ -6,8 +6,11 @@ import httpx
 import time
 import logging
 from enum import Enum
+import json
+from pathlib import Path
+from fastapi.responses import JSONResponse
 
-app = FastAPI(title="TradingView UDF Binance API")
+app = FastAPI(title="TradingView UDF Kraken API")
 
 # Add CORS middleware
 app.add_middleware(
@@ -18,8 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Binance API base URL
-BINANCE_API_BASE = "https://api.binance.com"
+# Kraken API base URL
+KRAKEN_API_BASE = "https://api.kraken.com"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -84,57 +87,56 @@ class ResolutionEnum(str, Enum):
 # Helper functions
 def resolution_to_interval(resolution: str) -> str:
     resolution_map = {
-        "1": "1m",
-        "3": "3m",
-        "5": "5m",
-        "15": "15m",
-        "30": "30m",
-        "60": "1h",
-        "120": "2h",
-        "240": "4h",
-        "360": "6h",
-        "480": "8h",
-        "720": "12h",
-        "D": "1d",
-        "1D": "1d",
-        "3D": "3d",
-        "W": "1w",
-        "1W": "1w",
-        "M": "1M",
-        "1M": "1M",
+        "1": "1",
+        "3": "3",
+        "5": "5",
+        "15": "15",
+        "30": "30",
+        "60": "60",
+        "120": "120",
+        "240": "240",
+        "360": "360",
+        "480": "480",
+        "720": "720",
+        "D": "1440",
+        "1D": "1440",
+        "3D": "4320",
+        "W": "10080",
+        "1W": "10080",
+        "M": "21600",
+        "1M": "21600",
     }
-    return resolution_map.get(resolution, "1h")
+    return resolution_map.get(resolution, "60")
 
-async def fetch_binance_data(endpoint: str, params: Dict[str, Any] = None) -> Any:
-    url = f"{BINANCE_API_BASE}{endpoint}"
+async def fetch_kraken_data(endpoint: str, params: Dict[str, Any] = None) -> Any:
+    url = f"{KRAKEN_API_BASE}{endpoint}"
     
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Kraken API returns errors in a specific format
+            if data.get("error") and len(data["error"]) > 0:
+                logger.error(f"Kraken API error: {data['error']}")
+                raise HTTPException(status_code=500, detail=f"Kraken API error: {data['error']}")
+                
+            return data
     except httpx.HTTPError as e:
-        logger.error(f"Error fetching data from Binance API: {e}")
-        raise HTTPException(status_code=500, detail=f"Error fetching data from Binance: {str(e)}")
+        logger.error(f"Error fetching data from Kraken API: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching data from Kraken: {str(e)}")
     
 @app.get("/")
 async def root():
     return "OpenBB Workspace Backend example for bringing your own data to charting tradingview"
 
 @app.get("/widgets.json")
-async def get_widgets():
-    return {
-        "udf_binance": {
-            "name": "Advanced Charting - Binance",
-            "description":
-                "Advanced charting for Binance, historical data from any binance asset",
-            "type": "advanced_charting",
-            "endpoint": "/udf",
-            "data": {
-                "defaultSymbol": "BTCUSDT",
-            }
-        }
-    }
+def get_widgets():
+    """Widgets configuration file for the OpenBB Custom Backend"""
+    return JSONResponse(
+        content=json.load((Path(__file__).parent.resolve() / "widgets.json").open())
+    )
 
 # UDF API endpoints
 @app.get("/udf/config")
@@ -148,7 +150,7 @@ async def get_config():
         "supports_time": True,
         "exchanges": [
             {"value": "", "name": "All Exchanges", "desc": ""},
-            {"value": "BINANCE", "name": "Binance", "desc": "Binance Exchange"}
+            {"value": "KRAKEN", "name": "Kraken", "desc": "Kraken Exchange"}
         ],
         "symbols_types": [
             {"name": "All types", "value": ""},
@@ -163,21 +165,39 @@ async def search_symbols(
     limit: int = Query(30, description="Limit of results")
 ):
     try:
-        exchange_info = await fetch_binance_data("/api/v3/exchangeInfo")
+        # Get asset pairs from Kraken
+        asset_pairs = await fetch_kraken_data("/0/public/AssetPairs")
         
-        filtered_symbols = [
-            symbol for symbol in exchange_info["symbols"]
-            if (query.lower() in symbol["symbol"].lower() or
-                query.lower() in symbol["baseAsset"].lower() or
-                query.lower() in symbol["quoteAsset"].lower())
-        ][:limit]
+        filtered_symbols = []
+        for pair_name, pair_info in asset_pairs.get("result", {}).items():
+            # Skip darkpool pairs
+            if pair_name.startswith("."):
+                continue
+                
+            base_asset = pair_info.get("base", "")
+            quote_asset = pair_info.get("quote", "")
+            wsname = pair_info.get("wsname", pair_name)
+            
+            if (query.lower() in pair_name.lower() or 
+                query.lower() in base_asset.lower() or 
+                query.lower() in quote_asset.lower()):
+                filtered_symbols.append({
+                    "symbol": pair_name,
+                    "wsname": wsname,
+                    "base": base_asset,
+                    "quote": quote_asset,
+                    "altname": pair_info.get("altname", pair_name)
+                })
+                
+            if len(filtered_symbols) >= limit:
+                break
         
         results = [
             UDFSearchResult(
                 symbol=symbol["symbol"],
-                full_name=f"BINANCE:{symbol['symbol']}",
-                description=f"{symbol['baseAsset']}/{symbol['quoteAsset']}",
-                exchange="BINANCE",
+                full_name=f"KRAKEN:{symbol['symbol']}",
+                description=f"{symbol['base']}/{symbol['quote']}",
+                exchange="KRAKEN",
                 ticker=symbol["symbol"],
                 type="crypto"
             )
@@ -194,31 +214,36 @@ async def get_symbol_info(symbol: str = Query(..., description="Symbol to get in
     clean_symbol = symbol.split(":")[-1] if ":" in symbol else symbol
     
     try:
-        exchange_info = await fetch_binance_data("/api/v3/exchangeInfo")
+        # Get asset pairs from Kraken
+        asset_pairs = await fetch_kraken_data("/0/public/AssetPairs")
         
-        symbol_info = next((s for s in exchange_info["symbols"] if s["symbol"] == clean_symbol), None)
-        
-        if not symbol_info:
+        if clean_symbol not in asset_pairs.get("result", {}):
             return {"s": "error", "errmsg": "Symbol not found"}
+            
+        symbol_info = asset_pairs["result"][clean_symbol]
+        
+        # Determine price scale based on pair decimals
+        pair_decimals = symbol_info.get("pair_decimals", 8)
+        price_scale = 10 ** pair_decimals
         
         result = {
-            "name": symbol_info["symbol"],
-            "ticker": symbol_info["symbol"],
-            "description": f"{symbol_info['baseAsset']}/{symbol_info['quoteAsset']}",
+            "name": symbol_info.get("wsname", clean_symbol),
+            "ticker": clean_symbol,
+            "description": f"{symbol_info.get('base', '')}/{symbol_info.get('quote', '')}",
             "type": "crypto",
-            "exchange": "BINANCE",
-            "listed_exchange": "BINANCE",
+            "exchange": "KRAKEN",
+            "listed_exchange": "KRAKEN",
             "timezone": "Etc/UTC",
             "session": "24x7",
             "minmov": 1,
-            "pricescale": 100000000,  # Adjust based on the asset precision
+            "pricescale": price_scale,
             "has_intraday": True,
             "has_daily": True,
             "has_weekly_and_monthly": True,
             "supported_resolutions": ["1", "3", "5", "15", "30", "60", "120", "240", "360", "480", "720", "D", "3D", "W", "M"],
-            "currency_code": symbol_info["quoteAsset"],
-            "original_currency_code": symbol_info["quoteAsset"],
-            "volume_precision": 8
+            "currency_code": symbol_info.get("quote", ""),
+            "original_currency_code": symbol_info.get("quote", ""),
+            "volume_precision": symbol_info.get("lot_decimals", 8)
         }
         
         return result
@@ -239,43 +264,58 @@ async def get_history(
     
     try:
         params = {
-            "symbol": clean_symbol,
+            "pair": clean_symbol,
             "interval": interval
         }
         
-        if countback > 0:
-            params["limit"] = str(countback)
-            params["endTime"] = str(to_time * 1000)  # Convert to milliseconds
-        else:
-            params["startTime"] = str(from_time * 1000)  # Convert to milliseconds
-            params["endTime"] = str(to_time * 1000)  # Convert to milliseconds
-            params["limit"] = "1000"  # Binance max limit
+        # Kraken OHLC endpoint accepts 'since' parameter in seconds
+        if from_time > 0:
+            params["since"] = str(from_time)
+            
+        # Kraken doesn't have a direct 'to' parameter or 'countback'
+        # We'll fetch data and filter it on our side
         
-        klines = await fetch_binance_data("/api/v3/klines", params)
+        ohlc_data = await fetch_kraken_data("/0/public/OHLC", params)
         
-        if not klines:
+        if not ohlc_data or "result" not in ohlc_data:
             return {"s": "no_data"}
+            
+        # Kraken returns data in format {pair_name: [[time, open, high, low, close, vwap, volume, count], ...], last: timestamp}
+        klines = ohlc_data["result"].get(clean_symbol, [])
+        
+        # Filter by time range
+        filtered_klines = [
+            kline for kline in klines 
+            if from_time <= kline[0] <= to_time
+        ]
+        
+        if not filtered_klines:
+            return {"s": "no_data"}
+            
+        # Apply countback if specified
+        if countback > 0 and len(filtered_klines) > countback:
+            filtered_klines = filtered_klines[-countback:]
         
         result = {
             "s": "ok",
-            "t": [int(kline[0] // 1000) for kline in klines],  # Open time (convert from ms to s)
-            "o": [float(kline[1]) for kline in klines],  # Open price
-            "h": [float(kline[2]) for kline in klines],  # High price
-            "l": [float(kline[3]) for kline in klines],  # Low price
-            "c": [float(kline[4]) for kline in klines],  # Close price
-            "v": [float(kline[5]) for kline in klines]   # Volume
+            "t": [int(kline[0]) for kline in filtered_klines],       # Time
+            "o": [float(kline[1]) for kline in filtered_klines],     # Open
+            "h": [float(kline[2]) for kline in filtered_klines],     # High
+            "l": [float(kline[3]) for kline in filtered_klines],     # Low
+            "c": [float(kline[4]) for kline in filtered_klines],     # Close
+            "v": [float(kline[6]) for kline in filtered_klines]      # Volume
         }
         
         return result
     except Exception as e:
         logger.error(f"Error in history data: {e}")
-        return {"s": "error", "errmsg": "Failed to fetch history data"}
+        return {"s": "error", "errmsg": f"Failed to fetch history data: {str(e)}"}
 
 @app.get("/udf/time")
 async def get_server_time():
     try:
-        time_data = await fetch_binance_data("/api/v3/time")
-        return int(time_data["serverTime"] // 1000)  # Convert from ms to s
+        time_data = await fetch_kraken_data("/0/public/Time")
+        return int(time_data["result"]["unixtime"])  # Kraken returns time in seconds
     except Exception as e:
         logger.error(f"Error in server time: {e}")
         return int(time.time())  # Return current time as fallback

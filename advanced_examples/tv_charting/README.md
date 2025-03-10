@@ -1,1 +1,0 @@
-us blocks binance api so this isnt gonna work if requests are coming from the us
