@@ -10,7 +10,8 @@
             "h": 20
         },
         "data": {
-            "defaultSymbol": "XBTUSDC"
+            "defaultSymbol": "XBTUSDC",
+            "updateFrequency": 60000
         }
     }
 }

@@ -256,8 +256,7 @@ async def get_history(
     symbol: str = Query(..., description="Symbol"),
     resolution: str = Query(..., description="Resolution"),
     from_time: int = Query(..., alias="from", description="From timestamp"),
-    to_time: int = Query(..., alias="to", description="To timestamp"),
-    countback: Optional[int] = Query(0, description="Count back")
+    to_time: int = Query(..., alias="to", description="To timestamp")
 ):
     clean_symbol = symbol.split(":")[-1] if ":" in symbol else symbol
     interval = resolution_to_interval(resolution)
@@ -291,10 +290,6 @@ async def get_history(
         
         if not filtered_klines:
             return {"s": "no_data"}
-            
-        # Apply countback if specified
-        if countback > 0 and len(filtered_klines) > countback:
-            filtered_klines = filtered_klines[-countback:]
         
         result = {
             "s": "ok",
