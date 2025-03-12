@@ -62,7 +62,7 @@ def get_widgets():
     )
 
 
-@app.get("/random/whitepapers")
+@app.get("/whitepapers")
 async def get_whitepapers(category: str = Query("all")):
     if category == "all":
         return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers]
@@ -74,7 +74,7 @@ async def get_whitepapers(category: str = Query("all")):
 
 
 # This is a simple example of how to return a base64 encoded pdf.
-@app.get("/random/whitepapers/view-base64")
+@app.get("/whitepapers/view-base64")
 async def view_whitepaper_base64(whitepaper: str):
     wp = next((wp for wp in whitepapers if wp["name"] == whitepaper), None)
     if not wp:
@@ -98,7 +98,7 @@ async def view_whitepaper_base64(whitepaper: str):
 
 # This is a simple example of how to return a url
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
-@app.get("/random/whitepapers/view-url")
+@app.get("/whitepapers/view-url")
 async def view_whitepaper_url(whitepaper: str):
     wp = next((wp for wp in whitepapers if wp["name"] == whitepaper), None)
     if not wp:
