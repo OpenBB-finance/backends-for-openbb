@@ -97,6 +97,7 @@ async def view_whitepaper_base64(whitepaper: str):
 
 
 # This is a simple example of how to return a url
+# if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
 @app.get("/whitepapers/view-url")
 async def view_whitepaper_url(whitepaper: str):
@@ -104,8 +105,8 @@ async def view_whitepaper_url(whitepaper: str):
     if not wp:
         raise HTTPException(status_code=404, detail="Whitepaper not found")
 
-    # go get the presigned url and return it for the file_reference
-    # code here to get the presigned url - we are simulating the presigned url by returning the url directly
+    # Fetch the presigned url and return it for the `file_reference`.
+    # In the code below, we are simulating the presigned url by returning the url directly.
     presigned_url = wp["url"]
 
     file_path = Path.cwd() / wp["location"]

@@ -2,7 +2,7 @@
   "whitepapers": {
     "type": "multi_file_viewer",
     "name": "Whitepapers",
-    "description": "List of available whitepapers",
+    "description": "A collection of crypto whitepapers.",
     "endpoint": "/whitepapers/view-base64",
     "gridData": {
       "w": 40,
