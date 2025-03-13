@@ -88,11 +88,11 @@ async def view_whitepaper_base64(whitepaper: str):
         base64_content = base64.b64encode(file.read()).decode("utf-8")
 
     return JSONResponse(
+        headers={"Content-Type": "application/json"},
         content={
-            "headers": {"Content-Type": "application/json"},
             "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
             "content": base64_content,
-        }
+        },
     )
 
 
@@ -114,9 +114,9 @@ async def view_whitepaper_url(whitepaper: str):
         raise HTTPException(status_code=404, detail="Whitepaper file not found")
 
     return JSONResponse(
+        headers={"Content-Type": "application/json"},
         content={
-            "headers": {"Content-Type": "application/json"},
             "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
             "file_reference": presigned_url,
-        }
+        },
     )
