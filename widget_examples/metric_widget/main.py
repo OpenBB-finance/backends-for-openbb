@@ -38,10 +38,30 @@ def get_widgets():
 @app.get("/test_metric")
 def test_metric():
         # Example data structure
-    data = {
+    data = [{
         "label": "Example Label",
         "value": "12345",
+        "delta": "0.01"
+    },
+    {
+        "label": "Example Label 2",
+        "value": "12345",
+        "delta": "-0.01"
+    },
+    {
+        "label": "Example Label 3",
+        "value": "12345",
         "delta": "5.67"
+    },
+    {
+        "label": "Example Label 4",
+        "value": "12345",
+        "delta": "0.00"
+    },
+        {
+        "label": "Example Label 4",
+        "value": "12345"
     }
+    ]
 
     return JSONResponse(content=data)

@@ -1,0 +1,113 @@
+{
+  "form_submit_widget": {
+    "name": "Financial Entry Form",
+    "description": "Example of a financial data entry form",
+    "category": "forms",
+    "searchCategory": "form",
+    "endpoint": "all_forms",
+    "type": "table",
+    "gridData": {
+      "w": 20,
+      "h": 9
+    },
+    "params": [
+      {
+        "paramName": "form",
+        "description": "Form example",
+        "type": "form",
+        "endpoint": "form_submit",
+        "inputParams": [
+          {
+            "paramName": "client_first_name",
+            "type": "text",
+            "value": "",
+            "label": "First Name",
+            "description": "Client's first name"
+          },
+          {
+            "paramName": "client_last_name",
+            "type": "text",
+            "value": "",
+            "label": "Last Name",
+            "description": "Client's last name"
+          },
+          {
+            "paramName": "investment_types",
+            "type": "text",
+            "value": null,
+            "label": "Investment Types",
+            "description": "Selected investment vehicles",
+            "multiSelect": true,
+            "options": [
+              {
+                "label": "Stocks",
+                "value": "stocks"
+              },
+              {
+                "label": "Bonds",
+                "value": "bonds"
+              },
+              {
+                "label": "Mutual Funds",
+                "value": "mutual_funds"
+              },
+              {
+                "label": "ETFs",
+                "value": "etfs"
+              },
+              {
+                "label": "Real Estate",
+                "value": "real_estate"
+              },
+              {
+                "label": "Commodities",
+                "value": "commodities"
+              },
+              {
+                "label": "Cryptocurrency",
+                "value": "cryptocurrency"
+              },
+              {
+                "label": "Options",
+                "value": "options"
+              },
+              {
+                "label": "Futures",
+                "value": "futures"
+              },
+              {
+                "label": "Retirement Accounts",
+                "value": "retirement_accounts"
+              },
+              {
+                "label": "CDs",
+                "value": "cds"
+              }
+            ]
+          },
+          {
+            "paramName": "risk_profile",
+            "type": "text",
+            "value": "",
+            "label": "Risk Profile",
+            "description": "Client risk tolerance assessment"
+          },
+          {
+            "paramName": "add_record",
+            "type": "button",
+            "value": true,
+            "label": "Add Client",
+            "description": "Add client record"
+          },
+          {
+            "paramName": "update_record",
+            "type": "button",
+            "value": true,
+            "label": "Update Client",
+            "description": "Update client record"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "whitepapers": {
+    "type": "multi_file_viewer",
+    "name": "Whitepapers",
+    "description": "A collection of crypto whitepapers.",
+    "endpoint": "/whitepapers/view-base64",
+    "gridData": {
+      "w": 40,
+      "h": 10
+    },
+    "params": [
+      {
+        "type": "endpoint",
+        "paramName": "whitepaper",
+        "value": "http://localhost:5011/whitepapers",
+        "label": "Whitepaper",
+        "description": "Whitepaper to display.",
+        "optionsEndpoint": "/whitepapers",
+        "show": false,
+        "optionsParams": {
+          "category": "$category"
+        }
+      },
+      {
+        "type": "text",
+        "paramName": "category",
+        "value": "all",
+        "label": "Category",
+        "description": "Category of whitepaper to fetch.",
+        "options": [
+          {
+            "label": "All",
+            "value": "all"
+          },
+          {
+            "label": "L1",
+            "value": "l1"
+          },
+          {
+            "label": "L2",
+            "value": "l2"
+          },
+          {
+            "label": "Oracles",
+            "value": "oracles"
+          },
+          {
+            "label": "Defi",
+            "value": "defi"
+          }
+        ]
+      }
+    ]
+  }
+}

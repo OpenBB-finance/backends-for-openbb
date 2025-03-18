@@ -17,6 +17,31 @@
         "label": "Chain",
         "type": "endpoint",
         "optionsEndpoint": "get_chains_list"
+      },
+      {
+        "paramName": "test",
+        "description": "Select a type to get historical TVL",
+        "value": "all",
+        "label": "Type",
+        "type": "text",
+        "options": [
+          {
+            "label": "test1",
+            "value": "test1"
+          },
+          {
+            "label": "test2",
+            "value": "test2"
+          },
+          {
+            "label": "test3",
+            "value": "test3"
+          },
+          {
+            "label": "test4",
+            "value": "test4"
+          }
+        ]
       }
     ]
   },
@@ -38,6 +63,31 @@
         "label": "Chain",
         "type": "endpoint",
         "optionsEndpoint": "get_chains_list"
+      },
+      {
+        "paramName": "test",
+        "description": "Select a type to get historical TVL",
+        "value": "all",
+        "label": "Type",
+        "type": "text",
+        "options": [
+          {
+            "label": "test1",
+            "value": "test1"
+          },
+          {
+            "label": "test2",
+            "value": "test2"
+          },
+          {
+            "label": "test3",
+            "value": "test3"
+          },
+          {
+            "label": "test4",
+            "value": "test4"
+          }
+        ]
       }
     ]
   }
