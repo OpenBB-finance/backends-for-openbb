@@ -1,0 +1,17 @@
+{
+    "udf_kraken": {
+        "name": "Advanced Charting - Kraken",
+        "description": "Advanced charting for Kraken, historical data from any Kraken asset",
+        "category": "Finance",
+        "type": "advanced_charting",
+        "endpoint": "/udf",
+        "gridData": {
+            "w": 20,
+            "h": 20
+        },
+        "data": {
+            "defaultSymbol": "XBTUSDC",
+            "updateFrequency": 60000
+        }
+    }
+}
