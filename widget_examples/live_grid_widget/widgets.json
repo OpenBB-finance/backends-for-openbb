@@ -1,0 +1,75 @@
+{
+  "live_grid_example": {
+    "name": "Live Grid",
+    "description": "Live Grid",
+    "type": "live_grid",
+    "endpoint": "test_websocket",
+    "wsEndpoint": "ws",
+    "data": {
+      "wsRowIdColumn": "symbol",
+      "table": {
+        "showAll": true,
+        "columnsDefs": [
+          {
+            "field": "symbol",
+            "headerName": "Symbol"
+          },
+          {
+            "field": "price",
+            "headerName": "Price",
+            "renderFn": "showCellChange",
+            "renderFnParams": {
+              "colorValueKey": "change"
+            }
+          },
+          {
+            "field": "change_percent",
+            "headerName": "Change %",
+            "renderFn": "greenRed"
+          },
+          {
+            "field": "volume",
+            "enableCellChangeWs": false,
+            "headerName": "Volume"
+          }
+        ]
+      }
+    },
+    "params": [
+      {
+        "paramName": "symbol",
+        "description": "The symbol to get details for",
+        "value": "TSLA",
+        "label": "Symbol",
+        "type": "text",
+        "multiSelect": true,
+        "options": [
+          {
+            "label": "AAPL",
+            "value": "AAPL"
+          },
+          {
+            "label": "GOOGL",
+            "value": "GOOGL"
+          },
+          {
+            "label": "MSFT",
+            "value": "MSFT"
+          },
+          {
+            "label": "AMZN",
+            "value": "AMZN"
+          },
+          {
+            "label": "TSLA",
+            "value": "TSLA"
+          }
+        ]
+      }
+    ],
+    "gridData": {
+      "w": 20,
+      "h": 9
+    }
+  }
+}
