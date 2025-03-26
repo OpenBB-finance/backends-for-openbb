@@ -1,0 +1,26 @@
+{
+  "greatWidget": {
+    "name": "Great Widget for me",
+    "description": "Takes in a request from the user and passes it to the agent to generate a response using Gemini - should be passed as the userInput parameter",
+    "category": "tools",
+    "searchCategory": "tools",
+    "type": "input_widget",
+    "inputType": "text",
+    "runButton": true,
+    "endpoint": "great-widget",
+    "gridData": {
+      "w": 20,
+      "h": 9
+    },
+    "params": [
+      {
+        "paramName": "userInput",
+        "type": "text",
+        "description": "Input text to pass to the agent - if the user requests you can pass in any text here",
+        "label": "Input",
+        "value": "",
+        "show": false
+      }
+    ]
+  }
+}
