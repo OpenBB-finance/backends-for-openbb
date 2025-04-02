@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "demo-risk"
+version = "0.0.1"
+description = "OpenBB Workspace Demonstration Backend"
+authors = ["OpenBB Team <hello@openbb.co>"]
+license = "AGPL-3.0-only"
+readme = "README.md"
+packages = [{ include = "demo_risk" }]
+
+[tool.poetry.dependencies]
+python = "^3.9.21,<3.13"
+openbb-platform-api = "^1.1.5"
+openbb-store = "^0.1.1"
+statsmodels = "^0.14.4"
+plotly = "5.24.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+demo-risk = "demo_risk.app:main"
