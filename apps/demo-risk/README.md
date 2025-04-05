@@ -7,11 +7,11 @@ Install this in an environment with a version of Python between 3.9-3.12, inclus
 
 - Run, `pip install -e .`
 
-- Run, `demo-risk`
+- Run, `openbb-api --app demo_risk/app.py --host 0.0.0.0 --port 6020`
 
 - Open the OpenBB Workspace.
 
-- Add as a new custom backend.
+- Add `http://127.0.0.1:6020` as a new custom backend.
 
 - Go to the templates page, click Refresh button.
 
