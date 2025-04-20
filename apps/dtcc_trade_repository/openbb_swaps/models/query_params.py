@@ -57,7 +57,7 @@ SwapRateTenors = Annotated[
         ],
     ],
     Query(
-        description="The tenor of swap to query. Can be a single tenor or a comma-separated list of tenors. Default is 10."
+        description="The tenor of swap to query. Can be a single tenor or a comma-separated list of tenors. Default is 2Y - 10Y Spread."
         + " Possible values are:\n"
         + "\n".join(
             [
