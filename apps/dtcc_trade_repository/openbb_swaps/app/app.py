@@ -99,7 +99,6 @@ def swap_rate_levels(
         if df.empty:
             raise OpenBBError(f"No {currency} {swap_type} data found for {tenor}.")
 
-        print(df)
         return df.to_dict(orient="records")
 
     except Exception as e:
