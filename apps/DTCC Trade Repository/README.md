@@ -1,40 +1,21 @@
-# Example Extension Templates
+# OpenBB Workspace Demonstration Application - DTCC Trade Repository
 
-The extensions in this folder represent starting points for creating your own OpenBB extensions. The types of extensions that can be created are:
-
-- Router
-  - Create a new router path and define the functions for the app.
-- Provider
-  - Add a new data provider source.
-- OBBject
-  - Extend the response object returned by every command.
+This application is a demonstration OpenBB Workspace application integrating data from the DTCC Trade Repository.
 
 ## Installation
 
-### All Examples
-
-To install all example extensions, activate the environment, then run:
+Install in a Python enviroment with a version between 3.10 and 3.12, inclusively, by navigating into the root of the project and entering:
 
 ```sh
-python install_examples.py
+pip install - e .
 ```
 
-### Individual Example
+## Launch
 
-To install an individual extension to the existing OpenBB environment, activate it, then navigate into the folder of the desired extension and enter:
+Start the application from the command line, with the environment active, by entering:
 
 ```sh
-poetry install --only-root
+openbb-swaps
 ```
 
-Then, rebuild the OpenBB Python interface with:
-
-```sh
-openbb-build
-```
-
-The new extension(s) will be available by importing the OpenBB package.
-
-```python
-from openbb import obb
-```
+![Screenshot 2025-04-20 at 11 20 11 AM](https://github.com/user-attachments/assets/129b8fe8-67c2-4bde-98ac-6829a8a8b1a3)
