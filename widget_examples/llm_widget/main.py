@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 import requests
 from dotenv import load_dotenv
 
-from models import ExtraCitation, PromptRequest, PromptResponse, DataFormat, SourceInfo
+from models import Citation, PromptRequest, PromptResponse, DataFormat, SourceInfo
 
 load_dotenv(".env")
 
@@ -66,7 +66,7 @@ async def query(request: PromptRequest):
         print(e)
         raise HTTPException(status_code=500, detail="Unexpected error.")
 
-    citation = ExtraCitation(
+    citation = Citation(
         source_info=SourceInfo(
             type="widget",
             widget_id="llm_widget",

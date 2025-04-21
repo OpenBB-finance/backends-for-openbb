@@ -9,7 +9,7 @@ class DataFormat(BaseModel):
 
 
 class SourceInfo(BaseModel):
-    type: Literal["widget"]
+    type: str
     uuid: UUID | None = Field(default=None)
     origin: str | None = Field(default=None)
     widget_id: str | None = Field(default=None)
@@ -18,7 +18,7 @@ class SourceInfo(BaseModel):
     metadata: dict[str, Any] | None = Field(default=None)
 
 
-class ExtraCitation(BaseModel):
+class Citation(BaseModel):
     source_info: SourceInfo | None = Field(default=None)
     details: list[dict] | None = Field(default=None)
 
@@ -26,7 +26,7 @@ class ExtraCitation(BaseModel):
 class PromptResponse(BaseModel):
     content: str
     data_format: DataFormat
-    extra_citations: list[ExtraCitation] | None = Field(default=None)
+    extra_citations: list[Citation] | None = Field(default=None)
     citable: bool = Field(default=True)
 
 
