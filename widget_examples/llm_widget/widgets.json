@@ -1,6 +1,6 @@
 {
   "llm_widget": {
-    "name": "Large Language Model",
+    "name": "Gemini",
     "description": "Takes in a prompt and forwards it to the agent to generate a response using an LLM.",
     "category": "tools",
     "searchCategory": "tools",

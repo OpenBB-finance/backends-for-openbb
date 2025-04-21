@@ -71,13 +71,13 @@ async def query(request: PromptRequest):
             type="widget",
             widget_id="llm_widget",
             origin="LLM Widget Backend",
-            name="Gemini AI Response",
+            name="Gemini",
             description="Response from Gemini API",
             metadata={},
         ),
         details=[
             {
-                "Name": "Gemini AI Response",
+                "Name": "Gemini",
                 "Prompt": request.prompt,
             }
         ],
