@@ -8,7 +8,6 @@
     "inputType": "text",
     "runButton": true,
     "endpoint": "query",
-    "endpointMethod": "POST",
     "gridData": {
       "w": 20,
       "h": 9
