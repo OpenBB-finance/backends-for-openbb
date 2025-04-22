@@ -1,0 +1,50 @@
+{
+	"coindesk_news": {
+		"type": "newsfeed",
+		"name": "CoinDesk News",
+		"description": "Get the latest crypto news from CoinDesk",
+		"endpoint": "/news",
+		"gridData": {
+			"w": 40,
+			"h": 20
+		},
+		"source": "coindesk",
+		"params": [
+			{
+				"paramName": "limit",
+				"label": "Limit",
+				"description": "The number of news articles to fetch",
+				"type": "number",
+				"value": "10"
+			},
+			{
+				"paramName": "lang",
+				"label": "Language",
+				"description": "The language of the news articles",
+				"type": "text",
+				"value": "EN",
+				"options": [
+					{
+						"label": "English 🇺🇸",
+						"value": "EN"
+					},
+					{
+						"label": "Spanish 🇪🇸",
+						"value": "ES"
+					},
+					{
+						"label": "Portuguese 🇵🇹",
+						"value": "PT"
+					}
+				]
+			},
+			{
+				"paramName": "categories",
+				"label": "Categories",
+				"description": "Comma separated list of categories to fetch (e.g. 'bitcoin,ethereum')",
+				"type": "text",
+				"value": ""
+			}
+		]
+	}
+}
