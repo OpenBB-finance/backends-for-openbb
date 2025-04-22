@@ -3,7 +3,7 @@
     "type": "newsfeed",
     "name": "CoinDesk News",
     "description": "Get the latest crypto news from CoinDesk",
-    "endpoint": "/coindesk/news",
+    "endpoint": "/news",
     "gridData": {
       "w": 40,
       "h": 20
