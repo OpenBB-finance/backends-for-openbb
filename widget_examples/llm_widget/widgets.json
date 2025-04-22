@@ -5,7 +5,6 @@
     "category": "tools",
     "searchCategory": "tools",
     "type": "input_widget",
-    "inputType": "text",
     "runButton": true,
     "endpoint": "query",
     "gridData": {
