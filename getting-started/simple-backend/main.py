@@ -154,6 +154,213 @@ def table_widget_example():
     return mock_data
 
 
+# Simple table widget example with column definitions
+# The most important part of this example is the "columnsDefs" key in the data object
+# Here's what you can do: 
+#
+# Column Definition Parameters:
+# ---------------------------
+# field: The name of the field from the JSON data.
+#        Example: "column1"
+# headerName: The display name of the column header.
+#             Example: "Column 1"
+# chartDataType: Specifies how data is treated in a chart.
+#                Example: "category"
+#                Possible values: "category", "series", "time", "excluded"
+# cellDataType: Specifies the data type of the cell.
+#               Example: "text"
+#               Possible values: "text", "number", "boolean", "date", "dateString", "object"
+# enableCellChangeWs: Controls whether the cell can be updated via WebSocket messages.
+#                     Example: false. Note: Only used with the Live Grid Widget. Default: true
+# formatterFn (optional): Specifies the function used to format the data in the table. The following values are allowed:
+#                       - int: Formats the number as an integer
+#                       - none: Does not format the number
+#                       - percent: Adds % to the number
+#                       - normalized: Multiplies the number by 100
+#                       - normalizedPercent: Multiplies the number by 100 and adds % (e.g., 0.5 becomes 50 %)
+#                       - dateToYear: Converts a date to just the year
+# renderFn: Specifies a rendering function for cell data.
+#           Example: "titleCase"Possible values: 
+#           - greenRed: Applies a green or red color based on conditions
+#           - titleCase: Converts text to title case
+#           - hoverCard: Displays additional information when hovering over a cell
+#           - cellOnClick: Triggers an action when a cell is clicked
+#           - columnColor: Changes the color of a column based on specified rules
+#           - showCellChange: Highlights cells when their values change via WebSocket updates (Live Grid Widget only)
+# renderFnParams: Required if renderFn is used with a specifc value. Specifies the parameters for the render function.
+#                 Example:
+#                 - if renderFn is "columnColor", then renderFnParams is required and must be a "colorRules" dictionary with the following keys: condition, color, range, fill.
+#                 - if renderFn is "hoverCard", then renderFnParams is required and must be a "hoverCard" dictionary with the following keys: cellField, title, markdown.
+#
+# width: Specifies the width of the column in pixels.
+#        Example: 100
+# maxWidth: Specifies the maximum width of the column in pixels.
+#           Example: 200
+# minWidth: Specifies the minimum width of the column in pixels.
+#           Example: 50
+# hide: Hides the column from the table.
+#       Example: false
+# pinned: Pins the column to the left or right of the table.
+#         Example: "left""right"
+# headerTooltip: Tooltip text for the column header.
+#                Example: "This is a tooltip"
+@register_widget({
+    "name": "Table Widget Example with Column Definitions",
+    "description": "A table widget example with column definitions",
+    "type": "table",
+    "endpoint": "table_widget_example_with_column_definitions",
+    "gridData": {"w": 16, "h": 6},
+    "data": {
+        "table": {
+            "columnsDefs": [
+                {
+                    "field": "name",
+                    "headerName": "Asset",
+                    "chartDataType": "category",
+                    "cellDataType": "text",
+                    "formatterFn": "none",
+                    "renderFn": "titleCase",
+                    "width": 120,
+                    "pinned": "left"
+                },
+                {
+                    "field": "tvl",
+                    "headerName": "TVL (USD)",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "int",
+                    "width": 150
+                },
+                {
+                    "field": "change_1d",
+                    "headerName": "24h Change",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "width": 120
+                },
+                {
+                    "field": "change_7d",
+                    "headerName": "7d Change",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "width": 120
+                }
+            ]
+        }
+    },
+})
+@app.get("/table_widget_example_with_column_definitions")
+def table_widget_example_with_column_definitions():
+    """Returns a mock table data for demonstration"""
+    mock_data = [
+        {
+            "name": "Ethereum",
+            "tvl": 45000000000,
+            "change_1d": 2.5,
+            "change_7d": 5.2
+        },
+        {
+            "name": "Bitcoin",
+            "tvl": 35000000000,
+            "change_1d": 1.2,
+            "change_7d": 4.8
+        },
+        {
+            "name": "Solana",
+            "tvl": 8000000000,
+            "change_1d": -0.5,
+            "change_7d": 2.1
+        }
+    ]
+    return mock_data
+
+
+# Simple table widget example
+# Utilize mock data for demonstration purposes on how a table widget can be used
+@register_widget({
+    "name": "Table Widget Example",
+    "description": "A table widget example",
+    "type": "table",
+    "endpoint": "table_widget_example",
+    "gridData": {"w": 12, "h": 4},
+    "data": {
+        "table": {
+            "enableCharts": True,
+            "showAll": True,
+            "chartView": {
+                "enabled": True,
+                "chartType": "column"
+            },
+            "columnsDefs": [
+                {
+                    "field": "name",
+                    "headerName": "Asset",
+                    "chartDataType": "category",
+                    "cellDataType": "text",
+                    "formatterFn": "none",
+                    "renderFn": "titleCase",
+                    "width": 120,
+                    "pinned": "left"
+                },
+                {
+                    "field": "tvl",
+                    "headerName": "TVL (USD)",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "int",
+                    "renderFn": "columnColor",
+                    "width": 150
+                },
+                {
+                    "field": "change_1d",
+                    "headerName": "24h Change",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120
+                },
+                {
+                    "field": "change_7d",
+                    "headerName": "7d Change",
+                    "chartDataType": "series",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120
+                }
+            ]
+        }
+    },
+})
+@app.get("/table_widget_example")
+def table_widget_example():
+    """Returns a mock table data for demonstration"""
+    mock_data = [
+        {
+            "name": "Ethereum",
+            "tvl": 45000000000,
+            "change_1d": 2.5,
+            "change_7d": 5.2
+        },
+        {
+            "name": "Bitcoin",
+            "tvl": 35000000000,
+            "change_1d": 1.2,
+            "change_7d": 4.8
+        },
+        {
+            "name": "Solana",
+            "tvl": 8000000000,
+            "change_1d": -0.5,
+            "change_7d": 2.1
+        }
+    ]
+    return mock_data
+
+
 # Simple table widget example from an API endpoint
 # This is a simple example of how to use a table widget from an API endpoint
 # Note that the endpoint is the endpoint of the API that will be used to fetch the data
