@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Hello World",
+    "img": "",
+    "img_dark": "",
+    "img_light": "",
+    "description": "Hello World template",
+    "allowCustomization": true,
+    "tabs": {
+      "": {
+        "id": "",
+        "name": "",
+        "layout": [
+          {
+            "i": "hello_world",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 4,
+            "state": {
+              "params": {
+                "name": ""
+              }
+            }
+          }
+        ]
+      }
+    },
+    "groups": []
+  }
+]
