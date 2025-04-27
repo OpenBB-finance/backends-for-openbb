@@ -1172,3 +1172,218 @@ def dropdown_dependent_widget(category: str = "all", document_type: str = "all")
 - Selected document: **{document_type}**
 """
 
+# This endpoint provides a list of available stock symbols
+# This is used by both widgets to populate their dropdown menus
+@app.get("/get_tickers_list")
+def get_tickers_list():
+    """Returns a list of available stock symbols"""
+    return [
+        {"label": "Apple Inc.", "value": "AAPL"},
+        {"label": "Microsoft Corporation", "value": "MSFT"},
+        {"label": "Google", "value": "GOOGL"},
+        {"label": "Amazon", "value": "AMZN"},
+        {"label": "Tesla", "value": "TSLA"}
+    ]
+
+# This widget demonstrates how to use cellOnClick with grouping functionality
+# The key feature here is the cellOnClick renderFn in the symbol column
+# When a user clicks on a symbol cell, it triggers the groupBy action
+# This action updates all widgets that use the same parameter name (symbol)
+@register_widget({
+    "name": "Table widget with grouping by cell click",
+    "description": "A table widget that groups data when clicking on symbols. Click on a symbol to update all related widgets.",
+    "type": "table",
+    "endpoint": "table_widget_with_grouping_by_cell_click",
+    "params": [
+        {
+            "paramName": "symbol",  # This parameter name is crucial - it's used for grouping
+            "description": "Select stocks to display",
+            "value": "AAPL",
+            "label": "Symbol",
+            "type": "endpoint",
+            "optionsEndpoint": "/get_tickers_list",
+            "multiSelect": False,
+            "show": True
+        }
+    ],
+    "data": {
+        "table": {
+            "showAll": True,
+            "columnsDefs": [
+                {
+                    "field": "symbol",
+                    "headerName": "Symbol",
+                    "cellDataType": "text",
+                    "width": 120,
+                    "pinned": "left",
+                    # The cellOnClick renderFn makes cells clickable
+                    "renderFn": "cellOnClick",
+                    "renderFnParams": {
+                        # groupBy action type means clicking will update all widgets using this parameter
+                        "actionType": "groupBy",
+                        # This must match the paramName in both widgets for grouping to work
+                        "groupByParamName": "symbol"
+                    }
+                },
+                {
+                    "field": "price",
+                    "headerName": "Price",
+                    "cellDataType": "number",
+                    "formatterFn": "none",
+                    "width": 120
+                },
+                {
+                    "field": "change",
+                    "headerName": "Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",  # Shows positive/negative changes in green/red
+                    "width": 120
+                },
+                {
+                    "field": "volume",
+                    "headerName": "Volume",
+                    "cellDataType": "number",
+                    "formatterFn": "int",
+                    "width": 150
+                }
+            ]
+        }
+    },
+    "gridData": {
+        "w": 20,
+        "h": 9
+    }
+})
+@app.get("/table_widget_with_grouping_by_cell_click")
+def table_widget_with_grouping_by_cell_click(symbol: str = "AAPL"):
+    """Returns stock data that can be grouped by symbol"""
+    # Mock data - in a real application, this would come from a data source
+    mock_data = [
+        {
+            "symbol": "AAPL",
+            "price": 175.50,
+            "change": 0.015,
+            "volume": 50000000
+        },
+        {
+            "symbol": "MSFT",
+            "price": 380.25,
+            "change": -0.008,
+            "volume": 25000000
+        },
+        {
+            "symbol": "GOOGL",
+            "price": 140.75,
+            "change": 0.022,
+            "volume": 15000000
+        },
+        {
+            "symbol": "AMZN",
+            "price": 175.25,
+            "change": 0.005,
+            "volume": 30000000
+        },
+        {
+            "symbol": "TSLA",
+            "price": 175.50,
+            "change": -0.012,
+            "volume": 45000000
+        }
+    ]
+    
+    return mock_data
+
+# This widget demonstrates how to use the grouped symbol parameter
+# It will update automatically when a symbol is clicked in the stock table
+# The key to making this work is using the same paramName ("symbol") as the table widget
+# When a user clicks a symbol in the table, this widget will automatically update
+# to show details for the selected symbol
+@register_widget({
+    "name": "Widget managed by parameter from cell click on table widget",
+    "description": "This widget demonstrates how to use the grouped symbol parameter from a table widget. When a symbol is clicked in the table, this widget will automatically update to show details for the selected symbol.",
+    "type": "markdown",
+    "endpoint": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+    "params": [
+        {
+            "paramName": "symbol",  # Must match the groupByParamName in the table widget
+            "description": "The symbol to get details for",
+            "value": "AAPL",
+            "label": "Symbol",
+            "type": "endpoint",
+            "optionsEndpoint": "/get_tickers_list",
+            "show": True
+        }
+    ],
+    "gridData": {
+        "w": 20,
+        "h": 6
+    }
+})
+@app.get("/widget_managed_by_parameter_from_cell_click_on_table_widget")
+def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "AAPL"):
+    """Returns detailed information about the selected stock"""
+    # Mock data - in a real application, this would come from a data source
+    stock_details = {
+        "AAPL": {
+            "name": "Apple Inc.",
+            "sector": "Technology",
+            "market_cap": "2.8T",
+            "pe_ratio": 28.5,
+            "dividend_yield": 0.5,
+            "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide."
+        },
+        "MSFT": {
+            "name": "Microsoft Corporation",
+            "sector": "Technology",
+            "market_cap": "2.5T",
+            "pe_ratio": 35.2,
+            "dividend_yield": 0.8,
+            "description": "Microsoft Corporation develops and supports software, services, devices, and solutions worldwide."
+        },
+        "GOOGL": {
+            "name": "Alphabet Inc.",
+            "sector": "Technology",
+            "market_cap": "1.8T",
+            "pe_ratio": 25.8,
+            "dividend_yield": 0.0,
+            "description": "Alphabet Inc. provides various products and platforms in the United States, Europe, the Middle East, Africa, the Asia-Pacific, Canada, and Latin America."
+        },
+        "AMZN": {
+            "name": "Amazon.com Inc.",
+            "sector": "Consumer Cyclical",
+            "market_cap": "1.6T",
+            "pe_ratio": 45.2,
+            "dividend_yield": 0.0,
+            "description": "Amazon.com Inc. engages in the retail sale of consumer products and subscriptions in North America and internationally."
+        },
+        "TSLA": {
+            "name": "Tesla Inc.",
+            "sector": "Automotive",
+            "market_cap": "800B",
+            "pe_ratio": 65.3,
+            "dividend_yield": 0.0,
+            "description": "Tesla Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally."
+        }
+    }
+    
+    # Get details for the selected symbol
+    # If no symbol is selected or symbol doesn't exist, return default values
+    details = stock_details.get(symbol, {
+        "name": "Unknown",
+        "sector": "Unknown",
+        "market_cap": "N/A",
+        "pe_ratio": 0,
+        "dividend_yield": 0,
+        "description": "No information available for this symbol."
+    })
+    
+    return f"""# {details['name']} ({symbol})
+**Sector:** {details['sector']}\n
+**Market Cap:** ${details['market_cap']}\n
+**P/E Ratio:** {details['pe_ratio']}\n
+**Dividend Yield:** {details['dividend_yield']}%\n\n
+
+{details['description']}
+"""
+
