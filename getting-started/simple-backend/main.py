@@ -1082,39 +1082,38 @@ def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
 Selected stocks: {stock_picker}
 """
 
-# Sample documents data - This is our mock database of documents
-# Each document has a name and belongs to a category
-SAMPLE_DOCUMENTS = [
-    {
-        "name": "Q1 Report",
-        "category": "reports"
-    },
-    {
-        "name": "Q2 Report",
-        "category": "reports"
-    },
-    {
-        "name": "Investor Presentation",
-        "category": "presentations"
-    },
-    {
-        "name": "Product Roadmap",
-        "category": "presentations"
-    }
-]
-
 # This endpoint provides the list of available documents
 # It takes a category parameter to filter the documents
 # The category parameter comes from the first dropdown in the widget
 @app.get("/document_options")
 def get_document_options(category: str = "all"):
     """Get filtered list of documents based on category"""
-    # Start with all documents
-    filtered_docs = SAMPLE_DOCUMENTS
-    
+    # Sample documents data - This is our mock database of documents
+    # Each document has a name and belongs to a category
+    SAMPLE_DOCUMENTS = [
+        {
+            "name": "Q1 Report",
+            "category": "reports"
+        },
+        {
+            "name": "Q2 Report",
+            "category": "reports"
+        },
+        {
+            "name": "Investor Presentation",
+            "category": "presentations"
+        },
+        {
+            "name": "Product Roadmap",
+            "category": "presentations"
+        }
+    ]
+
     # If a specific category is selected, filter the documents
     if category != "all":
-        filtered_docs = [doc for doc in filtered_docs if doc["category"] == category]
+        filtered_docs = [
+            doc for doc in SAMPLE_DOCUMENTS if doc["category"] == category
+        ]
     
     # Return the filtered documents in the format expected by the dropdown
     # Each document needs a label (what the user sees) and a value (what's passed to the backend)
