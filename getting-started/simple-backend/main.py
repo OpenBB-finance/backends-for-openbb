@@ -939,6 +939,32 @@ def markdown_widget_with_boolean(condition: bool):
 Current state: {'Enabled' if condition else 'Disabled'}
 """
 
+# This is a simple example of how to use a markdown widget with a text input parameter
+# The text input parameter is a text input that allows users to enter a specific text
+# and we pass this parameter to the widget as the textBox1 parameter
+@register_widget({
+    "name": "Markdown Widget with Number Input",
+    "description": "A markdown widget example with a number input parameter",
+    "endpoint": "markdown_widget_with_number_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "number_box",
+            "description": "Enter a number",
+            "value": 20,
+            "label": "Enter Number",
+            "type": "number"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_number_input")
+def markdown_widget_with_number_input(number_box: int):
+    """Returns a markdown widget example with number input parameter"""
+    return f"""# Number Input Example
+Entered number: {number_box}
+"""
+
 # This is a simple example of how to use a markdown widget with a dropdown parameter
 # The dropdown parameter is a dropdown parameter that allows users to select a specific option
 # and we pass this parameter to the widget as the days_picker parameter
@@ -1056,29 +1082,94 @@ def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
 Selected stocks: {stock_picker}
 """
 
-# This is a simple example of how to use a markdown widget with a text input parameter
-# The text input parameter is a text input that allows users to enter a specific text
-# and we pass this parameter to the widget as the textBox1 parameter
+# Sample documents data - This is our mock database of documents
+# Each document has a name and belongs to a category
+SAMPLE_DOCUMENTS = [
+    {
+        "name": "Q1 Report",
+        "category": "reports"
+    },
+    {
+        "name": "Q2 Report",
+        "category": "reports"
+    },
+    {
+        "name": "Investor Presentation",
+        "category": "presentations"
+    },
+    {
+        "name": "Product Roadmap",
+        "category": "presentations"
+    }
+]
+
+# This endpoint provides the list of available documents
+# It takes a category parameter to filter the documents
+# The category parameter comes from the first dropdown in the widget
+@app.get("/document_options")
+def get_document_options(category: str = "all"):
+    """Get filtered list of documents based on category"""
+    # Start with all documents
+    filtered_docs = SAMPLE_DOCUMENTS
+    
+    # If a specific category is selected, filter the documents
+    if category != "all":
+        filtered_docs = [doc for doc in filtered_docs if doc["category"] == category]
+    
+    # Return the filtered documents in the format expected by the dropdown
+    # Each document needs a label (what the user sees) and a value (what's passed to the backend)
+    return [
+        {
+            "label": doc["name"],
+            "value": doc["name"]
+        }
+        for doc in filtered_docs
+    ]
+
+# This widget demonstrates how to create dependent dropdowns
+# The first dropdown (category) controls what options are available in the second dropdown (document)
 @register_widget({
-    "name": "Markdown Widget with Number Input",
-    "description": "A markdown widget example with a number input parameter",
-    "endpoint": "markdown_widget_with_number_input",
+    "name": "Dropdown Dependent Widget",
+    "description": "A simple example of a dropdown depending on another dropdown",
+    "endpoint": "dropdown_dependent_widget",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
     "params": [
+        # First dropdown - Category selection
+        # This is a simple text dropdown with predefined options
         {
-            "paramName": "number_box",
-            "description": "Enter a number",
-            "value": 20,
-            "label": "Enter Number",
-            "type": "number"
-        }
+            "paramName": "category",
+            "description": "Category of documents to fetch",
+            "value": "all",  # Default value
+            "label": "Category",
+            "type": "text",
+            "options": [
+                {"label": "All", "value": "all"},
+                {"label": "Reports", "value": "reports"},
+                {"label": "Presentations", "value": "presentations"}
+            ]
+        },
+        # Second dropdown - Document selection
+        # This is an endpoint-based dropdown that gets its options from /document_options
+        # The optionsParams property tells the endpoint to use the value from the category dropdown
+        # The $category syntax means "use the value of the parameter named 'category'"
+        {
+            "paramName": "document_type",
+            "description": "Document to display",
+            "label": "Select Document",
+            "type": "endpoint",
+            "optionsEndpoint": "/document_options",
+            "optionsParams": {
+                "category": "$category"  # This passes the selected category to the endpoint
+            }
+        },
     ]
 })
-@app.get("/markdown_widget_with_number_input")
-def markdown_widget_with_number_input(number_box: int):
-    """Returns a markdown widget example with number input parameter"""
-    return f"""# Number Input Example
-Entered number: {number_box}
+@app.get("/dropdown_dependent_widget")
+def dropdown_dependent_widget(category: str = "all", document_type: str = "all"):
+    """Returns a dropdown dependent widget example"""
+    return f"""# Dropdown Dependent Widget
+- Selected category: **{category}**
+- Selected document: **{document_type}**
 """
 
