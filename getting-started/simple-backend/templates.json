@@ -438,6 +438,19 @@
                 }
               }
             ]
+          },
+          "tradingview": {
+            "id": "tradingview",
+            "name": "TradingView",
+            "layout": [
+              {
+                "i": "/udf",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 21
+              }
+            ]
           }
         },
         "groups": [

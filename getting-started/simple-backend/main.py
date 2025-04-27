@@ -3,13 +3,14 @@ import json
 import base64
 import requests
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from registry import register_widget, WIDGETS
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 from plotly_config import get_theme_colors, base_layout, get_toolbar_config
+import random
 
 # Initialize FastAPI application with metadata
 app = FastAPI(
@@ -2575,3 +2576,299 @@ async def all_forms() -> list:
             }
         ]
     )
+
+# Mock data for our symbols
+MOCK_SYMBOLS = {
+    "AAPL": {
+        "name": "Apple Inc.",
+        "description": "Apple Inc. Stock",
+        "type": "stock",
+        "exchange": "NASDAQ",
+        "pricescale": 100,
+        "minmov": 1,
+        "volume_precision": 0
+    },
+    "MSFT": {
+        "name": "Microsoft Corporation",
+        "description": "Microsoft Corporation Stock",
+        "type": "stock",
+        "exchange": "NASDAQ",
+        "pricescale": 100,
+        "minmov": 1,
+        "volume_precision": 0
+    },
+    "GOOGL": {
+        "name": "Alphabet Inc.",
+        "description": "Alphabet Inc. Stock",
+        "type": "stock",
+        "exchange": "NASDAQ",
+        "pricescale": 100,
+        "minmov": 1,
+        "volume_precision": 0
+    }
+}
+
+def generate_mock_price_data(symbol: str, from_time: int, to_time: int, resolution: str) -> dict:
+    """Generate mock OHLCV (Open, High, Low, Close, Volume) data for a symbol
+
+    This function creates realistic-looking price data for the TradingView chart.
+    It generates timestamps and corresponding price data based on the requested time range
+    and resolution (timeframe).
+
+    Args:
+        symbol: The stock symbol to generate data for
+        from_time: Start timestamp in seconds
+        to_time: End timestamp in seconds
+        resolution: Timeframe (1, 5, 15, 30, 60 minutes, D for daily, W for weekly, M for monthly)
+
+    Returns:
+        Dictionary containing OHLCV data in TradingView's expected format
+    """
+    # Convert resolution to minutes for timestamp generation
+    # TradingView uses specific resolution codes that we map to minutes
+    resolution_minutes = {
+        "1": 1, "5": 5, "15": 15, "30": 30, "60": 60,
+        "D": 1440, "W": 10080, "M": 43200
+    }.get(resolution, 60)
+
+    # Generate timestamps for each candle based on the resolution
+    current_time = from_time
+    timestamps = []
+    while current_time <= to_time:
+        timestamps.append(current_time)
+        current_time += resolution_minutes * 60
+
+    # Generate base price data with random movements
+    # Different symbols have different base prices to make them visually distinct
+    base_price = 100.0 if symbol == "AAPL" else 200.0 if symbol == "MSFT" else 150.0
+    prices = []
+    current_price = base_price
+
+    for _ in timestamps:
+        # Add random price movement to create realistic-looking price action
+        change = random.uniform(-2, 2)
+        current_price += change
+        current_price = max(current_price, 1.0)  # Ensure price doesn't go below 1
+        prices.append(current_price)
+
+    # Generate OHLCV data with proper bullish/bearish candles
+    # This creates realistic-looking candlesticks with proper open, high, low, close values
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    volumes = []
+
+    for price in prices:
+        # Randomly decide if this is a bullish or bearish candle
+        is_bullish = random.random() > 0.5
+
+        if is_bullish:
+            # Bullish candle: open < close (green candle)
+            open_price = price * 0.99
+            close_price = price * 1.01
+        else:
+            # Bearish candle: open > close (red candle)
+            open_price = price * 1.01
+            close_price = price * 0.99
+
+        # Add some randomness to high and low prices
+        high_price = max(open_price, close_price) * 1.02
+        low_price = min(open_price, close_price) * 0.98
+
+        opens.append(open_price)
+        highs.append(high_price)
+        lows.append(low_price)
+        closes.append(close_price)
+
+        # Generate volume that correlates with price movement
+        # Higher volume on larger price movements
+        price_change = abs(close_price - open_price)
+        base_volume = 1000000  # Base volume of 1M shares
+        volume_multiplier = 1 + (price_change / open_price) * 10  # Scale volume with price change
+        volume = int(base_volume * volume_multiplier * random.uniform(0.8, 1.2))  # Add some randomness
+        volumes.append(volume)
+
+    # Return data in TradingView's expected format
+    return {
+        "s": "ok",  # Status: ok
+        "t": timestamps,  # Time array
+        "o": opens,  # Open prices array
+        "h": highs,  # High prices array
+        "l": lows,  # Low prices array
+        "c": closes,  # Close prices array
+        "v": volumes  # Volume array
+    }
+
+@app.get("/udf/config")
+async def get_config():
+    """UDF configuration endpoint
+
+    This endpoint provides TradingView with the configuration for our data feed.
+    It tells TradingView what features we support and what data we can provide.
+
+    Returns:
+        Dictionary containing configuration options for the TradingView chart
+    """
+    return {
+        "supported_resolutions": ["1", "5", "15", "30", "60", "D", "W", "M"],  # Timeframes we support
+        "supports_group_request": False,  # We don't support requesting multiple symbols at once
+        "supports_marks": False,  # We don't support custom marks on the chart
+        "supports_search": True,  # We support symbol search
+        "supports_timescale_marks": False,  # We don't support marks on the timescale
+        "supports_time": True,  # We support server time requests
+        "exchanges": [  # Available exchanges
+            {"value": "", "name": "All Exchanges", "desc": ""},
+            {"value": "NASDAQ", "name": "NASDAQ", "desc": "NASDAQ Stock Exchange"}
+        ],
+        "symbols_types": [  # Available symbol types
+            {"name": "All types", "value": ""},
+            {"name": "Stocks", "value": "stock"}
+        ]
+    }
+
+@app.get("/udf/search")
+async def search_symbols(
+    query: str = Query("", description="Search query"),
+    limit: int = Query(30, description="Limit of results")
+):
+    """UDF symbol search endpoint
+
+    This endpoint allows TradingView to search for symbols in our data feed.
+    It's used when the user types in the symbol search box.
+
+    Args:
+        query: Search term entered by user
+        limit: Maximum number of results to return
+
+    Returns:
+        List of matching symbols with their details
+    """
+    results = []
+    for symbol, info in MOCK_SYMBOLS.items():
+        if query.lower() in symbol.lower() or query.lower() in info["name"].lower():
+            results.append({
+                "symbol": symbol,
+                "full_name": f"NASDAQ:{symbol}",
+                "description": info["description"],
+                "exchange": "NASDAQ",
+                "ticker": symbol,
+                "type": "stock"
+            })
+            if len(results) >= limit:
+                break
+    return results
+
+@app.get("/udf/symbols")
+async def get_symbol_info(symbol: str = Query(..., description="Symbol to get info for")):
+    """UDF symbol info endpoint
+
+    This endpoint provides TradingView with detailed information about a specific symbol.
+    It's called when a symbol is selected in the chart.
+
+    Args:
+        symbol: The symbol to get info for
+
+    Returns:
+        Dictionary containing symbol information in TradingView's expected format
+    """
+    # Clean the symbol (remove exchange prefix if present)
+    clean_symbol = symbol.split(":")[-1]
+
+    # Check if we have info for this symbol
+    if clean_symbol not in MOCK_SYMBOLS:
+        raise HTTPException(status_code=404, detail="Symbol not found")
+
+    # Get the symbol info
+    info = MOCK_SYMBOLS[clean_symbol]
+
+    # Return the symbol info in TradingView's expected format
+    return {
+        "name": clean_symbol,
+        "description": info["name"],
+        "type": info["type"],
+        "exchange": info["exchange"],
+        "pricescale": info["pricescale"],
+        "minmov": info["minmov"],
+        "volume_precision": info["volume_precision"],
+        "has_volume": True,  # Explicitly indicate that we provide volume data
+        "has_intraday": True,  # We support intraday data
+        "has_daily": True,  # We support daily data
+        "has_weekly_and_monthly": True,  # We support weekly and monthly data
+        "supported_resolutions": ["1", "5", "15", "30", "60", "D", "W", "M"],
+        "session-regular": "0930-1600",  # Regular trading hours
+        "timezone": "America/New_York"  # Timezone for the exchange
+    }
+
+@app.get("/udf/history")
+async def get_history(
+    symbol: str = Query(..., description="Symbol"),
+    resolution: str = Query(..., description="Resolution"),
+    from_time: int = Query(..., alias="from", description="From timestamp"),
+    to_time: int = Query(..., alias="to", description="To timestamp")
+):
+    """UDF historical data endpoint
+
+    This endpoint provides TradingView with the actual price data for the chart.
+    It's called when the chart needs to load or update its data.
+
+    Args:
+        symbol: The symbol to get data for
+        resolution: The timeframe (1, 5, 15, 30, 60, D, W, M)
+        from_time: Start timestamp in seconds
+        to_time: End timestamp in seconds
+
+    Returns:
+        Dictionary containing OHLCV data for the requested period
+    """
+    clean_symbol = symbol.split(":")[-1] if ":" in symbol else symbol
+
+    if clean_symbol not in MOCK_SYMBOLS:
+        return {"s": "error", "errmsg": "Symbol not found"}
+
+    return generate_mock_price_data(clean_symbol, from_time, to_time, resolution)
+
+@app.get("/udf/time")
+async def get_server_time():
+    """UDF server time endpoint
+
+    This endpoint provides TradingView with the current server time.
+    It's used to synchronize the chart with the server.
+
+    Returns:
+        Current server timestamp in seconds
+    """
+    return int(datetime.now().timestamp())
+
+# Register the TradingView UDF widget
+# This widget provides advanced charting capabilities using TradingView's charting library
+# The widget is configured to use our UDF endpoints for data
+@register_widget({
+    "name": "TradingView Chart",
+    "description": "Advanced charting with TradingView using mock data",
+    "category": "Finance",
+    "type": "advanced_charting",
+    "endpoint": "/udf",  # Base endpoint for all UDF requests
+    "gridData": {
+        "w": 20,
+        "h": 20
+    },
+    "data": {
+        "defaultSymbol": "AAPL",  # Default symbol to display
+        "updateFrequency": 60000,  # Update every minute
+        "chartConfig": {  # Chart appearance configuration
+            "upColor": "#26a69a",  # Color for bullish candles
+            "downColor": "#ef5350",  # Color for bearish candles
+            "borderUpColor": "#26a69a",  # Border color for bullish candles
+            "borderDownColor": "#ef5350",  # Border color for bearish candles
+            "wickUpColor": "#26a69a",  # Wick color for bullish candles
+            "wickDownColor": "#ef5350",  # Wick color for bearish candles
+            "volumeUpColor": "#26a69a",  # Color for volume bars on up days
+            "volumeDownColor": "#ef5350",  # Color for volume bars on down days
+            "showVolume": True  # Enable volume display
+        }
+    }
+})
+def tradingview_chart():
+    """Dummy function for TradingView chart widget registration"""
+    pass
