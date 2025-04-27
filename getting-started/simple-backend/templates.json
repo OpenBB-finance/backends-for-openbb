@@ -195,10 +195,13 @@
               {
                 "i": "table_widget_with_grouping_by_cell_click",
                 "x": 0,
-                "y": 23,
+                "y": 31,
                 "w": 20,
                 "h": 8,
                 "state": {
+                  "params": {
+                    "symbol": "AMZN"
+                  },
                   "chartView": {
                     "enabled": false,
                     "chartType": "line"
@@ -217,6 +220,31 @@
               },
               {
                 "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+                "x": 20,
+                "y": 31,
+                "w": 20,
+                "h": 8,
+                "state": {
+                  "params": {
+                    "symbol": "AMZN"
+                  }
+                }
+              },
+              {
+                "i": "company_performance",
+                "x": 0,
+                "y": 23,
+                "w": 20,
+                "h": 8,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  }
+                }
+              },
+              {
+                "i": "company_details",
                 "x": 20,
                 "y": 23,
                 "w": 20,
@@ -378,16 +406,37 @@
           }
         },
         "groups": [
-          {
-            "name": "Group 1",
-            "type": "endpointParam",
-            "paramName": "symbol",
-            "defaultValue": "AMZN",
-            "widgetIds": [
-              "table_widget_with_grouping_by_cell_click",
-              "widget_managed_by_parameter_from_cell_click_on_table_widget"
-            ]
-          }
+            {
+                "name": "Group 1",
+                "type": "endpointParam",
+                "paramName": "company",
+                "defaultValue": "TM",
+                "widgetIds": [
+                "company_performance",
+                "company_details"
+                ]
+            },
+            {
+                "name": "Group 2",
+                "type": "param",
+                "paramName": "year",
+                "defaultValue": "2024",
+                "widgetIds": [
+                "company_performance",
+                "company_details"
+                ]
+            },
+            {
+                "name": "Group 3",
+                "type": "endpointParam",
+                "paramName": "symbol",
+                "defaultValue": "GOOGL",
+                "widgetIds": [
+                "table_widget_with_grouping_by_cell_click",
+                "widget_managed_by_parameter_from_cell_click_on_table_widget"
+                ]
+            }
         ]
     }
 ]
+
