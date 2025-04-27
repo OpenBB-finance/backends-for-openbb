@@ -156,10 +156,326 @@ def table_widget_example():
 
 # Simple table widget example with column definitions
 # The most important part of this example is the "columnsDefs" key in the data object
-# Here's what you can do: 
-#
-# Column Definition Parameters:
-# ---------------------------
+# Here's what you can find in this example:
+# field: The name of the field from the JSON data.
+#        Example: "column1"
+# headerName: The display name of the column header.
+#             Example: "Column 1"
+# cellDataType: Specifies the data type of the cell - this is important to know what data type is expected in the cell
+# as it allows the OpenBB Workspace to know how to display the data in the cell and filter/sort the data accordingly
+#               Possible values: "text", "number", "boolean", "date", "dateString", "object"
+# formatterFn (optional): Specifies the function used to format the data in the table. The following values are allowed:
+#                       - int: Formats the number as an integer
+#                       - none: Does not format the number
+#                       - percent: Adds % to the number
+#                       - normalized: Multiplies the number by 100
+#                       - normalizedPercent: Multiplies the number by 100 and adds % (e.g., 0.5 becomes 50 %)
+#                       - dateToYear: Converts a date to just the year
+# width: Specifies the width of the column in pixels.
+#        Example: 100
+# maxWidth: Specifies the maximum width of the column in pixels.
+#           Example: 200
+# minWidth: Specifies the minimum width of the column in pixels.
+#           Example: 50
+# hide: Hides the column from the table.
+#       Example: false
+# pinned: Pins the column to the left or right of the table.
+#         Example: "left""right"
+# headerTooltip: Tooltip text for the column header.
+#                Example: "This is a tooltip"
+@register_widget({
+    "name": "Table Widget Example with Column Definitions",
+    "description": "A table widget example with column definitions",
+    "type": "table",
+    "endpoint": "table_widget_example_with_column_definitions",
+    "gridData": {"w": 20, "h": 6},
+    "data": {
+        "table": {
+            "columnsDefs": [
+                {
+                    "field": "name",
+                    "headerName": "Asset",
+                    "cellDataType": "text",
+                    "formatterFn": "none",
+                    "renderFn": "titleCase",
+                    "width": 120,
+                    "pinned": "left"
+                },
+                {
+                    "field": "tvl",
+                    "headerName": "TVL (USD)",
+                    "headerTooltip": "Total Value Locked",
+                    "cellDataType": "number",
+                    "formatterFn": "int",
+                    "width": 150
+                },
+                {
+                    "field": "change_1d",
+                    "headerName": "24h Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                },
+                {
+                    "field": "change_7d",
+                    "headerName": "24h Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                    "hide": True
+                },
+            ]
+        }
+    },
+})
+@app.get("/table_widget_example_with_column_definitions")
+def table_widget_example_with_column_definitions():
+    """Returns a mock table data for demonstration"""
+    mock_data = [
+        {
+            "name": "Ethereum",
+            "tvl": 45000000000,
+            "change_1d": 2.5,
+            "change_7d": 5.2
+        },
+        {
+            "name": "Bitcoin",
+            "tvl": 35000000000,
+            "change_1d": 1.2,
+            "change_7d": 4.8
+        },
+        {
+            "name": "Solana",
+            "tvl": 8000000000,
+            "change_1d": -0.5,
+            "change_7d": 2.1
+        }
+    ]
+    return mock_data
+
+
+# Simple table widget example with hover card
+# The most important part of this example that hasn't been covered in the previous example is the hover card is the "renderFn" key in the columnsDefs object
+# renderFn: Specifies a rendering function for cell data.
+#           Example: "titleCase"Possible values: 
+#           - greenRed: Applies a green or red color based on conditions
+#           - titleCase: Converts text to title case
+#           - hoverCard: Displays additional information when hovering over a cell
+#           - cellOnClick: Triggers an action when a cell is clicked
+#           - columnColor: Changes the color of a column based on specified rules
+#           - showCellChange: Highlights cells when their values change via WebSocket updates (Live Grid Widget only)
+# renderFnParams: Required if renderFn is used with a specifc value. Specifies the parameters for the render function.
+#                 Example:
+#                 - if renderFn is "columnColor", then renderFnParams is required and must be a "colorRules" dictionary with the following keys: condition, color, range, fill.
+#                 - if renderFn is "hoverCard", then renderFnParams is required and must be a "hoverCard" dictionary with the following keys: cellField, title, markdown.
+@register_widget({
+    "name": "Table Widget Example with Render Functions",
+    "description": "A table widget example with render functions",
+    "type": "table",
+    "endpoint": "table_widget_example_with_render_functions",
+    "gridData": {"w": 20, "h": 6},
+    "data": {
+        "table": {
+            "columnsDefs": [
+                {
+                    "field": "name",
+                    "headerName": "Asset",
+                    "cellDataType": "text",
+                    "formatterFn": "none",
+                    "renderFn": "titleCase",
+                    "width": 120,
+                    "pinned": "left"
+                },
+                {
+                    "field": "tvl",
+                    "headerName": "TVL (USD)",
+                    "headerTooltip": "Total Value Locked",
+                    "cellDataType": "number",
+                    "formatterFn": "int",               
+                    "width": 150,
+                    "renderFn": "columnColor",
+                    "renderFnParams": {
+                        "colorRules": [
+                            {
+                                "condition": "between",
+                                "range": {
+                                    "min": 30000000000,
+                                    "max": 40000000000
+                                },
+                                "color": "blue",
+                                "fill": False
+                            },
+                            {
+                                "condition": "lt",
+                                "value": 10000000000,
+                                "color": "#FFA500",
+                                "fill": False
+                            },
+                            {
+                                "condition": "gt",
+                                "value": 40000000000,
+                                "color": "green",
+                                "fill": True
+                            }
+                        ]
+                    }
+                },
+                {
+                    "field": "change_1d",
+                    "headerName": "24h Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                },
+                {
+                    "field": "change_7d",
+                    "headerName": "7d Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                }
+            ]
+        }
+    },
+})
+@app.get("/table_widget_example_with_render_functions")
+def table_widget_example_with_render_functions():
+    """Returns a mock table data for demonstration"""
+    mock_data = [
+        {
+            "name": "Ethereum",
+            "tvl": 45000000000,
+            "change_1d": 2.5,
+            "change_7d": 5.2
+        },
+        {
+            "name": "Bitcoin",
+            "tvl": 35000000000,
+            "change_1d": 1.2,
+            "change_7d": 4.8
+        },
+        {
+            "name": "Solana",
+            "tvl": 8000000000,
+            "change_1d": -0.5,
+            "change_7d": 2.1
+        }
+    ]
+    return mock_data
+
+
+# Simple table widget example with hover card
+# The most important part of this example that hasn't been covered in the previous examples is the hover card
+# which is a feature that allows you to display additional information when hovering over a cell
+@register_widget({
+    "name": "Table Widget Example with Hover Card",
+    "description": "A table widget example with hover card",
+    "type": "table",
+    "endpoint": "table_widget_example_with_hover_card",
+    "gridData": {"w": 20, "h": 6},
+    "data": {
+        "table": {
+            "columnsDefs": [
+                {
+                    "field": "name",
+                    "headerName": "Asset",
+                    "cellDataType": "text",
+                    "formatterFn": "none",
+                    "width": 120,
+                    "pinned": "left",
+                    "renderFn": "hoverCard",
+                    "renderFnParams": {
+                        "hoverCard": {
+                            "cellField": "value",
+                            "title": "Project Details",
+                            "markdown": "### {value} (since {foundedDate})\n**Description:** {description}"
+                        }
+                    }
+                },
+                {
+                    "field": "tvl",
+                    "headerName": "TVL (USD)",
+                    "headerTooltip": "Total Value Locked",
+                    "cellDataType": "number",
+                    "formatterFn": "int",               
+                    "width": 150,
+                    "renderFn": "columnColor",
+                },
+                {
+                    "field": "change_1d",
+                    "headerName": "24h Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                },
+                {
+                    "field": "change_7d",
+                    "headerName": "7d Change",
+                    "cellDataType": "number",
+                    "formatterFn": "percent",
+                    "renderFn": "greenRed",
+                    "width": 120,
+                    "maxWidth": 150,
+                    "minWidth": 70,
+                }
+            ]
+        }
+    },
+})
+@app.get("/table_widget_example_with_hover_card")
+def table_widget_example_with_hover_card():
+    """Returns a mock table data for demonstration"""
+    mock_data = [
+        {
+            "name": {
+                "value": "Ethereum",
+                "description": "A decentralized, open-source blockchain with smart contract functionality",
+                "foundedDate": "2015-07-30"
+            },
+            "tvl": 45000000000,
+            "change_1d": 2.5,
+            "change_7d": 5.2
+        },
+        {
+            "name": {
+                "value": "Bitcoin",
+                "description": "The first decentralized cryptocurrency",
+                "foundedDate": "2009-01-03"
+            },
+            "tvl": 35000000000,
+            "change_1d": 1.2,
+            "change_7d": 4.8
+        },
+        {
+            "name": {
+                "value": "Solana",
+                "description": "A high-performance blockchain supporting builders around the world",
+                "foundedDate": "2020-03-16"
+            },
+            "tvl": 8000000000,
+            "change_1d": -0.5,
+            "change_7d": 2.1
+        }
+    ]
+    return mock_data
+
+
+# Simple table widget example with column definitions
+# The most important part of this example is the "columnsDefs" key in the data object
+# Here's what you can find in this example:
 # field: The name of the field from the JSON data.
 #        Example: "column1"
 # headerName: The display name of the column header.
@@ -191,7 +507,6 @@ def table_widget_example():
 #                 Example:
 #                 - if renderFn is "columnColor", then renderFnParams is required and must be a "colorRules" dictionary with the following keys: condition, color, range, fill.
 #                 - if renderFn is "hoverCard", then renderFnParams is required and must be a "hoverCard" dictionary with the following keys: cellField, title, markdown.
-#
 # width: Specifies the width of the column in pixels.
 #        Example: 100
 # maxWidth: Specifies the maximum width of the column in pixels.
@@ -204,81 +519,6 @@ def table_widget_example():
 #         Example: "left""right"
 # headerTooltip: Tooltip text for the column header.
 #                Example: "This is a tooltip"
-@register_widget({
-    "name": "Table Widget Example with Column Definitions",
-    "description": "A table widget example with column definitions",
-    "type": "table",
-    "endpoint": "table_widget_example_with_column_definitions",
-    "gridData": {"w": 16, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "name",
-                    "headerName": "Asset",
-                    "chartDataType": "category",
-                    "cellDataType": "text",
-                    "formatterFn": "none",
-                    "renderFn": "titleCase",
-                    "width": 120,
-                    "pinned": "left"
-                },
-                {
-                    "field": "tvl",
-                    "headerName": "TVL (USD)",
-                    "chartDataType": "series",
-                    "cellDataType": "number",
-                    "formatterFn": "int",
-                    "width": 150
-                },
-                {
-                    "field": "change_1d",
-                    "headerName": "24h Change",
-                    "chartDataType": "series",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "width": 120
-                },
-                {
-                    "field": "change_7d",
-                    "headerName": "7d Change",
-                    "chartDataType": "series",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "width": 120
-                }
-            ]
-        }
-    },
-})
-@app.get("/table_widget_example_with_column_definitions")
-def table_widget_example_with_column_definitions():
-    """Returns a mock table data for demonstration"""
-    mock_data = [
-        {
-            "name": "Ethereum",
-            "tvl": 45000000000,
-            "change_1d": 2.5,
-            "change_7d": 5.2
-        },
-        {
-            "name": "Bitcoin",
-            "tvl": 35000000000,
-            "change_1d": 1.2,
-            "change_7d": 4.8
-        },
-        {
-            "name": "Solana",
-            "tvl": 8000000000,
-            "change_1d": -0.5,
-            "change_7d": 2.1
-        }
-    ]
-    return mock_data
-
-
-# Simple table widget example
-# Utilize mock data for demonstration purposes on how a table widget can be used
 @register_widget({
     "name": "Table Widget Example",
     "description": "A table widget example",
