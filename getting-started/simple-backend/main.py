@@ -119,6 +119,50 @@ def markdown_widget_example_with_error_handling():
         detail="Error that just occurred"
     )
 
+
+@register_widget({
+    "name": "Metric Widget",
+    "description": "A metric widget example",
+    "endpoint": "metric_widget",
+    "gridData": {
+      "w": 5,
+      "h": 5
+    },
+    "type": "metric"
+})
+@app.get("/metric_widget")
+def metric_widget():
+    # Example data structure
+    data = [
+        {
+            "label": "Total Users",
+            "value": "1,234,567",
+            "delta": "12.5"
+        },
+        {
+            "label": "Active Sessions",
+            "value": "45,678",
+            "delta": "-2.3"
+        },
+        {
+            "label": "Revenue (USD)",
+            "value": "$89,432",
+            "delta": "8.9"
+        },
+        {
+            "label": "Conversion Rate",
+            "value": "3.2%",
+            "delta": "0.0"
+        },
+        {
+            "label": "Avg. Session Duration",
+            "value": "4m 32s",
+            "delta": "0.5"
+        }
+    ]
+
+    return JSONResponse(content=data)
+
 # Simple table widget example
 # Utilize mock data for demonstration purposes on how a table widget can be used
 @register_widget({
