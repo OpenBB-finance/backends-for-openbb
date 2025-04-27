@@ -122,6 +122,98 @@ def markdown_widget_with_error_handling():
         detail="Error that just occurred"
     )
 
+# Markdown Widget with a Run button
+# The run button is a button that will execute the code in the widget
+# this is useful for widgets that are not static and require some computation
+# that may take a while to complete - e.g. running a model, fetching data, etc.
+@register_widget({
+    "name": "Markdown Widget with Run Button",
+    "description": "A markdown widget with a run button",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_run_button",
+    "gridData": {"w": 12, "h": 4},
+    "runButton": True,
+})
+@app.get("/markdown_widget_with_run_button")
+def markdown_widget_with_run_button():
+    """Returns a markdown widget with current time"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"### Current time: {current_time}"
+
+# Markdown Widget with a Short Refetch Interval
+# The refetch interval is the interval at which the widget will be refreshed
+# Use lower values for real-time data (e.g., 60000 for 1-minute updates)
+# Higher values recommended for static or slowly changing data
+@register_widget({
+    "name": "Markdown Widget with Short Refetch Interval",
+    "description": "A markdown widget with a short refetch interval",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_short_refetch_interval",
+    "gridData": {"w": 12, "h": 4},
+    "refetchInterval": 1000
+})
+@app.get("/markdown_widget_with_short_refetch_interval")
+def markdown_widget_with_short_refetch_interval():
+    """Returns a markdown widget with current time"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"### Current time: {current_time}"
+
+# Markdown Widget with a Short Refetch Interval and a Run Button
+# The refresh interval is set to 10000ms (10 seconds) but the run button is enabled
+# which means that the user can refresh the widget manually
+@register_widget({
+    "name": "Markdown Widget with Short Refetch Interval and a Run Button",
+    "description": "A markdown widget with a short refetch interval and a run button",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_short_refetch_interval_and_run_button",
+    "gridData": {"w": 12, "h": 4},
+    "refetchInterval": 10000,
+    "runButton": True
+})
+@app.get("/markdown_widget_with_short_refetch_interval_and_run_button")
+def markdown_widget_with_short_refetch_interval_and_run_button():
+    """Returns a markdown widget with current time"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"### Current time: {current_time}"
+
+
+# Markdown Widget with Stale Time
+# The stale time is the time after which the data will be considered stale
+# and a refresh will be triggered when the widget is interacted with again
+@register_widget({
+    "name": "Markdown Widget with Stale Time",
+    "description": "A markdown widget with stale time",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_stale_time",
+    "gridData": {"w": 12, "h": 4},
+    "staleTime": 5000
+})
+@app.get("/markdown_widget_with_stale_time")
+def markdown_widget_with_stale_time():
+    """Returns a markdown widget with current time"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"### Current time: {current_time}"
+
+# Markdown Widget with Refetch Interval and Stale Time
+# The refetch interval is set to 10000ms (10 seconds) and the stale time is set to 5000ms (5 seconds)
+# Data older than stale time will trigger a refresh when the widget is interacted with again
+# Stale time should typically be less than or equal to refetchInterval
+# Set higher stale time for data that updates infrequently
+@register_widget({
+    "name": "Markdown Widget with Refetch Interval and Shorter Stale Time",
+    "description": "A markdown widget with a short refetch interval and a shorter stale time",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+    "gridData": {"w": 12, "h": 4},
+    "refetchInterval": 10000,
+    "staleTime": 5000
+})
+@app.get("/markdown_widget_with_refetch_interval_and_shorter_stale_time")
+def markdown_widget_with_refetch_interval_and_shorter_stale_time():
+    """Returns a markdown widget with current time"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"### Current time: {current_time}"
+
 # Markdown Widget with Image from URL
 # This is a simple widget that demonstrates how to display an image from a URL
 @register_widget({

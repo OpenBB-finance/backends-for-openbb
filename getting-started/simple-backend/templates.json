@@ -1,21 +1,21 @@
 [
     {
-        "name": "Template App",
+        "name": "Template App 2",
         "img": "",
         "img_dark": "",
         "img_light": "",
-        "description": "A template app",
+        "description": "Template app",
         "allowCustomization": true,
         "tabs": {
-            "types_of_widgets": {
-              "id": "types_of_widgets",
-              "name": "Types of widgets",
-              "layout": [
-                {
-                  "i": "metric_widget",
-                  "x": 0,
-                  "y": 2,
-                  "w": 40,
+          "types-of-widgets": {
+            "id": "types-of-widgets",
+            "name": "Types of widgets",
+            "layout": [
+              {
+                "i": "metric_widget",
+                "x": 0,
+                "y": 2,
+                "w": 40,
                 "h": 5
               },
               {
@@ -95,6 +95,47 @@
                     "chartType": "line"
                   }
                 }
+              }
+            ]
+          },
+          "settings": {
+            "id": "settings",
+            "name": "Settings",
+            "layout": [
+              {
+                "i": "markdown_widget_with_run_button",
+                "x": 20,
+                "y": 7,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+                "x": 0,
+                "y": 7,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_short_refetch_interval",
+                "x": 20,
+                "y": 2,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_short_refetch_interval_and_run_button",
+                "x": 0,
+                "y": 12,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_stale_time",
+                "x": 0,
+                "y": 2,
+                "w": 20,
+                "h": 5
               }
             ]
           },
