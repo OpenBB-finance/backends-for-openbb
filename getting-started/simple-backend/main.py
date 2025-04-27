@@ -37,7 +37,7 @@ ROOT_PATH = Path(__file__).parent.resolve()
 @app.get("/")
 def read_root():
     """Root endpoint that returns basic information about the API"""
-    return {"Info": "Hello World example"}
+    return {"Info": "Hello World"}
 
 
 # Endpoint that returns the registered widgets configuration
@@ -72,51 +72,51 @@ def get_templates():
     )
 
 
-# Simple markdown widget example
+# Simple markdown widget
 # Note that the gridData specifies the size of the widget in the OpenBB Workspace
 @register_widget({
-    "name": "Markdown Widget Example",
-    "description": "A markdown widget example",
+    "name": "Markdown Widget",
+    "description": "A markdown widget",
     "type": "markdown",
-    "endpoint": "markdown_widget_example",
+    "endpoint": "markdown_widget",
     "gridData": {"w": 12, "h": 4},
 })
-@app.get("/markdown_widget_example")
-def markdown_widget_example():
-    """Returns a markdown widget example"""
-    return f"# Markdown Widget Example"
+@app.get("/markdown_widget")
+def markdown_widget():
+    """Returns a markdown widget"""
+    return f"# Markdown Widget"
 
-# Simple markdown widget example
+# Simple markdown widget with category and subcategory
 # Note that the category and subcategory specify the category and subcategory of the widget in the OpenBB Workspace
 # This is important to organize the widgets in the OpenBB Workspace, but also for AI agents to find the best 
 # widgets to utilize for a given task
 @register_widget({
-    "name": "Markdown Widget Example with Category and Subcategory",
-    "description": "A markdown widget example with category and subcategory",
+    "name": "Markdown Widget with Category and Subcategory",
+    "description": "A markdown widget with category and subcategory",
     "type": "markdown",
-    "category": "Widget Examples",
+    "category": "Widgets",
     "subcategory": "Markdown Widgets",
-    "endpoint": "markdown_widget_example_with_category_and_subcategory",
+    "endpoint": "markdown_widget_with_category_and_subcategory",
     "gridData": {"w": 12, "h": 4},
 })
-@app.get("/markdown_widget_example_with_category_and_subcategory")
-def markdown_widget_example_with_category_and_subcategory():
-    """Returns a markdown widget example with category and subcategory"""
-    return f"# Markdown Widget Example with Category and Subcategory"
+@app.get("/markdown_widget_with_category_and_subcategory")
+def markdown_widget_with_category_and_subcategory():
+    """Returns a markdown widget with category and subcategory"""
+    return f"# Markdown Widget with Category and Subcategory"
 
 
-# Markdown Widget Example with Error Handling
-# This is a simple example of how to handle errors in a widget
+# Markdown Widget with Error Handling
+# This is a simple widget that demonstrates how to handle errors
 @register_widget({
-    "name": "Markdown Widget Example with Error Handling",
-    "description": "A markdown widget example with error handling",
+    "name": "Markdown Widget with Error Handling",
+    "description": "A markdown widget with error handling",
     "type": "markdown",
-    "endpoint": "markdown_widget_example_with_error_handling",
+    "endpoint": "markdown_widget_with_error_handling",
     "gridData": {"w": 12, "h": 4},
 })
-@app.get("/markdown_widget_example_with_error_handling")
-def markdown_widget_example_with_error_handling():
-    """Returns a markdown widget example with error handling"""
+@app.get("/markdown_widget_with_error_handling")
+def markdown_widget_with_error_handling():
+    """Returns a markdown widget with error handling"""
     raise HTTPException(
         status_code=500,
         detail="Error that just occurred"
@@ -125,7 +125,7 @@ def markdown_widget_example_with_error_handling():
 
 @register_widget({
     "name": "Metric Widget",
-    "description": "A metric widget example",
+    "description": "A metric widget",
     "endpoint": "metric_widget",
     "gridData": {
       "w": 5,
@@ -135,7 +135,7 @@ def markdown_widget_example_with_error_handling():
 })
 @app.get("/metric_widget")
 def metric_widget():
-    # Example data structure
+    # Data structure
     data = [
         {
             "label": "Total Users",
@@ -166,17 +166,17 @@ def metric_widget():
 
     return JSONResponse(content=data)
 
-# Simple table widget example
+# Simple table widget
 # Utilize mock data for demonstration purposes on how a table widget can be used
 @register_widget({
-    "name": "Table Widget Example",
-    "description": "A table widget example",
+    "name": "Table Widget",
+    "description": "A table widget",
     "type": "table",
-    "endpoint": "table_widget_example",
+    "endpoint": "table_widget",
     "gridData": {"w": 12, "h": 4},
 })
-@app.get("/table_widget_example")
-def table_widget_example():
+@app.get("/table_widget")
+def table_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -201,9 +201,9 @@ def table_widget_example():
     return mock_data
 
 
-# Simple table widget example with column definitions
-# The most important part of this example is the "columnsDefs" key in the data object
-# Here's what you can find in this example:
+# Simple table widget with column definitions
+# The most important part of this widget is the "columnsDefs" key in the data object
+# Here's what you can find in this widget:
 # field: The name of the field from the JSON data.
 #        Example: "column1"
 # headerName: The display name of the column header.
@@ -231,10 +231,10 @@ def table_widget_example():
 # headerTooltip: Tooltip text for the column header.
 #                Example: "This is a tooltip"
 @register_widget({
-    "name": "Table Widget Example with Column Definitions",
-    "description": "A table widget example with column definitions",
+    "name": "Table Widget with Column Definitions",
+    "description": "A table widget with column definitions",
     "type": "table",
-    "endpoint": "table_widget_example_with_column_definitions",
+    "endpoint": "table_widget_with_column_definitions",
     "gridData": {"w": 20, "h": 6},
     "data": {
         "table": {
@@ -279,8 +279,8 @@ def table_widget_example():
         }
     },
 })
-@app.get("/table_widget_example_with_column_definitions")
-def table_widget_example_with_column_definitions():
+@app.get("/table_widget_with_column_definitions")
+def table_widget_with_column_definitions():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -305,8 +305,8 @@ def table_widget_example_with_column_definitions():
     return mock_data
 
 
-# Simple table widget example with hover card
-# The most important part of this example that hasn't been covered in the previous example is the hover card is the "renderFn" key in the columnsDefs object
+# Simple table widget with hover card
+# The most important part of this widget that hasn't been covered in the previous widget is the hover card is the "renderFn" key in the columnsDefs object
 # renderFn: Specifies a rendering function for cell data.
 #           Example: "titleCase"Possible values: 
 #           - greenRed: Applies a green or red color based on conditions
@@ -320,10 +320,10 @@ def table_widget_example_with_column_definitions():
 #                 - if renderFn is "columnColor", then renderFnParams is required and must be a "colorRules" dictionary with the following keys: condition, color, range, fill.
 #                 - if renderFn is "hoverCard", then renderFnParams is required and must be a "hoverCard" dictionary with the following keys: cellField, title, markdown.
 @register_widget({
-    "name": "Table Widget Example with Render Functions",
-    "description": "A table widget example with render functions",
+    "name": "Table Widget with Render Functions",
+    "description": "A table widget with render functions",
     "type": "table",
-    "endpoint": "table_widget_example_with_render_functions",
+    "endpoint": "table_widget_with_render_functions",
     "gridData": {"w": 20, "h": 6},
     "data": {
         "table": {
@@ -395,8 +395,8 @@ def table_widget_example_with_column_definitions():
         }
     },
 })
-@app.get("/table_widget_example_with_render_functions")
-def table_widget_example_with_render_functions():
+@app.get("/table_widget_with_render_functions")
+def table_widget_with_render_functions():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -421,14 +421,14 @@ def table_widget_example_with_render_functions():
     return mock_data
 
 
-# Simple table widget example with hover card
-# The most important part of this example that hasn't been covered in the previous examples is the hover card
+# Simple table widget with hover card
+# The most important part of this widget that hasn't been covered in the previous widgets is the hover card
 # which is a feature that allows you to display additional information when hovering over a cell
 @register_widget({
-    "name": "Table Widget Example with Hover Card",
-    "description": "A table widget example with hover card",
+    "name": "Table Widget with Hover Card",
+    "description": "A table widget with hover card",
     "type": "table",
-    "endpoint": "table_widget_example_with_hover_card",
+    "endpoint": "table_widget_with_hover_card",
     "gridData": {"w": 20, "h": 6},
     "data": {
         "table": {
@@ -482,8 +482,8 @@ def table_widget_example_with_render_functions():
         }
     },
 })
-@app.get("/table_widget_example_with_hover_card")
-def table_widget_example_with_hover_card():
+@app.get("/table_widget_with_hover_card")
+def table_widget_with_hover_card():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -520,16 +520,16 @@ def table_widget_example_with_hover_card():
     return mock_data
 
 
-# Table to Chart Widget Example
-# The most important part of this example is that the default view is a chart that comes from the "chartView" key in the data object
+# Table to Chart Widget
+# The most important part of this widget is that the default view is a chart that comes from the "chartView" key in the data object
 # chartDataType: Specifies how data is treated in a chart.
 #                Example: "category"
 #                Possible values: "category", "series", "time", "excluded"
 @register_widget({
-    "name": "Table to Chart Widget Example",
-    "description": "A table widget example",
+    "name": "Table to Chart Widget",
+    "description": "A table widget",
     "type": "table",
-    "endpoint": "table_to_chart_widget_example",
+    "endpoint": "table_to_chart_widget",
     "gridData": {"w": 20, "h": 12},
     "data": {
         "table": {
@@ -554,8 +554,8 @@ def table_widget_example_with_hover_card():
         }
     },
 })
-@app.get("/table_to_chart_widget_example")
-def table_to_chart_widget_example():
+@app.get("/table_to_chart_widget")
+def table_to_chart_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -581,13 +581,13 @@ def table_to_chart_widget_example():
 
 
 
-# Table to time series Widget Example
+# Table to time series Widget
 # In here we will see how to use a table widget to display a time series chart
 @register_widget({
-    "name": "Table to Time Series Widget Example",
-    "description": "A table widget example",
+    "name": "Table to Time Series Widget",
+    "description": "A table widget",
     "type": "table",
-    "endpoint": "table_to_time_series_widget_example",
+    "endpoint": "table_to_time_series_widget",
     "gridData": {"w": 20, "h": 12},
     "data": {
         "table": {
@@ -622,8 +622,8 @@ def table_to_chart_widget_example():
         }
     },
 })
-@app.get("/table_to_time_series_widget_example")
-def table_to_time_series_widget_example():
+@app.get("/table_to_time_series_widget")
+def table_to_time_series_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
         {
@@ -659,19 +659,19 @@ def table_to_time_series_widget_example():
     ]
     return mock_data
 
-# Simple table widget example from an API endpoint
-# This is a simple example of how to use a table widget from an API endpoint
+# Simple table widget from an API endpoint
+# This is a simple widget that demonstrates how to use a table widget from an API endpoint
 # Note that the endpoint is the endpoint of the API that will be used to fetch the data
 # and the data is returned in the JSON format
 @register_widget({
-    "name": "Table Widget Example from API Endpoint",
-    "description": "A table widget example from an API endpoint",
+    "name": "Table Widget from API Endpoint",
+    "description": "A table widget from an API endpoint",
     "type": "table",
-    "endpoint": "table_widget_from_api_endpoint_example",
+    "endpoint": "table_widget_from_api_endpoint",
     "gridData": {"w": 12, "h": 4},
 })
-@app.get("/table_widget_from_api_endpoint_example")
-def table_widget_from_api_endpoint_example():
+@app.get("/table_widget_from_api_endpoint")
+def table_widget_from_api_endpoint():
     """Get current TVL of all chains using Defi LLama"""
     response = requests.get("https://api.llama.fi/v2/chains")
 
@@ -766,7 +766,7 @@ SAMPLE_PDFS = [
 ]
 
 # Sample PDF options endpoint
-# This is a simple example of how to use an endpoint to get the list of available PDFs
+# This is a simple endpoint to get the list of available PDFs
 # and return it in the JSON format. The reason why we need this endpoint is because the multi_file_viewer widget
 # needs to know the list of available PDFs to display and we pass this endpoint to the widget as the optionsEndpoint
 @app.get("/get_pdf_options")
@@ -859,12 +859,12 @@ async def get_multi_pdf_url(pdf_name: str):
         },
     )
 
-# This is a simple example of how to use a markdown widget with a date picker parameter
+# This is a simple markdown widget with a date picker parameter
 # The date picker parameter is a date picker that allows users to select a specific date
 # and we pass this parameter to the widget as the date_picker parameter 
 @register_widget({
     "name": "Markdown Widget with Date Picker",
-    "description": "A markdown widget example with a date picker parameter",
+    "description": "A markdown widget with a date picker parameter",
     "endpoint": "markdown_widget_with_date_picker",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -882,17 +882,17 @@ async def get_multi_pdf_url(pdf_name: str):
 def markdown_widget_with_date_picker(
     date_picker: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 ):
-    """Returns a markdown widget example with date picker parameter"""
-    return f"""# Date Picker Example
+    """Returns a markdown widget with date picker parameter"""
+    return f"""# Date Picker
 Selected date: {date_picker}
 """
 
-# This is a simple example of how to use a markdown widget with a text input parameter
+# This is a simple markdown widget with a text input parameter
 # The text input parameter is a text input that allows users to enter a specific text
 # and we pass this parameter to the widget as the textBox1 parameter
 @register_widget({
     "name": "Markdown Widget with Text Input",
-    "description": "A markdown widget example with a text input parameter",
+    "description": "A markdown widget with a text input parameter",
     "endpoint": "markdown_widget_with_text_input",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -908,17 +908,17 @@ Selected date: {date_picker}
 })
 @app.get("/markdown_widget_with_text_input")
 def markdown_widget_with_text_input(text_box: str):
-    """Returns a markdown widget example with text input parameter"""
-    return f"""# Text Input Example
+    """Returns a markdown widget with text input parameter"""
+    return f"""# Text Input
 Entered text: {text_box}
 """
 
-# This is a simple example of how to use a markdown widget with a boolean parameter
+# This is a simple markdown widget with a boolean parameter
 # The boolean parameter is a boolean parameter that allows users to enable or disable a feature
 # and we pass this parameter to the widget as the condition parameter
 @register_widget({
     "name": "Markdown Widget with Boolean Toggle",
-    "description": "A markdown widget example with a boolean parameter",
+    "description": "A markdown widget with a boolean parameter",
     "endpoint": "markdown_widget_with_boolean",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -934,17 +934,17 @@ Entered text: {text_box}
 })
 @app.get("/markdown_widget_with_boolean")
 def markdown_widget_with_boolean(condition: bool):
-    """Returns a markdown widget example with boolean parameter"""
-    return f"""# Boolean Toggle Example
+    """Returns a markdown widget with boolean parameter"""
+    return f"""# Boolean Toggle
 Current state: {'Enabled' if condition else 'Disabled'}
 """
 
-# This is a simple example of how to use a markdown widget with a text input parameter
+# This is a simple markdown widget with a text input parameter
 # The text input parameter is a text input that allows users to enter a specific text
 # and we pass this parameter to the widget as the textBox1 parameter
 @register_widget({
     "name": "Markdown Widget with Number Input",
-    "description": "A markdown widget example with a number input parameter",
+    "description": "A markdown widget with a number input parameter",
     "endpoint": "markdown_widget_with_number_input",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -960,18 +960,18 @@ Current state: {'Enabled' if condition else 'Disabled'}
 })
 @app.get("/markdown_widget_with_number_input")
 def markdown_widget_with_number_input(number_box: int):
-    """Returns a markdown widget example with number input parameter"""
-    return f"""# Number Input Example
+    """Returns a markdown widget with number input parameter"""
+    return f"""# Number Input
 Entered number: {number_box}
 """
 
-# This is a simple example of how to use a markdown widget with a dropdown parameter
+# This is a simple markdown widget with a dropdown parameter
 # The dropdown parameter is a dropdown parameter that allows users to select a specific option
 # and we pass this parameter to the widget as the days_picker parameter
 # Note that the multiSelect parameter is set to True, so the user can select multiple options
 @register_widget({
     "name": "Markdown Widget with Dropdown",
-    "description": "A markdown widget example with a dropdown parameter",
+    "description": "A markdown widget with a dropdown parameter",
     "endpoint": "markdown_widget_with_dropdown",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -1010,8 +1010,8 @@ Entered number: {number_box}
 })
 @app.get("/markdown_widget_with_dropdown")
 def markdown_widget_with_dropdown(days_picker: str):
-    """Returns a markdown widget example with dropdown parameter"""
-    return f"""# Dropdown Example
+    """Returns a markdown widget with dropdown parameter"""
+    return f"""# Dropdown
 Selected days: {days_picker}
 """
 
@@ -1056,7 +1056,7 @@ def advanced_dropdown_options():
 # The style parameter is used to customize the dropdown widget, in this case we are setting the popupWidth to 450px
 @register_widget({
     "name": "Markdown Widget with Multi Select Advanced Dropdown",
-    "description": "A markdown widget example with a multi select advanced dropdown parameter",
+    "description": "A markdown widget with a multi select advanced dropdown parameter",
     "endpoint": "markdown_widget_with_multi_select_advanced_dropdown",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -1077,8 +1077,8 @@ def advanced_dropdown_options():
 })
 @app.get("/markdown_widget_with_multi_select_advanced_dropdown")
 def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
-    """Returns a markdown widget example with multi select advanced dropdown parameter"""
-    return f"""# Multi Select Advanced Dropdown Example
+    """Returns a markdown widget with multi select advanced dropdown parameter"""
+    return f"""# Multi Select Advanced Dropdown
 Selected stocks: {stock_picker}
 """
 
@@ -1129,7 +1129,7 @@ def get_document_options(category: str = "all"):
 # The first dropdown (category) controls what options are available in the second dropdown (document)
 @register_widget({
     "name": "Dropdown Dependent Widget",
-    "description": "A simple example of a dropdown depending on another dropdown",
+    "description": "A simple widget with a dropdown depending on another dropdown",
     "endpoint": "dropdown_dependent_widget",
     "gridData": {"w": 16, "h": 6},
     "type": "markdown",
@@ -1166,7 +1166,7 @@ def get_document_options(category: str = "all"):
 })
 @app.get("/dropdown_dependent_widget")
 def dropdown_dependent_widget(category: str = "all", document_type: str = "all"):
-    """Returns a dropdown dependent widget example"""
+    """Returns a dropdown dependent widget"""
     return f"""# Dropdown Dependent Widget
 - Selected category: **{category}**
 - Selected document: **{document_type}**
