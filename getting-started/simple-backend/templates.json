@@ -1,10 +1,10 @@
 [
     {
-        "name": "Template App 2",
-        "img": "",
+        "name": "Template App",
+        "img": "https://didierlopes.com/blog/2025-01-30-what-it-means-to-have-skin-in-the-game.png",
         "img_dark": "",
         "img_light": "",
-        "description": "Template app",
+        "description": "This is a template app that demonstrates how to create a simple app with the OpenBB Workspace. It highlights the different types of widgets that can be used in the OpenBB Workspace, the different ways to customize the widgets and the different ways to use parameters.",
         "allowCustomization": true,
         "tabs": {
           "types-of-widgets": {

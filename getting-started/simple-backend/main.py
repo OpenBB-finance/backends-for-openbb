@@ -10,7 +10,7 @@ from registry import register_widget, WIDGETS
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 from plotly_config import get_theme_colors, base_layout, get_toolbar_config
-import numpy as np
+
 # Initialize FastAPI application with metadata
 app = FastAPI(
     title="Simple Backend",
@@ -86,7 +86,7 @@ def get_templates():
 @app.get("/markdown_widget")
 def markdown_widget():
     """Returns a markdown widget"""
-    return f"# Markdown Widget"
+    return "# Markdown Widget"
 
 # Simple markdown widget with category and subcategory
 # Note that the category and subcategory specify the category and subcategory of the widget in the OpenBB Workspace
@@ -1277,11 +1277,11 @@ def get_document_options(category: str = "all"):
         }
     ]
 
-    # If a specific category is selected, filter the documents
-    if category != "all":
-        filtered_docs = [
-            doc for doc in SAMPLE_DOCUMENTS if doc["category"] == category
-        ]
+    # Filter documents based on category
+    filtered_docs = (
+        SAMPLE_DOCUMENTS if category == "all"
+        else [doc for doc in SAMPLE_DOCUMENTS if doc["category"] == category]
+    )
     
     # Return the filtered documents in the format expected by the dropdown
     # Each document needs a label (what the user sees) and a value (what's passed to the backend)
