@@ -1,5 +1,6 @@
 # Import required libraries
 import json
+import base64
 import requests
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
@@ -30,6 +31,8 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+ROOT_PATH = Path(__file__).parent.resolve()
 
 @app.get("/")
 def read_root():
@@ -680,3 +683,71 @@ def table_widget_from_api_endpoint_example():
         status_code=response.status_code,
         detail=response.text
     )
+
+
+
+@register_widget({
+    "name": "PDF Widget with Base64",
+    "description": "Display a PDF file with base64 encoding",
+    "endpoint": "pdf_widget_base64",
+    "gridData": {
+        "w": 20,
+        "h": 20
+    },
+    "type": "pdf",
+})
+@app.get("/pdf_widget_base64")
+def get_pdf_widget_base64():
+    """Serve a file through base64 encoding."""
+    try:
+        name = "sample.pdf"
+        with open(ROOT_PATH / name, "rb") as file:
+            file_data = file.read()
+            encoded_data = base64.b64encode(file_data)
+            content = encoded_data.decode("utf-8")
+    
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail="File not found"
+        ) from exc
+    
+    return JSONResponse(
+        headers={"Content-Type": "application/json"},
+        content={
+            "data_format": {
+                "data_type": "pdf",
+                "filename": name,
+            },
+            "content": content,
+        },
+    )
+
+
+@register_widget({
+    "name": "PDF Widget with URL",
+    "description": "Display a PDF file",
+    "type": "pdf", 
+    "endpoint": "pdf_widget_url",
+    "gridData": {
+        "w": 20,
+        "h": 20
+    }
+})
+@app.get("/pdf_widget_url")
+def get_pdf_widget_url():
+    """Serve a file through URL."""
+    file_reference = "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/sample.pdf"
+    if not file_reference:
+        raise HTTPException(status_code=404, detail="File not found")
+    return JSONResponse(
+        headers={"Content-Type": "application/json"},
+        content={
+            "data_format": {
+                "data_type": "pdf",
+                "filename": "Sample.pdf",
+            },
+            "file_reference": file_reference,
+        },
+    )
+
