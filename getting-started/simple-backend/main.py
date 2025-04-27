@@ -2411,3 +2411,167 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
     }
 
     return figure_json
+
+
+# Global variable to store form submissions
+# This acts as a simple in-memory database for our form entries
+ALL_FORMS = []
+
+# Form submission endpoint
+# This endpoint handles both adding new records and updating existing ones
+# It receives form data as a dictionary and performs validation before processing
+@app.post("/form_submit")
+async def form_submit(params: dict) -> JSONResponse:
+    global ALL_FORMS
+    
+    # Validate required fields
+    # The form requires first name and last name to be provided
+    if not params.get("client_first_name") or not params.get("client_last_name"):
+        # Even with a 400 status code, the error message is passed to the frontend
+        # and can be displayed to the user in the OpenBB widget
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Client first name and last name are required"}
+        )
+    
+    # Validate investment types and risk profile
+    # These fields are also required for a complete form submission
+    if not params.get("investment_types") or not params.get("risk_profile"):
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Investment types and risk profile are required"}
+        )
+
+    # Handle form submission based on the action (add or update)
+    # The form can either add a new record or update an existing one
+    # We pop these values from params to avoid storing them in the record
+    add_record = params.pop("add_record", None)
+    if add_record:
+        # For new records, append to the list
+        # Convert lists to comma-separated strings for storage
+        ALL_FORMS.append(
+            {k: ",".join(v) if isinstance(v, list) else v for k, v in params.items()}
+        )
+    
+    update_record = params.pop("update_record", None)
+    if update_record:
+        # For updates, find the matching record by first and last name
+        # and update its fields with the new values
+        for record in ALL_FORMS:
+            if record["client_first_name"] == params.get("client_first_name") and record[
+                "client_last_name"
+            ] == params.get("client_last_name"):
+                record.update(params)
+    
+    # Return success response
+    # The OpenBB Workspace only checks for a 200 status code from this endpoint
+    # The actual content returned doesn't matter for the widget refresh mechanism
+    # After a successful submission, Workspace will automatically refresh the widget
+    # by calling the GET endpoint defined in the widget configuration
+    return JSONResponse(content={"success": True})
+
+
+# Form Widget Registration
+# This decorator registers the form widget with the OpenBB Workspace
+# The widget configuration defines how the form will be displayed and behave
+@register_widget({
+    "name": "Entry Form",
+    "description": "Example of a more complex entry form",
+    "category": "forms",
+    "searchCategory": "form",
+    "endpoint": "all_forms",  # The GET endpoint that provides the form data
+    "type": "table",  # The form data is displayed in a table format
+    "gridData": {
+        "w": 20,  # Width of the widget in the grid
+        "h": 9    # Height of the widget in the grid
+    },
+    "params": [
+        {
+            "paramName": "form",
+            "description": "Form example",
+            "type": "form",  # This indicates this is a form widget
+            "endpoint": "form_submit",  # The POST endpoint that handles form submissions
+            "inputParams": [
+                # Text input for client's first name
+                {
+                    "paramName": "client_first_name",
+                    "type": "text",
+                    "value": "",
+                    "label": "First Name",
+                    "description": "Client's first name"
+                },
+                # Text input for client's last name
+                {
+                    "paramName": "client_last_name",
+                    "type": "text",
+                    "value": "",
+                    "label": "Last Name",
+                    "description": "Client's last name"
+                },
+                # Multi-select dropdown for investment types
+                {
+                    "paramName": "investment_types",
+                    "type": "text",
+                    "value": None,
+                    "label": "Investment Types",
+                    "description": "Selected investment vehicles",
+                    "multiSelect": True,  # Allows selecting multiple options
+                    "options": [
+                        {"label": "Stocks", "value": "stocks"},
+                        {"label": "Bonds", "value": "bonds"},
+                        {"label": "Mutual Funds", "value": "mutual_funds"},
+                        {"label": "ETFs", "value": "etfs"},
+                    ]
+                },
+                # Text input for risk profile
+                {
+                    "paramName": "risk_profile",
+                    "type": "text",
+                    "value": "",
+                    "label": "Risk Profile",
+                    "description": "Client risk tolerance assessment"
+                },
+                # Button to add a new record
+                {
+                    "paramName": "add_record",
+                    "type": "button",
+                    "value": True,
+                    "label": "Add Client",
+                    "description": "Add client record"
+                },
+                # Button to update an existing record
+                {
+                    "paramName": "update_record",
+                    "type": "button",
+                    "value": True,
+                    "label": "Update Client",
+                    "description": "Update client record"
+                }
+            ]
+        }
+    ]
+})
+@app.get("/all_forms")
+async def all_forms() -> list:
+    """Returns all form submissions"""
+    # This GET endpoint is called by the OpenBB widget after form submission
+    # The widget refresh mechanism works by:
+    # 1. User submits form (POST to /form_submit)
+    # 2. If POST returns 200, widget automatically refreshes
+    # 3. Widget refresh calls this GET endpoint to fetch updated data
+    # 4. This function must return ALL data needed to display the updated widget
+    
+    # Return either the list of form submissions or a default empty record
+    # The default record ensures the table has the correct structure even when empty
+    return (
+        ALL_FORMS
+        if ALL_FORMS
+        else [
+            {
+                "client_first_name": None,
+                "client_last_name": None,
+                "investment_types": None,
+                "risk_profile": None
+            }
+        ]
+    )

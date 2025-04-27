@@ -410,6 +410,34 @@
                 }
               }
             ]
+          },
+          "input-form": {
+            "id": "input-form",
+            "name": "Input Form",
+            "layout": [
+              {
+                "i": "all_forms",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 10,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "focusedCell": {
+                        "colId": "client_first_name",
+                        "rowIndex": 1,
+                        "rowPinned": null
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         "groups": [
