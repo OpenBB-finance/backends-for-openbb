@@ -3,7 +3,7 @@ import json
 import base64
 import requests
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from registry import register_widget, WIDGETS
@@ -751,3 +751,110 @@ def get_pdf_widget_url():
         },
     )
 
+# Sample PDF files data
+SAMPLE_PDFS = [
+    {
+        "name": "Sample",
+        "location": "sample.pdf",
+        "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/sample.pdf",
+    },
+    {
+        "name": "Bitcoin Whitepaper", 
+        "location": "bitcoin.pdf",
+        "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/bitcoin.pdf",
+    }
+]
+
+# Sample PDF options endpoint
+# This is a simple example of how to use an endpoint to get the list of available PDFs
+# and return it in the JSON format. The reason why we need this endpoint is because the multi_file_viewer widget
+# needs to know the list of available PDFs to display and we pass this endpoint to the widget as the optionsEndpoint
+@app.get("/get_pdf_options")
+async def get_pdf_options():
+    """Get list of available PDFs"""
+    return [
+        {
+            "label": pdf["name"],
+            "value": pdf["name"]
+        } for pdf in SAMPLE_PDFS
+    ]
+
+@register_widget({
+    "name": "Multi PDF Viewer - Base64",
+    "description": "View multiple PDF files using base64 encoding",
+    "type": "multi_file_viewer",
+    "endpoint": "multi_pdf_base64",
+    "gridData": {
+        "w": 20,
+        "h": 10
+    },
+    "params": [
+        {
+            "paramName": "pdf_name",
+            "description": "PDF file to display",
+            "type": "endpoint",
+            "label": "PDF File",
+            "optionsEndpoint": "/get_pdf_options",
+            "show": False
+        }
+    ]
+})
+@app.get("/multi_pdf_base64")
+async def get_multi_pdf_base64(pdf_name: str):
+    """Get PDF content in base64 format"""
+    pdf = next((p for p in SAMPLE_PDFS if p["name"] == pdf_name), None)
+    if not pdf:
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    file_path = ROOT_PATH / pdf["location"]
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="PDF file not found")
+
+    with open(file_path, "rb") as file:
+        base64_content = base64.b64encode(file.read()).decode("utf-8")
+
+    return JSONResponse(
+        headers={"Content-Type": "application/json"},
+        content={
+            "data_format": {
+                "data_type": "pdf",
+                "filename": f"{pdf['name']}.pdf"
+            },
+            "content": base64_content,
+        },
+    )
+
+@register_widget({
+    "name": "Multi PDF Viewer - URL",
+    "description": "View multiple PDF files using URLs",
+    "type": "multi_file_viewer", 
+    "endpoint": "multi_pdf_url",
+    "gridData": {
+        "w": 20,
+        "h": 10
+    },
+    "params": [
+        {
+            "paramName": "pdf_name",
+            "description": "PDF file to display",
+            "type": "endpoint",
+            "label": "PDF File",
+            "optionsEndpoint": "/get_pdf_options",
+            "show": False
+        }
+    ]
+})
+@app.get("/multi_pdf_url")
+async def get_multi_pdf_url(pdf_name: str):
+    """Get PDF URL"""
+    pdf = next((p for p in SAMPLE_PDFS if p["name"] == pdf_name), None)
+    if not pdf:
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    return JSONResponse(
+        headers={"Content-Type": "application/json"},
+        content={
+            "data_format": {"data_type": "pdf", "filename": f"{pdf['name']}.pdf"},
+            "file_reference": pdf["url"],
+        },
+    )
