@@ -333,7 +333,48 @@
           "plotly_chart": {
             "id": "plotly_chart",
             "name": "Plotly Chart",
-            "layout": []
+            "layout": [
+              {
+                "i": "plotly_chart",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme",
+                "x": 0,
+                "y": 17,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme_and_toolbar",
+                "x": 0,
+                "y": 32,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme_and_toolbar_using_config_file",
+                "x": 0,
+                "y": 47,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_heatmap",
+                "x": 0,
+                "y": 62,
+                "w": 40,
+                "h": 15,
+                "state": {
+                  "params": {
+                    "color_scale": "Blues"
+                  }
+                }
+              }
+            ]
           }
         },
         "groups": [
