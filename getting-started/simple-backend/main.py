@@ -941,7 +941,8 @@ Current state: {'Enabled' if condition else 'Disabled'}
 
 # This is a simple example of how to use a markdown widget with a dropdown parameter
 # The dropdown parameter is a dropdown parameter that allows users to select a specific option
-# and we pass this parameter to the widget as the daysPicker1 parameter
+# and we pass this parameter to the widget as the days_picker parameter
+# Note that the multiSelect parameter is set to True, so the user can select multiple options
 @register_widget({
     "name": "Markdown Widget with Dropdown",
     "description": "A markdown widget example with a dropdown parameter",
@@ -951,11 +952,11 @@ Current state: {'Enabled' if condition else 'Disabled'}
     "params": [
         {
             "paramName": "days_picker",
+            "description": "Number of days to look back",
             "value": "1",
             "label": "Select Days",
             "type": "text",
             "multiSelect": True,
-            "description": "Number of days to look back",
             "options": [
                 {
                     "value": "1",
@@ -987,3 +988,97 @@ def markdown_widget_with_dropdown(days_picker: str):
     return f"""# Dropdown Example
 Selected days: {days_picker}
 """
+
+
+# This is a single endpoint that returns a list of items with their details to be used in the multi select advanced dropdown widget
+# The extraInfo is a way to have more information about the item at hand, to provide the user with more context about the item
+# Note that since this doesn't has a register_widget decorator, it isn't recognzied as a widget by the OpenBB Workspace
+# which is exactly what we want, since we want to use it as a simple endpoint to get the list of items
+@app.get("/advanced_dropdown_options")
+def advanced_dropdown_options():
+    """Returns a list of stocks with their details"""
+    return [
+        {
+            "label": "Apple Inc.",
+            "value": "AAPL", 
+            "extraInfo": {
+                "description": "Technology Company",
+                "rightOfDescription": "NASDAQ"
+            }
+        },
+        {
+            "label": "Microsoft Corporation",
+            "value": "MSFT",
+            "extraInfo": {
+                "description": "Software Company", 
+                "rightOfDescription": "NASDAQ"
+            }
+        },
+        {
+            "label": "Google",
+            "value": "GOOGL",
+            "extraInfo": {
+                "description": "Search Engine",
+                "rightOfDescription": "NASDAQ"
+            }
+        }
+    ]
+
+
+# This is a simple markdown widget with an advanced drodpown with more information and allowed to select multiple options
+# It uses the optionsEndpoint to get the list of possible options as opposed to having them hardcoded in the widget
+# The style parameter is used to customize the dropdown widget, in this case we are setting the popupWidth to 450px
+@register_widget({
+    "name": "Markdown Widget with Multi Select Advanced Dropdown",
+    "description": "A markdown widget example with a multi select advanced dropdown parameter",
+    "endpoint": "markdown_widget_with_multi_select_advanced_dropdown",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "stock_picker",
+            "description": "Select a stock to analyze",
+            "value": "AAPL",
+            "label": "Select Stock",
+            "type": "endpoint",
+            "multiSelect": True,
+            "optionsEndpoint": "/advanced_dropdown_options",
+            "style": {
+                "popupWidth": 450
+            }
+        }
+    ]
+})
+@app.get("/markdown_widget_with_multi_select_advanced_dropdown")
+def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
+    """Returns a markdown widget example with multi select advanced dropdown parameter"""
+    return f"""# Multi Select Advanced Dropdown Example
+Selected stocks: {stock_picker}
+"""
+
+# This is a simple example of how to use a markdown widget with a text input parameter
+# The text input parameter is a text input that allows users to enter a specific text
+# and we pass this parameter to the widget as the textBox1 parameter
+@register_widget({
+    "name": "Markdown Widget with Number Input",
+    "description": "A markdown widget example with a number input parameter",
+    "endpoint": "markdown_widget_with_number_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "number_box",
+            "description": "Enter a number",
+            "value": 20,
+            "label": "Enter Number",
+            "type": "number"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_number_input")
+def markdown_widget_with_number_input(number_box: int):
+    """Returns a markdown widget example with number input parameter"""
+    return f"""# Number Input Example
+Entered number: {number_box}
+"""
+
