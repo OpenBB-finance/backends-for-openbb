@@ -122,6 +122,80 @@ def markdown_widget_with_error_handling():
         detail="Error that just occurred"
     )
 
+# Markdown Widget with Image from URL
+# This is a simple widget that demonstrates how to display an image from a URL
+@register_widget({
+    "name": "Markdown Widget with Image from URL",
+    "description": "A markdown widget with an image from a URL",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_image_from_url",
+    "gridData": {"w": 20, "h": 20},
+})
+@app.get("/markdown_widget_with_image_from_url")
+def markdown_widget_with_image_from_url():
+    """Returns a markdown widget with an image from a URL"""
+    # Use a simpler, more reliable image URL
+    image_url = "https://api.star-history.com/svg?repos=openbb-finance/OpenBB&type=Date&theme=dark"
+    
+    try:
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        
+        # Verify the response is actually an image
+        content_type = response.headers.get('content-type', '')
+        if not content_type.startswith('image/'):
+            raise HTTPException(
+                status_code=500,
+                detail=f"URL did not return an image. Content-Type: {content_type}"
+            )
+
+        # Convert the image to base64
+        image_base64 = base64.b64encode(response.content).decode('utf-8')
+        
+        # Return the markdown with the base64 image
+        return f"![OpenBB Logo](data:{content_type};base64,{image_base64})"
+        
+    except requests.RequestException as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch image: {str(e)}"
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing image: {str(e)}"
+        ) from e
+
+
+# Markdown Widget with Local Image
+# This is a simple widget that demonstrates how to display a local image
+@register_widget({
+    "name": "Markdown Widget with Local Image",
+    "description": "A markdown widget with a local image",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_local_image",
+    "gridData": {"w": 20, "h": 20},
+})
+@app.get("/markdown_widget_with_local_image")
+def markdown_widget_with_local_image():
+    """Returns a markdown widget with a local image"""
+    # Read the local image file
+    try:
+        with open("img.png", "rb") as image_file:
+            # Convert the image to base64
+            image_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+            return f"![Local Image](data:image/png;base64,{image_base64})"
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=500,
+            detail="Image file not found"
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error reading image: {str(e)}"
+        ) from e
+
 
 @register_widget({
     "name": "Metric Widget",
