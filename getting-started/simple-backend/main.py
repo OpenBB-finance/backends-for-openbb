@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from registry import register_widget, WIDGETS
-
+from datetime import datetime, timedelta
 
 # Initialize FastAPI application with metadata
 app = FastAPI(
@@ -858,3 +858,132 @@ async def get_multi_pdf_url(pdf_name: str):
             "file_reference": pdf["url"],
         },
     )
+
+# This is a simple example of how to use a markdown widget with a date picker parameter
+# The date picker parameter is a date picker that allows users to select a specific date
+# and we pass this parameter to the widget as the date_picker parameter 
+@register_widget({
+    "name": "Markdown Widget with Date Picker",
+    "description": "A markdown widget example with a date picker parameter",
+    "endpoint": "markdown_widget_with_date_picker",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "date_picker",
+            "description": "Choose a date to display",
+            "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+            "label": "Select Date",
+            "type": "date"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_date_picker")
+def markdown_widget_with_date_picker(
+    date_picker: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+):
+    """Returns a markdown widget example with date picker parameter"""
+    return f"""# Date Picker Example
+Selected date: {date_picker}
+"""
+
+# This is a simple example of how to use a markdown widget with a text input parameter
+# The text input parameter is a text input that allows users to enter a specific text
+# and we pass this parameter to the widget as the textBox1 parameter
+@register_widget({
+    "name": "Markdown Widget with Text Input",
+    "description": "A markdown widget example with a text input parameter",
+    "endpoint": "markdown_widget_with_text_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "text_box",
+            "value": "hello",
+            "label": "Enter Text",
+            "description": "Type something to display",
+            "type": "text"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_text_input")
+def markdown_widget_with_text_input(text_box: str):
+    """Returns a markdown widget example with text input parameter"""
+    return f"""# Text Input Example
+Entered text: {text_box}
+"""
+
+# This is a simple example of how to use a markdown widget with a boolean parameter
+# The boolean parameter is a boolean parameter that allows users to enable or disable a feature
+# and we pass this parameter to the widget as the condition parameter
+@register_widget({
+    "name": "Markdown Widget with Boolean Toggle",
+    "description": "A markdown widget example with a boolean parameter",
+    "endpoint": "markdown_widget_with_boolean",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "condition",
+            "description": "Enable or disable this feature",
+            "label": "Toggle Option",
+            "type": "boolean",
+            "value": True,
+        }
+    ]
+})
+@app.get("/markdown_widget_with_boolean")
+def markdown_widget_with_boolean(condition: bool):
+    """Returns a markdown widget example with boolean parameter"""
+    return f"""# Boolean Toggle Example
+Current state: {'Enabled' if condition else 'Disabled'}
+"""
+
+# This is a simple example of how to use a markdown widget with a dropdown parameter
+# The dropdown parameter is a dropdown parameter that allows users to select a specific option
+# and we pass this parameter to the widget as the daysPicker1 parameter
+@register_widget({
+    "name": "Markdown Widget with Dropdown",
+    "description": "A markdown widget example with a dropdown parameter",
+    "endpoint": "markdown_widget_with_dropdown",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "days_picker",
+            "value": "1",
+            "label": "Select Days",
+            "type": "text",
+            "multiSelect": True,
+            "description": "Number of days to look back",
+            "options": [
+                {
+                    "value": "1",
+                    "label": "1"
+                },
+                {
+                    "value": "5",
+                    "label": "5"
+                },
+                {
+                    "value": "10",
+                    "label": "10"
+                },
+                {
+                    "value": "20",
+                    "label": "20"
+                },
+                {
+                    "value": "30",
+                    "label": "30"
+                }
+            ]
+        }
+    ]
+})
+@app.get("/markdown_widget_with_dropdown")
+def markdown_widget_with_dropdown(days_picker: str):
+    """Returns a markdown widget example with dropdown parameter"""
+    return f"""# Dropdown Example
+Selected days: {days_picker}
+"""
