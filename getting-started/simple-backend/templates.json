@@ -102,41 +102,48 @@
             "id": "settings",
             "name": "Settings",
             "layout": [
-              {
-                "i": "markdown_widget_with_run_button",
-                "x": 20,
-                "y": 7,
-                "w": 20,
-                "h": 5
-              },
-              {
-                "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
-                "x": 0,
-                "y": 7,
-                "w": 20,
-                "h": 5
-              },
-              {
-                "i": "markdown_widget_with_short_refetch_interval",
-                "x": 20,
-                "y": 2,
-                "w": 20,
-                "h": 5
-              },
-              {
-                "i": "markdown_widget_with_short_refetch_interval_and_run_button",
-                "x": 0,
-                "y": 12,
-                "w": 20,
-                "h": 5
-              },
-              {
-                "i": "markdown_widget_with_stale_time",
-                "x": 0,
-                "y": 2,
-                "w": 20,
-                "h": 5
-              }
+                {
+                  "i": "markdown_widget_with_run_button",
+                  "x": 20,
+                  "y": 7,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+                  "x": 0,
+                  "y": 7,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_short_refetch_interval",
+                  "x": 20,
+                  "y": 2,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_short_refetch_interval_and_run_button",
+                  "x": 0,
+                  "y": 12,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_stale_time",
+                  "x": 0,
+                  "y": 2,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "/vendor1/markdown_widget_with_better_structured_api",
+                  "x": 20,
+                  "y": 12,
+                  "w": 20,
+                  "h": 5
+                }
             ]
           },
           "input_parameters": {
@@ -439,4 +446,3 @@
         ]
     }
 ]
-

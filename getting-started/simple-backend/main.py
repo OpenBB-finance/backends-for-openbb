@@ -178,10 +178,32 @@ def markdown_widget_with_short_refetch_interval_and_run_button():
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
 
+# Structured API Widget Example
+# Demonstrates how to organize API endpoints by vendor/domain for better maintainability
+# Benefits:
+# - Clear separation of concerns
+# - Reusable parameter names and options across related endpoints
+# - Easier to manage vendor-specific configurations
+# - Improved code organization and readability
+# Example structure: /vendor1/endpoint1, /vendor1/endpoint2, /vendor2/endpoint1, /vendor2/endpoint2, ...
+# This can be done not only based on vendors, but also based on the type of data, e.g. /stocks/endpoint1, /commodities/endpoint2, etc.
+@register_widget({
+    "name": "Markdown Widget with better structured API",
+    "description": "A simple markdown widget with a better structured API",
+    "type": "markdown",
+    "endpoint": "/vendor1/markdown_widget_with_better_structured_api",
+    "gridData": {"w": 12, "h": 4},
+    "refetchInterval": 10000,
+    "runButton": True
+})
+@app.get("/vendor1/markdown_widget_with_better_structured_api")
+def markdown_widget_with_better_structured_api():
+    """Returns a markdown widget with current time"""
+    return "vendor1/markdown_widget_with_better_structured_api"
 
 # Markdown Widget with Stale Time
 # The stale time is the time after which the data will be considered stale
-# and a refresh will be triggered when the widget is interacted with again
+# and you will see a refresh button in the widget becoming orange to indicate that the data is stale
 @register_widget({
     "name": "Markdown Widget with Stale Time",
     "description": "A markdown widget with stale time",
@@ -198,9 +220,8 @@ def markdown_widget_with_stale_time():
 
 # Markdown Widget with Refetch Interval and Stale Time
 # The refetch interval is set to 10000ms (10 seconds) and the stale time is set to 5000ms (5 seconds)
-# Data older than stale time will trigger a refresh when the widget is interacted with again
-# Stale time should typically be less than or equal to refetchInterval
-# Set higher stale time for data that updates infrequently
+# Data older than stale time will make the refresh button in the widget become orange to indicate that the data is stale
+# and once it reaches the refetch interval, the widget will be refreshed and the indicator will turn green again
 @register_widget({
     "name": "Markdown Widget with Refetch Interval and Shorter Stale Time",
     "description": "A markdown widget with a short refetch interval and a shorter stale time",
