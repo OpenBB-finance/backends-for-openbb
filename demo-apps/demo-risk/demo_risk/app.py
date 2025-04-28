@@ -2,10 +2,13 @@
 
 import asyncio
 import json
+import os
 
 from typing import Annotated, Literal, Optional
 
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from openbb_core.provider.abstract.data import Data
 from pandas import DataFrame, DateOffset, DatetimeIndex, Timestamp, to_datetime
 from pydantic import Field
@@ -20,6 +23,19 @@ from demo_risk.utils import (
 )
 
 app = FastAPI()
+
+origins = [
+    "https://pro.openbb.co",
+    "https://pro.openbb.dev",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class PriceHistory(Data):
@@ -300,6 +316,10 @@ async def get_templates():
         }
     ]
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "ok"}
 
 @app.get(
     "/fama_french_info",
@@ -1326,20 +1346,20 @@ async def holdings_correlation(
     return fig_json
 
 
-def main():
-    """Run the app."""
-    import subprocess
+# def main():
+#     """Run the app."""
+#     import subprocess
 
-    subprocess.run(
-        [
-            "openbb-api",
-            "--app",
-            __file__,
-            "--port",
-            "6020",
-        ]
-    )
+#     subprocess.run(
+#         [
+#             "openbb-api",
+#             "--app",
+#             __file__,
+#             "--port",
+#             "6020",
+#         ]
+#     )
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
