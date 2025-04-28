@@ -10,6 +10,17 @@
       "h": 9
     }
   },
+  "chains_highchart": {
+    "name": "Chains chart example Highchart",
+    "description": "Get current TVL of all chains and plot it with Highchart",
+    "category": "Crypto",
+    "type": "chart-highcharts",
+    "endpoint": "chains-highchart",
+    "gridData": {
+      "w": 40,
+      "h": 9
+    }
+  },
   "chains_table": {
     "name": "Chains Chart example",
     "description": "A built in chart widget example",
@@ -22,25 +33,25 @@
     "data": {
       "table": {
         "chartView": {
-            "enabled": true,
-            "chartType": "bar"
+          "enabled": true,
+          "chartType": "bar"
         },
         "showAll": false,
         "columnsDefs": [
-            {
-                "headerName": "Name",
-                "field": "name",
-                "chartDataType": "category"
-            },
-            {
-                "headerName": "Total Value Locked",
-                "field": "tvl"
-            },
-            {
-                "headerName": "Token Symbol",
-                "field": "tokenSymbol",
-                "chartDataType": "category"
-            }
+          {
+            "headerName": "Name",
+            "field": "name",
+            "chartDataType": "category"
+          },
+          {
+            "headerName": "Total Value Locked",
+            "field": "tvl"
+          },
+          {
+            "headerName": "Token Symbol",
+            "field": "tokenSymbol",
+            "chartDataType": "category"
+          }
         ]
       }
     }
