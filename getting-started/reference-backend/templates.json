@@ -1,0 +1,489 @@
+[
+    {
+        "name": "Template App",
+        "img": "https://didierlopes.com/blog/2025-01-30-what-it-means-to-have-skin-in-the-game.png",
+        "img_dark": "",
+        "img_light": "",
+        "description": "This is a template app that demonstrates how to create a simple app with the OpenBB Workspace. It highlights the different types of widgets that can be used in the OpenBB Workspace, the different ways to customize the widgets and the different ways to use parameters.",
+        "allowCustomization": true,
+        "tabs": {
+          "types-of-widgets": {
+            "id": "types-of-widgets",
+            "name": "Types of widgets",
+            "layout": [
+              {
+                "i": "metric_widget",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget",
+                "x": 0,
+                "y": 7,
+                "w": 12,
+                "h": 4
+              },
+              {
+                "i": "markdown_widget_with_error_handling",
+                "x": 24,
+                "y": 7,
+                "w": 16,
+                "h": 8
+              },
+              {
+                "i": "multi_pdf_base64",
+                "x": 20,
+                "y": 15,
+                "w": 20,
+                "h": 13,
+                "state": {
+                  "params": {
+                    "pdf_name": "Sample"
+                  }
+                }
+              },
+              {
+                "i": "multi_pdf_url",
+                "x": 20,
+                "y": 28,
+                "w": 20,
+                "h": 10,
+                "state": {
+                  "params": {
+                    "pdf_name": "Sample"
+                  }
+                }
+              },
+              {
+                "i": "pdf_widget_base64",
+                "x": 0,
+                "y": 15,
+                "w": 20,
+                "h": 13
+              },
+              {
+                "i": "pdf_widget_url",
+                "x": 0,
+                "y": 28,
+                "w": 20,
+                "h": 10
+              },
+              {
+                "i": "table_widget",
+                "x": 0,
+                "y": 11,
+                "w": 12,
+                "h": 4,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  }
+                }
+              },
+              {
+                "i": "table_widget_from_api_endpoint",
+                "x": 12,
+                "y": 7,
+                "w": 12,
+                "h": 8,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  }
+                }
+              }
+            ]
+          },
+          "settings": {
+            "id": "settings",
+            "name": "Settings",
+            "layout": [
+                {
+                  "i": "markdown_widget_with_run_button",
+                  "x": 20,
+                  "y": 7,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+                  "x": 0,
+                  "y": 7,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_short_refetch_interval",
+                  "x": 20,
+                  "y": 2,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_short_refetch_interval_and_run_button",
+                  "x": 0,
+                  "y": 12,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "markdown_widget_with_stale_time",
+                  "x": 0,
+                  "y": 2,
+                  "w": 20,
+                  "h": 5
+                },
+                {
+                  "i": "/vendor1/markdown_widget_with_better_structured_api",
+                  "x": 20,
+                  "y": 12,
+                  "w": 20,
+                  "h": 5
+                }
+            ]
+          },
+          "input_parameters": {
+            "id": "input_parameters",
+            "name": "Input parameters",
+            "layout": [
+              {
+                "i": "markdown_widget_with_boolean",
+                "x": 0,
+                "y": 2,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_date_picker",
+                "x": 20,
+                "y": 2,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_dropdown",
+                "x": 0,
+                "y": 7,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_multi_select_advanced_dropdown",
+                "x": 20,
+                "y": 12,
+                "w": 20,
+                "h": 6
+              },
+              {
+                "i": "markdown_widget_with_number_input",
+                "x": 20,
+                "y": 7,
+                "w": 20,
+                "h": 5
+              },
+              {
+                "i": "markdown_widget_with_text_input",
+                "x": 0,
+                "y": 12,
+                "w": 20,
+                "h": 6
+              },
+              {
+                "i": "dropdown_dependent_widget",
+                "x": 0,
+                "y": 18,
+                "w": 40,
+                "h": 5
+              },
+              {
+                "i": "table_widget_with_grouping_by_cell_click",
+                "x": 0,
+                "y": 31,
+                "w": 20,
+                "h": 8,
+                "state": {
+                  "params": {
+                    "symbol": "AMZN"
+                  },
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "symbol"
+                        ],
+                        "rightColIds": []
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+                "x": 20,
+                "y": 31,
+                "w": 20,
+                "h": 8,
+                "state": {
+                  "params": {
+                    "symbol": "AMZN"
+                  }
+                }
+              },
+              {
+                "i": "company_performance",
+                "x": 0,
+                "y": 23,
+                "w": 20,
+                "h": 8,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  }
+                }
+              },
+              {
+                "i": "company_details",
+                "x": 20,
+                "y": 23,
+                "w": 20,
+                "h": 8
+              }
+            ]
+          },
+          "aggrid_table": {
+            "id": "aggrid_table",
+            "name": "AgGrid Table",
+            "layout": [
+              {
+                "i": "table_widget_with_hover_card",
+                "x": 27,
+                "y": 2,
+                "w": 13,
+                "h": 7,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "name"
+                        ],
+                        "rightColIds": []
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "table_widget_with_render_functions",
+                "x": 12,
+                "y": 2,
+                "w": 15,
+                "h": 7,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "name"
+                        ],
+                        "rightColIds": []
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "table_widget_with_column_definitions",
+                "x": 0,
+                "y": 2,
+                "w": 12,
+                "h": 7,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "name"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnVisibility": {
+                        "hiddenColIds": [
+                          "change_7d"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "table_to_chart_widget",
+                "x": 0,
+                "y": 9,
+                "w": 20,
+                "h": 12,
+                "state": {
+                  "chartView": {
+                    "enabled": true,
+                    "chartType": "column"
+                  }
+                }
+              },
+              {
+                "i": "table_to_time_series_widget",
+                "x": 20,
+                "y": 9,
+                "w": 20,
+                "h": 12,
+                "state": {
+                  "chartView": {
+                    "enabled": true,
+                    "chartType": "line"
+                  }
+                }
+              }
+            ]
+          },
+          "plotly_chart": {
+            "id": "plotly_chart",
+            "name": "Plotly Chart",
+            "layout": [
+              {
+                "i": "plotly_chart",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme",
+                "x": 0,
+                "y": 17,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme_and_toolbar",
+                "x": 0,
+                "y": 32,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_chart_with_theme_and_toolbar_using_config_file",
+                "x": 0,
+                "y": 47,
+                "w": 40,
+                "h": 15
+              },
+              {
+                "i": "plotly_heatmap",
+                "x": 0,
+                "y": 62,
+                "w": 40,
+                "h": 15,
+                "state": {
+                  "params": {
+                    "color_scale": "Blues"
+                  }
+                }
+              }
+            ]
+          },
+          "input-form": {
+            "id": "input-form",
+            "name": "Input Form",
+            "layout": [
+              {
+                "i": "all_forms",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 10,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "focusedCell": {
+                        "colId": "client_first_name",
+                        "rowIndex": 1,
+                        "rowPinned": null
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "tradingview": {
+            "id": "tradingview",
+            "name": "TradingView",
+            "layout": [
+              {
+                "i": "/udf",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 21
+              }
+            ]
+          }
+        },
+        "groups": [
+            {
+                "name": "Group 1",
+                "type": "endpointParam",
+                "paramName": "company",
+                "defaultValue": "TM",
+                "widgetIds": [
+                "company_performance",
+                "company_details"
+                ]
+            },
+            {
+                "name": "Group 2",
+                "type": "param",
+                "paramName": "year",
+                "defaultValue": "2024",
+                "widgetIds": [
+                "company_performance",
+                "company_details"
+                ]
+            },
+            {
+                "name": "Group 3",
+                "type": "endpointParam",
+                "paramName": "symbol",
+                "defaultValue": "GOOGL",
+                "widgetIds": [
+                "table_widget_with_grouping_by_cell_click",
+                "widget_managed_by_parameter_from_cell_click_on_table_widget"
+                ]
+            }
+        ]
+    }
+]
