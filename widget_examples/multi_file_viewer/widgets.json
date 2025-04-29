@@ -12,14 +12,16 @@
       {
         "type": "endpoint",
         "paramName": "whitepaper",
-        "value": "http://localhost:5011/whitepapers",
+        "value": ["Bitcoin"],
         "label": "Whitepaper",
         "description": "Whitepaper to display.",
         "optionsEndpoint": "/whitepapers",
         "show": false,
         "optionsParams": {
           "category": "$category"
-        }
+        },
+        "multiSelect": true,
+        "roles": ["fileSelector"]
       },
       {
         "type": "text",
