@@ -922,7 +922,7 @@ def get_pdf_widget_base64():
     "gridData": {
         "w": 20,
         "h": 20
-    }
+    },
 })
 @app.get("/pdf_widget_url")
 def get_pdf_widget_url():
@@ -985,7 +985,10 @@ async def get_pdf_options():
             "type": "endpoint",
             "label": "PDF File",
             "optionsEndpoint": "/get_pdf_options",
-            "show": False
+            "show": False,
+            "value": ["Bitcoin Whitepaper"],
+            "multiSelect": True,
+            "roles": ["fileSelector"]
         }
     ]
 })
@@ -1030,7 +1033,10 @@ async def get_multi_pdf_base64(pdf_name: str):
             "type": "endpoint",
             "label": "PDF File",
             "optionsEndpoint": "/get_pdf_options",
-            "show": False
+            "value": ["Sample"],
+            "show": False,
+            "multiSelect": True,
+            "roles": ["fileSelector"]
         }
     ]
 })
