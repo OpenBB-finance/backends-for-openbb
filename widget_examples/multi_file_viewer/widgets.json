@@ -21,7 +21,7 @@
           "category": "$category"
         },
         "multiSelect": true,
-        "roles": ["fileSwitcher"]
+        "roles": ["fileSelector"]
       },
       {
         "type": "text",
