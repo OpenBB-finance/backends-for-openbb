@@ -105,7 +105,7 @@ async def view_whitepaper_url(whitepaper: str):
     if not wp:
         raise HTTPException(status_code=404, detail="Whitepaper not found")
 
-    # Fetch the presigned url and return it for the `file_reference`.
+    # Fetch the presigned url and return it for the `url`.
     # In the code below, we are simulating the presigned url by returning the url directly.
     presigned_url = wp["url"]
 
@@ -117,6 +117,6 @@ async def view_whitepaper_url(whitepaper: str):
         headers={"Content-Type": "application/json"},
         content={
             "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
-            "file_reference": presigned_url,
+            "url": presigned_url,
         },
     )

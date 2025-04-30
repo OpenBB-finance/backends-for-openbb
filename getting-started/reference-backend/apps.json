@@ -35,40 +35,44 @@
               {
                 "i": "multi_pdf_base64",
                 "x": 20,
-                "y": 15,
+                "y": 31,
                 "w": 20,
                 "h": 13,
                 "state": {
                   "params": {
-                    "pdf_name": "Sample"
+                    "pdf_name": [
+                      "Sample"
+                    ]
                   }
                 }
               },
               {
                 "i": "multi_pdf_url",
                 "x": 20,
-                "y": 28,
+                "y": 44,
                 "w": 20,
-                "h": 10,
+                "h": 14,
                 "state": {
                   "params": {
-                    "pdf_name": "Sample"
+                    "pdf_name": [
+                      "Sample"
+                    ]
                   }
                 }
               },
               {
                 "i": "pdf_widget_base64",
                 "x": 0,
-                "y": 15,
+                "y": 31,
                 "w": 20,
                 "h": 13
               },
               {
                 "i": "pdf_widget_url",
                 "x": 0,
-                "y": 28,
+                "y": 44,
                 "w": 20,
-                "h": 10
+                "h": 14
               },
               {
                 "i": "table_widget",
@@ -80,6 +84,11 @@
                   "chartView": {
                     "enabled": false,
                     "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "version": "33.2.1"
+                    }
                   }
                 }
               },
@@ -93,8 +102,27 @@
                   "chartView": {
                     "enabled": false,
                     "chartType": "line"
+                  },
+                  "columnState": {
+                    "default_undefined": {
+                      "version": "33.2.1"
+                    }
                   }
                 }
+              },
+              {
+                "i": "markdown_widget_with_local_image",
+                "x": 0,
+                "y": 15,
+                "w": 20,
+                "h": 16
+              },
+              {
+                "i": "markdown_widget_with_image_from_url",
+                "x": 20,
+                "y": 15,
+                "w": 20,
+                "h": 16
               }
             ]
           },
