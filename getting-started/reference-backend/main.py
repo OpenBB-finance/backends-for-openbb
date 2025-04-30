@@ -457,7 +457,7 @@ def table_widget():
                 },
                 {
                     "field": "change_7d",
-                    "headerName": "24h Change",
+                    "headerName": "7d Change",
                     "cellDataType": "number",
                     "formatterFn": "percent",
                     "width": 120,
