@@ -12,7 +12,8 @@ app = FastAPI()
 
 origins = [
     "https://pro.openbb.co",
-    "https://excel.openbb.co"
+    "https://excel.openbb.co",
+    "http://localhost:1420"
 ]
 
 app.add_middleware(
@@ -53,6 +54,51 @@ def chains_table():
         content={"error": response.text}, status_code=response.status_code
     )
 
+
+# Example of a Highchart chart widget
+@app.get("/chains-highchart")
+def get_chains_highchart():
+    """Get current TVL of all chains using Defi Llama"""
+    import requests
+    import pandas as pd
+    from fastapi.responses import JSONResponse
+    from highcharts_core.chart import Chart
+
+    response = requests.get("https://api.llama.fi/v2/chains")
+
+    if response.status_code == 200:
+        df = pd.DataFrame(response.json())
+
+        top_30_df = df.sort_values(by='tvl', ascending=False).head(30)
+        
+        # Format TVL values to be more readable (in billions)
+        top_30_df['formatted_tvl'] = top_30_df['tvl'].apply(lambda x: round(x / 1e9, 2))
+
+        categories = top_30_df['name'].tolist()
+        data = top_30_df['formatted_tvl'].tolist()
+
+        chart_options = {
+            'chart': {'type': 'column', 'height': "50%"},
+            'title': {'text': 'Top 30 Chains by TVL'},
+            'xAxis': {'categories': categories, 'title': {'text': 'Chain Name'}},
+            'yAxis': {'title': {'text': 'Total Value Locked (TVL in billions $)'}},
+            'tooltip': {
+                'pointFormat': '<b>${point.y:.2f}B</b>'
+            },
+            'series': [{
+                'name': 'Chain',
+                'data': data
+            }]
+        }
+
+        chart = Chart.from_options(chart_options)
+
+        return chart.to_dict()
+
+    print(f"Request error {response.status_code}: {response.text}")
+    return JSONResponse(
+        content={"error": response.text}, status_code=response.status_code
+    )
 
 # Example of a Plotly chart widget
 @app.get("/chains")

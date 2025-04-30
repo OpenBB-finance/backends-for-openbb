@@ -20,7 +20,7 @@ pip install -r requirements.txt
 cd into the Example folder you want to run
 
 ```python
-Run `uvicorn main:app --port 5050`
+uvicorn main:app --port 5050
 ```
 
 ## Step 3 - Add to Pro
