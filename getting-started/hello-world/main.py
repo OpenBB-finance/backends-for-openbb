@@ -51,19 +51,19 @@ def get_widgets():
     )
 
 
-# Templates configuration file for the OpenBB Workspace
+# Apps configuration file for the OpenBB Workspace
 # it contains the information and configuration about all the
-# templates that will be displayed in the OpenBB Workspace
-@app.get("/templates.json")
-def get_templates():
-    """Templates configuration file for the OpenBB Workspace
+# apps that will be displayed in the OpenBB Workspace
+@app.get("/apps.json")
+def get_apps():
+    """Apps configuration file for the OpenBB Workspace
     
     Returns:
-        JSONResponse: The contents of templates.json file
+        JSONResponse: The contents of apps.json file
     """
-    # Read and return the templates configuration file
+    # Read and return the apps configuration file
     return JSONResponse(
-        content=json.load((Path(__file__).parent.resolve() / "templates.json").open())
+        content=json.load((Path(__file__).parent.resolve() / "apps.json").open())
     )
 
 
