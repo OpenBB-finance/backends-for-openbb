@@ -59,19 +59,19 @@ def get_widgets():
     return WIDGETS
 
 
-# Templates configuration file for the OpenBB Workspace
+# Apps configuration file for the OpenBB Workspace
 # it contains the information and configuration about all the
-# templates that will be displayed in the OpenBB Workspace
-@app.get("/templates.json")
-def get_templates():
-    """Templates configuration file for the OpenBB Workspace
+# apps that will be displayed in the OpenBB Workspace
+@app.get("/apps.json")
+def get_apps():
+    """Apps configuration file for the OpenBB Workspace
     
     Returns:
-        JSONResponse: The contents of templates.json file
+        JSONResponse: The contents of apps.json file
     """
-    # Read and return the templates configuration file
+    # Read and return the apps configuration file
     return JSONResponse(
-        content=json.load((Path(__file__).parent.resolve() / "templates.json").open())
+        content=json.load((Path(__file__).parent.resolve() / "apps.json").open())
     )
 
 
@@ -1390,7 +1390,7 @@ def get_company_options():
 # - "company" for manufacturer selection
 # - "year" for model year selection
 # When widgets share the same paramName, they can be grouped together in the UI
-# This grouping can be configured in the templates.json file or through the UI
+# This grouping can be configured in the apps.json file or through the UI
 # When grouped, changing a parameter in one widget will automatically update the other
 # Note that both widgets also share the same optionsEndpoint ("/company_options")
 # which ensures they have identical options in their dropdowns
@@ -1562,14 +1562,14 @@ def get_company_performance(company: str, year: str = "2024"):
 
 # This widget is grouped with the company_performance widget above
 # They share the same paramNames ("company" and "year")
-# When these widgets are grouped in the UI or templates.json:
+# When these widgets are grouped in the UI or apps.json:
 # 1. Selecting a manufacturer in either widget updates both
 # 2. Changing the year in either widget updates both
 # This creates a synchronized view of both performance metrics and company details
 # The key to making this work is:
 # 1. Using identical paramNames in both widgets
 # 2. Using the same optionsEndpoint for shared parameters
-# 3. Configuring the grouping in templates.json or through the UI
+# 3. Configuring the grouping in apps.json or through the UI
 @register_widget({
     "name": "Car Manufacturer Details",
     "description": "Displays detailed information about the selected car manufacturer",
