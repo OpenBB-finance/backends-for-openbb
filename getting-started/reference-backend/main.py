@@ -937,7 +937,7 @@ def get_pdf_widget_url():
                 "data_type": "pdf",
                 "filename": "Sample.pdf",
             },
-            "file_reference": file_reference,
+            "url": file_reference,
         },
     )
 
@@ -1051,7 +1051,7 @@ async def get_multi_pdf_url(pdf_name: str):
         headers={"Content-Type": "application/json"},
         content={
             "data_format": {"data_type": "pdf", "filename": f"{pdf['name']}.pdf"},
-            "file_reference": pdf["url"],
+            "url": pdf["url"],
         },
     )
 

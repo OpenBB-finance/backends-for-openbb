@@ -70,7 +70,7 @@ def get_files_url(name: str):
                 "data_type": "pdf",
                 "filename": name,
             },
-            "file_reference": file_reference,
+            "url": file_reference,
         },
     )
 
