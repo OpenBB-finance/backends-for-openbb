@@ -8,11 +8,11 @@ def main():
         [
             "openbb-api",
             "--app",
-            __file__.replace("main.py", "/app/app.py"),
-            "--templates-path",
-            __file__.replace("main.py", "/app"),
+            __file__.replace("main.py", "app/app.py"),
+            "--host",
+            "0.0.0.0",
             "--port",
-            "6700",
+            "6020",
         ]
     )
 

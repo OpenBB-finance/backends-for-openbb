@@ -1,0 +1,35 @@
+# fly.toml app configuration file generated for dtcc-trade-repo on 2025-05-01T10:20:03-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'dtcc-trade-repo'
+primary_region = 'lax'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  PORT = '6020'
+
+[http_service]
+  internal_port = 6020
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[http_service.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
