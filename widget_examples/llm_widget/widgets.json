@@ -4,8 +4,7 @@
     "description": "Takes in a prompt and forwards it to the agent to generate a response using an LLM.",
     "category": "tools",
     "searchCategory": "tools",
-    "type": "input_widget",
-    "runButton": true,
+    "type": "prompt",
     "endpoint": "query",
     "gridData": {
       "w": 20,
@@ -15,7 +14,7 @@
       {
         "paramName": "prompt",
         "type": "text",
-        "description": "REQUIRED - The prompt to send to the LLM to make queries or ask questions.",
+        "description": "The prompt to send to the LLM to make queries or ask questions.",
         "label": "Prompt",
         "show": false
       }
