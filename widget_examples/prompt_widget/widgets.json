@@ -1,7 +1,7 @@
 {
   "llm_widget": {
     "name": "Gemini",
-    "description": "Takes in a prompt and forwards it to the agent to generate a response using an LLM.",
+    "description": "Use to query Google's Gemini LLM.",
     "category": "tools",
     "searchCategory": "tools",
     "type": "prompt",
