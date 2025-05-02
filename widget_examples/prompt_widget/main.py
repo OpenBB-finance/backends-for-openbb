@@ -46,21 +46,13 @@ async def ask(request: PromptRequest):
     """Process a prompt request and return a response."""
 
     client = Client(api_key=GEMINI_API_KEY)
-
-    try:
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=request.prompt,
-        )
-        content = response.text
-        if not content:
-            raise HTTPException(
-                status_code=500, detail="Empty response from Gemini API."
-            )
-    except Exception as e:
-        logging.error(f"Unexpected error: {e}")
-        raise HTTPException(status_code=500, detail="Unexpected error.")
-
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=request.prompt,
+    )
+    content = response.text
+    if not content:
+        raise HTTPException(status_code=500, detail="Empty response from Gemini API.")
     return PromptResponse(
         content=content,
         data_format=DataFormat(data_type="object", parse_as="text"),
