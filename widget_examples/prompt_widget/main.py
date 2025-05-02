@@ -4,12 +4,10 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import requests
 from dotenv import load_dotenv
-import logging
-from google.genai import Client, types
+from google.genai import Client
 
-from models import Citation, PromptRequest, PromptResponse, DataFormat, SourceInfo
+from models import PromptRequest, PromptResponse, DataFormat
 
 load_dotenv(".env")
 
