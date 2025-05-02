@@ -5,7 +5,7 @@
     "category": "tools",
     "searchCategory": "tools",
     "type": "prompt",
-    "endpoint": "query",
+    "endpoint": "ask",
     "gridData": {
       "w": 20,
       "h": 9

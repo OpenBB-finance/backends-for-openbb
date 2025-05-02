@@ -6,13 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 from dotenv import load_dotenv
+import logging
+from google.genai import Client, types
 
 from models import Citation, PromptRequest, PromptResponse, DataFormat, SourceInfo
 
 load_dotenv(".env")
 
 ROOT_PATH = Path(__file__).parent.resolve()
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+GEMINI_MODEL = "gemini-2.0-flash"
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 
 app = FastAPI()
@@ -39,53 +41,27 @@ def get_widgets():
     return JSONResponse(content=json.load((ROOT_PATH / "widgets.json").open()))
 
 
-@app.post("/query")
-async def query(request: PromptRequest):
+@app.post("/ask")
+async def ask(request: PromptRequest):
     """Process a prompt request and return a response."""
 
-    try:
-        response = requests.post(
-            url=f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
-            headers={"Content-Type": "application/json"},
-            json={"contents": [{"parts": [{"text": request.prompt}]}]},
-        )
-        response.raise_for_status()
-        result = response.json()
-        content = (
-            result.get("candidates", [{}])[0]
-            .get("content", {})
-            .get("parts", [{}])[0]
-            .get("text", "Failed to get response.")
-        )
-    except requests.exceptions.RequestException as e:
-        print(e)
-        raise HTTPException(
-            status_code=500, detail=f"Error communicating with Gemini API: {str(e)}"
-        )
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail="Unexpected error.")
+    client = Client(api_key=GEMINI_API_KEY)
 
-    citation = Citation(
-        source_info=SourceInfo(
-            type="widget",
-            widget_id="llm_widget",
-            origin="LLM Widget Backend",
-            name="Gemini",
-            description="Response from Gemini API",
-            metadata={},
-        ),
-        details=[
-            {
-                "Name": "Gemini",
-                "Prompt": request.prompt,
-            }
-        ],
-    )
+    try:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=request.prompt,
+        )
+        content = response.text
+        if not content:
+            raise HTTPException(
+                status_code=500, detail="Empty response from Gemini API."
+            )
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Unexpected error.")
 
     return PromptResponse(
         content=content,
         data_format=DataFormat(data_type="object", parse_as="text"),
-        extra_citations=[citation],
-        citable=False,
     )
