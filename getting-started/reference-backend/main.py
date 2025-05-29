@@ -22,7 +22,7 @@ app = FastAPI(
 # Define allowed origins for CORS (Cross-Origin Resource Sharing)
 # This restricts which domains can access the API
 origins = [
-    "https://pro.openbb.co",
+    "https://pro.openbb.co"
 ]
 
 # Configure CORS middleware to handle cross-origin requests
@@ -1107,7 +1107,36 @@ def markdown_widget_with_text_input(text_box: str):
     """Returns a markdown widget with text input parameter"""
     return f"""# Text Input
 Entered text: {text_box}
-"""
+""" 
+
+
+# This is a simple markdown widget with an editable text input parameter
+# The editable text input parameter is a text input that allows users to enter a specific text
+# and we pass all of them as a list to the widget as the text_box parameter
+# The user is able to add more by just typing a new variable and pressing enter
+@register_widget({
+    "name": "Markdown Widget with Editable Text Input",
+    "description": "A markdown widget with an editable text input parameter",
+    "endpoint": "markdown_widget_with_editable_text_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "text_box",
+            "value": "var1,var2,var3",
+            "label": "Enter Text",
+            "description": "Type something to display",
+            "editable": True,
+            "type": "text"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_editable_text_input")
+def markdown_widget_with_editable_text_input(text_box: str):
+    """Returns a markdown widget with text input parameter"""
+    return f"""# Text Input
+Entered text: {text_box}
+""" 
 
 # This is a simple markdown widget with a boolean parameter
 # The boolean parameter is a boolean parameter that allows users to enable or disable a feature
