@@ -1,0 +1,23 @@
+{
+  "llm_widget": {
+    "name": "Gemini",
+    "description": "Use to query Google's Gemini LLM.",
+    "category": "tools",
+    "searchCategory": "tools",
+    "type": "prompt",
+    "endpoint": "ask",
+    "gridData": {
+      "w": 20,
+      "h": 9
+    },
+    "params": [
+      {
+        "paramName": "prompt",
+        "type": "text",
+        "description": "The prompt to send to the LLM to make queries or ask questions.",
+        "label": "Prompt",
+        "show": false
+      }
+    ]
+  }
+}
