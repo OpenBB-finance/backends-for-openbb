@@ -25,23 +25,27 @@ ROOT_PATH = Path(__file__).parent.resolve()
 
 # We are assuming the url is a publicly accessible url (ex a presigned url from an s3 bucket)
 whitepapers = {
-    "Bitcoin": {
-        "location": "bitcoin.pdf",
+    "bitcoin.pdf": {
+        "label": "Bitcoin",
+        "filename": "bitcoin.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/bitcoin.pdf",
         "category": "l1",
     },
-    "Ethereum": {
-        "location": "ethereum.pdf",
+    "ethereum.pdf": {
+        "label": "Ethereum",
+        "filename": "ethereum.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/ethereum.pdf",
         "category": "l1",
     },
-    "ChainLink": {
-        "location": "chainlink.pdf",
+    "chainlink.pdf": {
+        "label": "Chainlink",
+        "filename": "chainlink.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/chainlink.pdf",
         "category": "oracles",
     },
-    "Solana": {
-        "location": "solana.pdf",
+    "solana.pdf": {
+        "label": "Solana",
+        "filename": "solana.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/solana.pdf",
         "category": "l1",
     },
@@ -64,11 +68,14 @@ def get_widgets():
 @app.get("/options")
 async def get_options(category: str = Query("all")):
     if category == "all":
-        return [{"label": name, "value": name} for name in whitepapers]
+        return [
+            {"label": whitepaper["label"], "value": whitepaper["filename"]}
+            for whitepaper in whitepapers.values()
+        ]
     return [
-        {"label": name, "value": name}
-        for name, wp in whitepapers.items()
-        if wp["category"] == category
+        {"label": whitepaper["label"], "value": whitepaper["filename"]}
+        for whitepaper in whitepapers.values()
+        if whitepaper["category"] == category
     ]
 
 
@@ -88,14 +95,18 @@ async def get_whitepapers_base64(filename: List[str] = Query(...)):
     files: List[dict] = []
     for name in filename:
         if whitepaper := whitepapers.get(name):
-            file_path = Path.cwd() / whitepaper["location"]
+            file_name_with_extension = whitepaper["filename"]
+            file_path = Path.cwd() / file_name_with_extension
             if file_path.exists():
                 with open(file_path, "rb") as file:
                     base64_content = base64.b64encode(file.read()).decode("utf-8")
                     files.append(
                         DataContent(
                             content=base64_content,
-                            data_format={"data_type": "pdf", "filename": f"{name}.pdf"},
+                            data_format={
+                                "data_type": "pdf",
+                                "filename": file_name_with_extension,
+                            },
                         ).model_dump()
                     )
             else:
@@ -111,10 +122,7 @@ async def get_whitepapers_base64(filename: List[str] = Query(...)):
                 ).model_dump()
             )
 
-    return JSONResponse(
-        headers={"Content-Type": "application/json"},
-        content=files,
-    )
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files,)
 
 
 # This is a simple example of how to return a url
@@ -125,11 +133,15 @@ async def get_whitepapers_url(filename: List[str] = Query(...)):
     files: List[dict] = []
     for name in filename:
         if whitepaper := whitepapers.get(name):
+            file_name_with_extension = whitepaper["filename"]
             if url := whitepaper.get("url"):
                 files.append(
                     DataContent(
                         content=url,
-                        data_format={"data_type": "pdf", "filename": f"{name}.pdf"},
+                        data_format={
+                            "data_type": "pdf",
+                            "filename": file_name_with_extension,
+                        },
                     ).model_dump()
                 )
             else:
@@ -145,7 +157,4 @@ async def get_whitepapers_url(filename: List[str] = Query(...)):
                 ).model_dump()
             )
 
-    return JSONResponse(
-        headers={"Content-Type": "application/json"},
-        content=files,
-    )
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files,)
