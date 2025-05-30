@@ -122,7 +122,8 @@ async def get_whitepapers_base64(filename: List[str] = Query(...)):
                 ).model_dump()
             )
 
-    return JSONResponse(headers={"Content-Type": "application/json"}, content=files,)
+    # The number of files returned should match the number of filenames requested
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
 
 
 # This is a simple example of how to return a url
@@ -157,4 +158,5 @@ async def get_whitepapers_url(filename: List[str] = Query(...)):
                 ).model_dump()
             )
 
+    # The number of files returned should match the number of filenames requested
     return JSONResponse(headers={"Content-Type": "application/json"}, content=files,)
