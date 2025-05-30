@@ -8,9 +8,10 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 origins = [
-    "https://pro.openbb.co",
+    "https://pro.openbb.dev",
     "https://excel.openbb.co",
-    "http://localhost:1420"
+    "https://localhost:1420",
+    "http://localhost:1420",
 ]
 
 app.add_middleware(
