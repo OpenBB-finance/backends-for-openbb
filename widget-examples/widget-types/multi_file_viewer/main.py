@@ -1,9 +1,12 @@
 import json
 from pathlib import Path
+from typing import List
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 import base64
+
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -21,32 +24,28 @@ ROOT_PATH = Path(__file__).parent.resolve()
 
 
 # We are assuming the url is a publicly accessible url (ex a presigned url from an s3 bucket)
-whitepapers = [
-    {
-        "name": "Bitcoin",
+whitepapers = {
+    "Bitcoin": {
         "location": "bitcoin.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/bitcoin.pdf",
         "category": "l1",
     },
-    {
-        "name": "Ethereum",
+    "Ethereum": {
         "location": "ethereum.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/ethereum.pdf",
         "category": "l1",
     },
-    {
-        "name": "ChainLink",
+    "ChainLink": {
         "location": "chainlink.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/chainlink.pdf",
         "category": "oracles",
     },
-    {
-        "name": "Solana",
+    "Solana": {
         "location": "solana.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/solana.pdf",
         "category": "l1",
     },
-]
+}
 
 
 @app.get("/")
@@ -62,61 +61,91 @@ def get_widgets():
     )
 
 
-@app.get("/whitepapers")
-async def get_whitepapers(category: str = Query("all")):
+@app.get("/options")
+async def get_options(category: str = Query("all")):
     if category == "all":
-        return [{"label": wp["name"], "value": wp["name"]} for wp in whitepapers]
+        return [{"label": name, "value": name} for name in whitepapers]
     return [
-        {"label": wp["name"], "value": wp["name"]}
-        for wp in whitepapers
+        {"label": name, "value": name}
+        for name, wp in whitepapers.items()
         if wp["category"] == category
     ]
 
 
+class DataContent(BaseModel):
+    content: str
+    data_format: dict
+
+
+class DataError(BaseModel):
+    error_type: str
+    content: str
+
+
 # This is a simple example of how to return a base64 encoded pdf.
-@app.get("/whitepapers/view-base64")
-async def view_whitepaper_base64(whitepaper: str):
-    wp = next((wp for wp in whitepapers if wp["name"] == whitepaper), None)
-    if not wp:
-        raise HTTPException(status_code=404, detail="Whitepaper not found")
-
-    file_path = Path.cwd() / wp["location"]
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Whitepaper file not found")
-
-    with open(file_path, "rb") as file:
-        base64_content = base64.b64encode(file.read()).decode("utf-8")
+@app.get("/whitepapers/base64")
+async def get_whitepapers_base64(filename: List[str] = Query(...)):
+    files: List[dict] = []
+    for name in filename:
+        if whitepaper := whitepapers.get(name):
+            file_path = Path.cwd() / whitepaper["location"]
+            if file_path.exists():
+                with open(file_path, "rb") as file:
+                    base64_content = base64.b64encode(file.read()).decode("utf-8")
+                    files.append(
+                        DataContent(
+                            content=base64_content,
+                            data_format={"data_type": "pdf", "filename": f"{name}.pdf"},
+                        ).model_dump()
+                    )
+            else:
+                files.append(
+                    DataError(
+                        error_type="not_found", content=f"File not found"
+                    ).model_dump()
+                )
+        else:
+            files.append(
+                DataError(
+                    error_type="not_found", content=f"Whitepaper '{name}' not found"
+                ).model_dump()
+            )
 
     return JSONResponse(
         headers={"Content-Type": "application/json"},
-        content={
-            "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
-            "content": base64_content,
-        },
+        content=files,
     )
 
 
 # This is a simple example of how to return a url
 # if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
-@app.get("/whitepapers/view-url")
-async def view_whitepaper_url(whitepaper: str):
-    wp = next((wp for wp in whitepapers if wp["name"] == whitepaper), None)
-    if not wp:
-        raise HTTPException(status_code=404, detail="Whitepaper not found")
-
-    # Fetch the presigned url and return it for the `url`.
-    # In the code below, we are simulating the presigned url by returning the url directly.
-    presigned_url = wp["url"]
-
-    file_path = Path.cwd() / wp["location"]
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Whitepaper file not found")
+@app.get("/whitepapers/url")
+async def get_whitepapers_url(filename: List[str] = Query(...)):
+    files: List[dict] = []
+    for name in filename:
+        if whitepaper := whitepapers.get(name):
+            if url := whitepaper.get("url"):
+                files.append(
+                    DataContent(
+                        content=url,
+                        data_format={"data_type": "pdf", "filename": f"{name}.pdf"},
+                    ).model_dump()
+                )
+            else:
+                files.append(
+                    DataError(
+                        error_type="not_found", content="URL not found"
+                    ).model_dump()
+                )
+        else:
+            files.append(
+                DataError(
+                    error_type="not_found", content=f"Whitepaper '{name}' not found"
+                ).model_dump()
+            )
 
     return JSONResponse(
         headers={"Content-Type": "application/json"},
-        content={
-            "data_format": {"data_type": "pdf", "filename": f"{wp['name']}.pdf"},
-            "url": presigned_url,
-        },
+        content=files,
     )
