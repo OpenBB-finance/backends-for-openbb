@@ -99,7 +99,10 @@ async def get_options(category: str = Query("all")):
     ]
 
 
-# This is a simple example of how to return a base64 encoded pdf.
+# For multi file viewer we need accept a list of filenames and return a list of results.
+# The number of files returned must match the number of filenames requested.
+
+# This is an example of how to return a list of base64 encoded files.
 @app.get("/whitepapers/base64")
 async def get_whitepapers_base64(filenames: List[str] = Query(...)):
     files: List[dict] = []
@@ -130,12 +133,10 @@ async def get_whitepapers_base64(filenames: List[str] = Query(...)):
                     error_type="not_found", content=f"Whitepaper '{name}' not found"
                 ).model_dump()
             )
-
-    # The number of files returned should match the number of filenames requested
     return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
 
 
-# This is a simple example of how to return a url
+# This is an example of how to return a list of urls.
 # if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
 @app.get("/whitepapers/url")
@@ -165,6 +166,4 @@ async def get_whitepapers_url(filenames: List[str] = Query(...)):
                     error_type="not_found", content=f"Whitepaper '{name}' not found"
                 ).model_dump()
             )
-
-    # The number of files returned should match the number of filenames requested
     return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
