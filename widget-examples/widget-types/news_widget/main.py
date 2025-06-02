@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-origins = ["https://pro.openbb.co", "https://excel.openbb.co", "https://localhost:1420", "http://localhost:1420"]
+origins = ["https://pro.openbb.co", "https://excel.openbb.co", "http://localhost:1420"]
 
 app.add_middleware(
     CORSMiddleware,

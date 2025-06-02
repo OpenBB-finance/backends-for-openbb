@@ -15,7 +15,7 @@
         "label": "Limit",
         "description": "The number of news articles to fetch",
         "type": "number",
-        "value": null
+        "value": "10"
       },
       {
         "paramName": "lang",
