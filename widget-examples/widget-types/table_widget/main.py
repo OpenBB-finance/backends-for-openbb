@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 origins = [
-    "https://pro.openbb.dev",
+    "https://pro.openbb.co",
     "https://excel.openbb.co",
     "https://localhost:1420",
     "http://localhost:1420",
