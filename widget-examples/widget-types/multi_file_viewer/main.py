@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List
+from typing import List, Literal
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -24,7 +24,7 @@ ROOT_PATH = Path(__file__).parent.resolve()
 
 
 class DataFormat(BaseModel):
-    data_type: str
+    data_type: Literal["pdf"]
     filename: str
 
 
