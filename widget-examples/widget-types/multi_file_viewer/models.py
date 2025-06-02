@@ -1,12 +1,15 @@
 from typing import List, Literal
 from pydantic import BaseModel
 
+
 class FileOption(BaseModel):
     label: str
     value: str
 
+
 class FileRequest(BaseModel):
     filenames: List[str]
+
 
 class DataFormat(BaseModel):
     data_type: Literal["pdf"]

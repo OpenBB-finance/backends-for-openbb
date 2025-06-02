@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List, Literal
+from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -80,9 +80,12 @@ async def get_options(category: str = "all") -> List[FileOption]:
 # For multi file viewer we need accept a list of filenames and return a list of results.
 # The number of files returned must match the number of filenames requested.
 
+
 # This is an example of how to return a list of base64 encoded files.
 @app.post("/whitepapers/base64")
-async def get_whitepapers_base64(request: FileRequest) -> List[DataContent | DataUrl | DataError]:
+async def get_whitepapers_base64(
+    request: FileRequest,
+) -> List[DataContent | DataUrl | DataError]:
     files = []
     for name in request.filenames:
         if whitepaper := WHITEPAPERS.get(name):
@@ -95,14 +98,15 @@ async def get_whitepapers_base64(request: FileRequest) -> List[DataContent | Dat
                         DataContent(
                             content=base64_content,
                             data_format=DataFormat(
-                                data_type="pdf", filename=file_name_with_extension,
+                                data_type="pdf",
+                                filename=file_name_with_extension,
                             ),
                         ).model_dump()
                     )
             else:
                 files.append(
                     DataError(
-                        error_type="not_found", content=f"File not found"
+                        error_type="not_found", content="File not found"
                     ).model_dump()
                 )
         else:
@@ -118,7 +122,9 @@ async def get_whitepapers_base64(request: FileRequest) -> List[DataContent | Dat
 # if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
 @app.post("/whitepapers/url")
-async def get_whitepapers_url(request: FileRequest) -> List[DataContent | DataUrl | DataError]:
+async def get_whitepapers_url(
+    request: FileRequest,
+) -> List[DataContent | DataUrl | DataError]:
     files = []
     for name in request.filenames:
         if whitepaper := WHITEPAPERS.get(name):
