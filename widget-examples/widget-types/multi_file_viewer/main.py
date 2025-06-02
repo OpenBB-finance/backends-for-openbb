@@ -54,7 +54,7 @@ whitepapers = {
 
 @app.get("/")
 def read_root():
-    return {"Info": "Full example for OpenBB Custom Backend"}
+    return {"Info": "Multi File Viewer Example"}
 
 
 @app.get("/widgets.json")
