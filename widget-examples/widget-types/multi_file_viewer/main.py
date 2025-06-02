@@ -39,7 +39,7 @@ class DataUrl(BaseModel):
 
 
 class DataError(BaseModel):
-    error_type: str
+    error_type: Literal["not_found"]
     content: str
 
 
