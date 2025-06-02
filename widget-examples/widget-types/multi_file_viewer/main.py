@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import List
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import base64
@@ -21,6 +21,26 @@ app.add_middleware(
 )
 
 ROOT_PATH = Path(__file__).parent.resolve()
+
+
+class DataFormat(BaseModel):
+    data_type: str
+    filename: str
+
+
+class DataContent(BaseModel):
+    content: str
+    data_format: DataFormat
+
+
+class DataUrl(BaseModel):
+    url: str
+    data_format: DataFormat
+
+
+class DataError(BaseModel):
+    error_type: str
+    content: str
 
 
 # We are assuming the url is a publicly accessible url (ex a presigned url from an s3 bucket)
@@ -79,16 +99,6 @@ async def get_options(category: str = Query("all")):
     ]
 
 
-class DataContent(BaseModel):
-    content: str
-    data_format: dict
-
-
-class DataError(BaseModel):
-    error_type: str
-    content: str
-
-
 # This is a simple example of how to return a base64 encoded pdf.
 @app.get("/whitepapers/base64")
 async def get_whitepapers_base64(filename: List[str] = Query(...)):
@@ -103,10 +113,9 @@ async def get_whitepapers_base64(filename: List[str] = Query(...)):
                     files.append(
                         DataContent(
                             content=base64_content,
-                            data_format={
-                                "data_type": "pdf",
-                                "filename": file_name_with_extension,
-                            },
+                            data_format=DataFormat(
+                                data_type="pdf", filename=file_name_with_extension,
+                            ),
                         ).model_dump()
                     )
             else:
@@ -137,12 +146,11 @@ async def get_whitepapers_url(filename: List[str] = Query(...)):
             file_name_with_extension = whitepaper["filename"]
             if url := whitepaper.get("url"):
                 files.append(
-                    DataContent(
-                        content=url,
-                        data_format={
-                            "data_type": "pdf",
-                            "filename": file_name_with_extension,
-                        },
+                    DataUrl(
+                        url=url,
+                        data_format=DataFormat(
+                            data_type="pdf", filename=file_name_with_extension
+                        ),
                     ).model_dump()
                 )
             else:
@@ -159,4 +167,4 @@ async def get_whitepapers_url(filename: List[str] = Query(...)):
             )
 
     # The number of files returned should match the number of filenames requested
-    return JSONResponse(headers={"Content-Type": "application/json"}, content=files,)
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
