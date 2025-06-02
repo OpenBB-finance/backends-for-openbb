@@ -6,11 +6,54 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from registry import register_widget, WIDGETS
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 from plotly_config import get_theme_colors, base_layout, get_toolbar_config
 import random
+from functools import wraps
+import asyncio
+
+# Initialize empty dictionary for widgets
+WIDGETS = {}
+
+# This is the decorator that registers a widget configuration in the WIDGETS dictionary.
+def register_widget(widget_config):
+    """
+    Decorator that registers a widget configuration in the WIDGETS dictionary.
+    
+    Args:
+        widget_config (dict): The widget configuration to add to the WIDGETS 
+            dictionary. This should follow the same structure as other entries 
+            in WIDGETS.
+    
+    Returns:
+        function: The decorated function.
+    """
+    def decorator(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            # Call the original function
+            return await func(*args, **kwargs)
+            
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            # Call the original function
+            return func(*args, **kwargs)
+        
+        # Extract the endpoint from the widget_config
+        endpoint = widget_config.get("endpoint")
+        if endpoint:
+            # Add an id field to the widget_config if not already present
+            if "id" not in widget_config:
+                widget_config["id"] = endpoint
+            
+            WIDGETS[endpoint] = widget_config
+        
+        # Return the appropriate wrapper based on whether the function is async
+        if asyncio.iscoroutinefunction(func):
+            return async_wrapper
+        return sync_wrapper
+    return decorator
 
 # Initialize FastAPI application with metadata
 app = FastAPI(
