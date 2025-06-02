@@ -101,12 +101,12 @@ async def get_options(category: str = Query("all")):
 
 # This is a simple example of how to return a base64 encoded pdf.
 @app.get("/whitepapers/base64")
-async def get_whitepapers_base64(filename: List[str] = Query(...)):
+async def get_whitepapers_base64(filenames: List[str] = Query(...)):
     files: List[dict] = []
-    for name in filename:
+    for name in filenames:
         if whitepaper := whitepapers.get(name):
             file_name_with_extension = whitepaper["filename"]
-            file_path = Path.cwd() / file_name_with_extension
+            file_path = Path.cwd() / "whitepapers" / file_name_with_extension
             if file_path.exists():
                 with open(file_path, "rb") as file:
                     base64_content = base64.b64encode(file.read()).decode("utf-8")
@@ -139,9 +139,9 @@ async def get_whitepapers_base64(filename: List[str] = Query(...)):
 # if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
 @app.get("/whitepapers/url")
-async def get_whitepapers_url(filename: List[str] = Query(...)):
+async def get_whitepapers_url(filenames: List[str] = Query(...)):
     files: List[dict] = []
-    for name in filename:
+    for name in filenames:
         if whitepaper := whitepapers.get(name):
             file_name_with_extension = whitepaper["filename"]
             if url := whitepaper.get("url"):

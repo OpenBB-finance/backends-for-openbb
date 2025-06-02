@@ -11,7 +11,7 @@
     "params": [
       {
         "type": "endpoint",
-        "paramName": "filename",
+        "paramName": "filenames",
         "value": ["Bitcoin"],
         "label": "Whitepaper",
         "description": "Whitepaper to display.",
