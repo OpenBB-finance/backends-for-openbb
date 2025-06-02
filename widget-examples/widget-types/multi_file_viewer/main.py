@@ -1,12 +1,11 @@
 import json
 from pathlib import Path
 from typing import List, Literal
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import base64
-
-from pydantic import BaseModel
+from models import FileOption, FileRequest, DataContent, DataUrl, DataError, DataFormat
 
 app = FastAPI()
 
@@ -22,29 +21,8 @@ app.add_middleware(
 
 ROOT_PATH = Path(__file__).parent.resolve()
 
-
-class DataFormat(BaseModel):
-    data_type: Literal["pdf"]
-    filename: str
-
-
-class DataContent(BaseModel):
-    content: str
-    data_format: DataFormat
-
-
-class DataUrl(BaseModel):
-    url: str
-    data_format: DataFormat
-
-
-class DataError(BaseModel):
-    error_type: Literal["not_found"]
-    content: str
-
-
 # We are assuming the url is a publicly accessible url (ex a presigned url from an s3 bucket)
-whitepapers = {
+WHITEPAPERS = {
     "bitcoin.pdf": {
         "label": "Bitcoin",
         "filename": "bitcoin.pdf",
@@ -86,15 +64,15 @@ def get_widgets():
 
 
 @app.get("/options")
-async def get_options(category: str = Query("all")):
+async def get_options(category: str = "all") -> List[FileOption]:
     if category == "all":
         return [
             {"label": whitepaper["label"], "value": whitepaper["filename"]}
-            for whitepaper in whitepapers.values()
+            for whitepaper in WHITEPAPERS.values()
         ]
     return [
         {"label": whitepaper["label"], "value": whitepaper["filename"]}
-        for whitepaper in whitepapers.values()
+        for whitepaper in WHITEPAPERS.values()
         if whitepaper["category"] == category
     ]
 
@@ -103,11 +81,11 @@ async def get_options(category: str = Query("all")):
 # The number of files returned must match the number of filenames requested.
 
 # This is an example of how to return a list of base64 encoded files.
-@app.get("/whitepapers/base64")
-async def get_whitepapers_base64(filenames: List[str] = Query(...)):
-    files: List[dict] = []
-    for name in filenames:
-        if whitepaper := whitepapers.get(name):
+@app.post("/whitepapers/base64")
+async def get_whitepapers_base64(request: FileRequest) -> List[DataContent | DataUrl | DataError]:
+    files = []
+    for name in request.filenames:
+        if whitepaper := WHITEPAPERS.get(name):
             file_name_with_extension = whitepaper["filename"]
             file_path = Path.cwd() / "whitepapers" / file_name_with_extension
             if file_path.exists():
@@ -139,11 +117,11 @@ async def get_whitepapers_base64(filenames: List[str] = Query(...)):
 # This is an example of how to return a list of urls.
 # if you are using this endpoint you will need to change the widgets.json file to use this endpoint as well.
 # You would want to return your own presigned url here for the file to load correctly or else the file will not load due to CORS policy.
-@app.get("/whitepapers/url")
-async def get_whitepapers_url(filenames: List[str] = Query(...)):
-    files: List[dict] = []
-    for name in filenames:
-        if whitepaper := whitepapers.get(name):
+@app.post("/whitepapers/url")
+async def get_whitepapers_url(request: FileRequest) -> List[DataContent | DataUrl | DataError]:
+    files = []
+    for name in request.filenames:
+        if whitepaper := WHITEPAPERS.get(name):
             file_name_with_extension = whitepaper["filename"]
             if url := whitepaper.get("url"):
                 files.append(

@@ -13,8 +13,8 @@
         "type": "endpoint",
         "paramName": "filenames",
         "value": ["Bitcoin"],
-        "label": "Whitepaper",
-        "description": "Whitepaper to display.",
+        "label": "Filenames",
+        "description": "Whitepaper filenames.",
         "optionsEndpoint": "/options",
         "show": false,
         "optionsParams": {
