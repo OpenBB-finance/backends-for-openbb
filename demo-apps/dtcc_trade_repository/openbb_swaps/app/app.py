@@ -1,6 +1,8 @@
 """Main application and entry point."""
 
 from dateutil.relativedelta import relativedelta
+import json
+from pathlib import Path
 
 from fastapi import FastAPI
 from openbb_core.app.model.abstract.error import OpenBBError
@@ -334,3 +336,14 @@ async def swap_trades(
         return output.replace({nan: None}).to_dict(orient="records")
     except Exception as e:
         raise OpenBBError(e) from e
+
+
+@app.get("/apps.json")
+def get_apps_json():
+    """Return the apps.json configuration file."""
+    try:
+        apps_json_path = Path(__file__).parent / "apps.json"
+        with open(apps_json_path, "r") as f:
+            return json.load(f)
+    except Exception as e:
+        raise OpenBBError(f"Error reading apps.json: {str(e)}") from e
