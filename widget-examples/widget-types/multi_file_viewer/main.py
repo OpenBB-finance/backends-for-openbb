@@ -67,11 +67,11 @@ def get_widgets():
 async def get_options(category: str = "all") -> List[FileOption]:
     if category == "all":
         return [
-            {"label": whitepaper["label"], "value": whitepaper["filename"]}
+            FileOption(label=whitepaper["label"], value=whitepaper["filename"])
             for whitepaper in WHITEPAPERS.values()
         ]
     return [
-        {"label": whitepaper["label"], "value": whitepaper["filename"]}
+        FileOption(label=whitepaper["label"], value=whitepaper["filename"])
         for whitepaper in WHITEPAPERS.values()
         if whitepaper["category"] == category
     ]
@@ -82,10 +82,10 @@ async def get_options(category: str = "all") -> List[FileOption]:
 
 
 # This is an example of how to return a list of base64 encoded files.
-@app.post("/whitepapers/base64")
+@app.get("/whitepapers/base64")
 async def get_whitepapers_base64(
-    request: FileRequest,
-) -> List[DataContent | DataUrl | DataError]:
+    filenames: str,
+):
     files = []
     for name in request.filenames:
         if whitepaper := WHITEPAPERS.get(name):
