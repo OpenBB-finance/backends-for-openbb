@@ -3318,3 +3318,99 @@ This response includes citation information that will be automatically tracked a
         extra_citations=[extra_citation],
         citable=True
     )
+
+@register_widget({
+    "name": "Markdown Widget with Organized Parameters",
+    "description": "A markdown widget demonstrating various parameter types organized in a clean way",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_organized_params",
+    "gridData": {"w": 20, "h": 12},
+    "params": [
+        [
+            {
+                "paramName": "enable_feature",
+                "description": "Enable or disable the main feature",
+                "label": "Enable Feature",
+                "type": "boolean",
+                "value": True
+            }
+        ],
+        [
+            {
+                "paramName": "selected_date",
+                "description": "Select a date for analysis",
+                "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+                "label": "Analysis Date",
+                "type": "date"
+            },
+            {
+                "paramName": "analysis_type",
+                "description": "Select the type of analysis to perform",
+                "value": "technical",
+                "label": "Analysis Type",
+                "type": "text",
+                "options": [
+                    {"label": "Technical Analysis", "value": "technical"},
+                    {"label": "Fundamental Analysis", "value": "fundamental"},
+                    {"label": "Sentiment Analysis", "value": "sentiment"},
+                    {"label": "Risk Analysis", "value": "risk"}
+                ]
+            },
+            {
+                "paramName": "lookback_period",
+                "description": "Number of days to look back",
+                "value": 30,
+                "label": "Lookback Period (days)",
+                "type": "number",
+                "min": 1,
+                "max": 365
+            }
+        ],
+        [
+            {
+                "paramName": "analysis_notes",
+                "description": "Additional notes for the analysis",
+                "value": "",
+                "label": "Analysis Notes",
+                "type": "text"
+            }
+        ]
+    ]
+})
+@app.get("/markdown_widget_with_organized_params")
+def markdown_widget_with_organized_params(
+    enable_feature: bool = True,
+    selected_date: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+    analysis_type: str = "technical",
+    lookback_period: int = 30,
+    analysis_notes: str = ""
+):
+    """Returns a markdown widget with organized parameters"""
+    # Format the date for display
+    formatted_date = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%B %d, %Y")
+    
+    # Get the label for the selected analysis type
+    analysis_type_label = next(
+        (opt["label"] for opt in [
+            {"label": "Technical Analysis", "value": "technical"},
+            {"label": "Fundamental Analysis", "value": "fundamental"},
+            {"label": "Sentiment Analysis", "value": "sentiment"},
+            {"label": "Risk Analysis", "value": "risk"}
+        ] if opt["value"] == analysis_type),
+        analysis_type
+    )
+    
+    return f"""# Analysis Configuration
+*This widget demonstrates various parameter types including boolean toggles, date pickers, dropdowns, number inputs, and text fields.*
+
+## Feature Status
+- **Feature Enabled:** {'✅ Yes' if enable_feature else '❌ No'}
+
+## Analysis Parameters
+- **Selected Date:** {formatted_date}
+- **Analysis Type:** {analysis_type_label}
+- **Lookback Period:** {lookback_period} days
+
+## Additional Notes
+{analysis_notes if analysis_notes else "*No additional notes provided*"}
+"""

@@ -41,7 +41,7 @@
             "state": {
               "params": {
                 "pdf_name": [
-                  null
+                  "Sample"
                 ]
               }
             }
@@ -55,7 +55,7 @@
             "state": {
               "params": {
                 "pdf_name": [
-                  null
+                  "Sample"
                 ]
               }
             }
@@ -245,6 +245,14 @@
                       "symbol"
                     ],
                     "rightColIds": []
+                  },
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "price",
+                      "change",
+                      "volume"
+                    ]
                   }
                 }
               }
@@ -272,6 +280,17 @@
               "chartView": {
                 "enabled": false,
                 "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "metric",
+                      "value",
+                      "change"
+                    ]
+                  }
+                }
               }
             }
           },
@@ -281,6 +300,18 @@
             "y": 23,
             "w": 20,
             "h": 8
+          },
+          {
+            "i": "markdown_widget_with_organized_params",
+            "x": 0,
+            "y": 39,
+            "w": 40,
+            "h": 13,
+            "state": {
+              "params": {
+                "enable_feature": "true"
+              }
+            }
           }
         ]
       },
@@ -369,6 +400,84 @@
             "w": 20,
             "h": 12,
             "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "column",
+                "chartOptions": {
+                  "common": {
+                    "axes": {
+                      "category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5,
+                          "autoRotate": true
+                        },
+                        "position": "bottom"
+                      },
+                      "radius-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "angle-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "grouped-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "number": {
+                        "position": "left",
+                        "crosshair": {
+                          "label": {}
+                        },
+                        "label": {
+                          "fontSize": 11,
+                          "autoRotate": false,
+                          "avoidCollisions": true
+                        }
+                      },
+                      "time": {
+                        "position": "bottom",
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "rotation": 0
+                        }
+                      }
+                    },
+                    "legend": {
+                      "position": "top",
+                      "maxHeight": 50,
+                      "spacing": 20,
+                      "item": {
+                        "paddingX": 32,
+                        "paddingY": 8,
+                        "marker": {
+                          "shape": "square",
+                          "padding": 5,
+                          "size": 11
+                        },
+                        "label": {
+                          "color": "#fff",
+                          "fontSize": 11
+                        }
+                      }
+                    }
+                  }
+                },
+                "suppressChartRanges": true
+              },
               "chartView": {
                 "enabled": true,
                 "chartType": "column"
@@ -382,6 +491,84 @@
             "w": 20,
             "h": 12,
             "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "line",
+                "chartOptions": {
+                  "common": {
+                    "axes": {
+                      "category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5,
+                          "autoRotate": true
+                        },
+                        "position": "bottom"
+                      },
+                      "radius-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "angle-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "grouped-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "number": {
+                        "position": "left",
+                        "crosshair": {
+                          "label": {}
+                        },
+                        "label": {
+                          "fontSize": 11,
+                          "autoRotate": false,
+                          "avoidCollisions": true
+                        }
+                      },
+                      "time": {
+                        "position": "bottom",
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "rotation": 0
+                        }
+                      }
+                    },
+                    "legend": {
+                      "position": "top",
+                      "maxHeight": 50,
+                      "spacing": 20,
+                      "item": {
+                        "paddingX": 32,
+                        "paddingY": 8,
+                        "marker": {
+                          "shape": "square",
+                          "padding": 5,
+                          "size": 11
+                        },
+                        "label": {
+                          "color": "#fff",
+                          "fontSize": 11
+                        }
+                      }
+                    }
+                  }
+                },
+                "suppressChartRanges": true
+              },
               "chartView": {
                 "enabled": true,
                 "chartType": "line"
