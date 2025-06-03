@@ -2507,7 +2507,7 @@ ALL_FORMS = []
 @app.post("/form_submit")
 async def form_submit(params: dict) -> JSONResponse:
     global ALL_FORMS
-
+    
     # Validate required fields
     # The form requires first name and last name to be provided
     if not params.get("client_first_name") or not params.get("client_last_name"):
@@ -2517,7 +2517,7 @@ async def form_submit(params: dict) -> JSONResponse:
             status_code=400,
             content={"error": "Client first name and last name are required"}
         )
-
+    
     # Validate investment types and risk profile
     # These fields are also required for a complete form submission
     if not params.get("investment_types") or not params.get("risk_profile"):
@@ -2536,7 +2536,7 @@ async def form_submit(params: dict) -> JSONResponse:
         ALL_FORMS.append(
             {k: ",".join(v) if isinstance(v, list) else v for k, v in params.items()}
         )
-
+    
     update_record = params.pop("update_record", None)
     if update_record:
         # For updates, find the matching record by first and last name
@@ -2546,7 +2546,7 @@ async def form_submit(params: dict) -> JSONResponse:
                 "client_last_name"
             ] == params.get("client_last_name"):
                 record.update(params)
-
+    
     # Return success response
     # The OpenBB Workspace only checks for a 200 status code from this endpoint
     # The actual content returned doesn't matter for the widget refresh mechanism
@@ -3051,22 +3051,67 @@ async def get_omni_widget_post(
             )
 
     if data.get("type") == "chart":
-        content = {
-                "data": [
-                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar"},
-                    {"x": [1, 2, 3], "y": [2, 4, 5], "type": "bar"},
-                    {"x": [1, 2, 3], "y": [2, 3, 6], "type": "bar"},
-                ],
-                "layout": {
-                    "title": "Great Plot",
-                },
-            }
+
+        # Create figure with base layout
+        fig = go.Figure()
+        
+        # Add traces with themed colors
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[4, 1, 2],
+            name="Series 1",
+            marker_color="#26a69a"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 4, 5],
+            name="Series 2",
+            marker_color="#ef5350"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 3, 6],
+            name="Series 3",
+            marker_color="#f0a500"
+        ))
+        
+        # Apply base layout with theme
+        base_layout_config = base_layout(theme="dark")
+        # Override text colors with #216df1
+        base_layout_config.update({
+            'font': {'color': '#216df1'},
+            'title': {'font': {'color': '#216df1'}},
+            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
+            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
+        })
+        fig.update_layout(**base_layout_config)
+        
+        # Add specific layout updates for this chart
+        fig.update_layout(
+            title="Plotly Chart example",
+            bargap=0.15,
+            bargroupgap=0.1,
+            margin=dict(t=50),  # Add 50px top margin
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.2,  # Position below the chart
+                xanchor="center",
+                x=0.5,  # Center horizontally
+                font=dict(color='#216df1'),  # Update legend text color
+                bgcolor='rgba(0,0,0,0)'  # Transparent background
+            )
+        )
+        
+        # Convert to JSON and add toolbar config
+        content = json.loads(fig.to_json())
+        content["config"] = get_toolbar_config()
 
         return OmniWidgetResponse(
-                content=content,
-                data_format=DataFormat(data_type="object", parse_as="chart"),
-                citable=False
-            )
+            content=content,
+            data_format=DataFormat(data_type="object", parse_as="chart"),
+            citable=False
+        )
 
     # Default to markdown without citations
     content = f"""### Basic Omni Widget Response
