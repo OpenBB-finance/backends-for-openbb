@@ -3,14 +3,19 @@ import json
 import base64
 import requests
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi import FastAPI, HTTPException, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from registry import register_widget, WIDGETS
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 from plotly_config import get_theme_colors, base_layout, get_toolbar_config
 import random
+from pydantic import BaseModel, Field
+from uuid import UUID
+from typing import Any, List, Literal, List
+from functools import wraps
+import asyncio
+
 
 # Initialize FastAPI application with metadata
 app = FastAPI(
@@ -23,6 +28,7 @@ app = FastAPI(
 # This restricts which domains can access the API
 origins = [
     "https://pro.openbb.co",
+    "https://pro.openbb.dev"
 ]
 
 # Configure CORS middleware to handle cross-origin requests
@@ -41,6 +47,48 @@ ROOT_PATH = Path(__file__).parent.resolve()
 def read_root():
     """Root endpoint that returns basic information about the API"""
     return {"Info": "Hello World"}
+
+# Initialize empty dictionary for widgets
+WIDGETS = {}
+
+
+def register_widget(widget_config):
+    """
+    Decorator that registers a widget configuration in the WIDGETS dictionary.
+
+    Args:
+        widget_config (dict): The widget configuration to add to the WIDGETS 
+            dictionary. This should follow the same structure as other entries 
+            in WIDGETS.
+
+    Returns:
+        function: The decorated function.
+    """
+    def decorator(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            # Call the original function
+            return await func(*args, **kwargs)
+
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            # Call the original function
+            return func(*args, **kwargs)
+
+        # Extract the endpoint from the widget_config
+        endpoint = widget_config.get("endpoint")
+        if endpoint:
+            # Add an id field to the widget_config if not already present
+            if "id" not in widget_config:
+                widget_config["id"] = endpoint
+
+            WIDGETS[endpoint] = widget_config
+
+        # Return the appropriate wrapper based on whether the function is async
+        if asyncio.iscoroutinefunction(func):
+            return async_wrapper
+        return sync_wrapper
+    return decorator
 
 
 # Endpoint that returns the registered widgets configuration
@@ -1107,7 +1155,36 @@ def markdown_widget_with_text_input(text_box: str):
     """Returns a markdown widget with text input parameter"""
     return f"""# Text Input
 Entered text: {text_box}
-"""
+""" 
+
+
+# This is a simple markdown widget with an editable text input parameter
+# The editable text input parameter is a text input that allows users to enter a specific text
+# and we pass all of them as a list to the widget as the text_box parameter
+# The user is able to add more by just typing a new variable and pressing enter
+@register_widget({
+    "name": "Markdown Widget with Editable Text Input",
+    "description": "A markdown widget with an editable text input parameter",
+    "endpoint": "markdown_widget_with_editable_text_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "text_box",
+            "value": "var1,var2,var3",
+            "label": "Variables to display",
+            "description": "Type the variables to display, separated by commas",
+            "editable": True,
+            "type": "text"
+        }
+    ]
+})
+@app.get("/markdown_widget_with_editable_text_input")
+def markdown_widget_with_editable_text_input(text_box: str):
+    """Returns a markdown widget with text input parameter"""
+    return f"""# Text Input
+Entered text: {text_box}
+""" 
 
 # This is a simple markdown widget with a boolean parameter
 # The boolean parameter is a boolean parameter that allows users to enable or disable a feature
@@ -2878,3 +2955,462 @@ async def get_server_time():
 def tradingview_chart():
     """Dummy function for TradingView chart widget registration"""
     pass
+
+
+class DataFormat(BaseModel):
+    """Data format for the widget"""
+    data_type: str
+    parse_as: Literal["text", "table", "chart"]
+
+
+class SourceInfo(BaseModel):
+    """Source information for the widget"""
+    type: Literal["widget"]
+    uuid: UUID | None = Field(default=None)
+    origin: str | None = Field(default=None)
+    widget_id: str | None = Field(default=None)
+    name: str
+    description: str | None = Field(default=None)
+    metadata: dict[str, Any] | None = Field(
+        default=None,
+        description="Additional metadata (eg. the selected ticker, endpoint used, etc.).",  # noqa: E501
+    )
+
+
+class ExtraCitation(BaseModel):
+    """Extra citation for the widget"""
+    source_info: SourceInfo | None = Field(default=None)
+    details: List[dict] | None = Field(default=None)
+
+
+class OmniWidgetResponse(BaseModel):
+    """Omni widget response for the widget"""
+    content: Any
+    data_format: DataFormat
+    extra_citations: list[ExtraCitation] | None = Field(default_factory=list)
+    citable: bool = Field(
+        default=True,
+        description="Whether the source is citable.",
+    )
+
+
+@register_widget({
+    "name": "Basic Omni Widget",
+    "description": "A versatile omni widget that can display multiple types of content",
+    "category": "General",
+    "type": "omni",
+    "endpoint": "omni-widget",
+    "params": [
+        {
+            "paramName": "prompt",
+            "type": "text",
+            "description": "The prompt to send to the LLM to make queries or ask questions.",
+            "label": "Prompt",
+            "show": False
+        },
+        {
+            "paramName": "type",
+            "type": "text",
+            "description": "Type of content to return",
+            "label": "Content Type",
+            "show": True,
+            "options": [
+                {"value": "markdown", "label": "Markdown"},
+                {"value": "chart", "label": "Chart"},
+                {"value": "table", "label": "Table"}
+            ]
+        }
+    ],
+    "gridData": {"w": 30, "h": 12}
+})
+@app.post("/omni-widget")
+async def get_omni_widget_post(
+    data: str | dict = Body(...)
+):
+    """Basic Omni Widget example showing different return types without citations"""
+    if isinstance(data, str):
+        data = json.loads(data)
+
+    if data.get("type") == "table":
+        content = [
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            ]
+
+        return OmniWidgetResponse(
+                content=content,
+                data_format=DataFormat(data_type="object", parse_as="table"),
+                citable=False
+            )
+
+    if data.get("type") == "chart":
+
+        # Create figure with base layout
+        fig = go.Figure()
+        
+        # Add traces with themed colors
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[4, 1, 2],
+            name="Series 1",
+            marker_color="#26a69a"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 4, 5],
+            name="Series 2",
+            marker_color="#ef5350"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 3, 6],
+            name="Series 3",
+            marker_color="#f0a500"
+        ))
+        
+        # Apply base layout with theme
+        base_layout_config = base_layout(theme="dark")
+        # Override text colors with #216df1
+        base_layout_config.update({
+            'font': {'color': '#216df1'},
+            'title': {'font': {'color': '#216df1'}},
+            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
+            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
+        })
+        fig.update_layout(**base_layout_config)
+        
+        # Add specific layout updates for this chart
+        fig.update_layout(
+            title="Plotly Chart example",
+            bargap=0.15,
+            bargroupgap=0.1,
+            margin=dict(t=50),  # Add 50px top margin
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.2,  # Position below the chart
+                xanchor="center",
+                x=0.5,  # Center horizontally
+                font=dict(color='#216df1'),  # Update legend text color
+                bgcolor='rgba(0,0,0,0)'  # Transparent background
+            )
+        )
+        
+        # Convert to JSON and add toolbar config
+        content = json.loads(fig.to_json())
+        content["config"] = get_toolbar_config()
+
+        return OmniWidgetResponse(
+            content=content,
+            data_format=DataFormat(data_type="object", parse_as="chart"),
+            citable=False
+        )
+
+    # Default to markdown without citations
+    content = f"""### Basic Omni Widget Response
+**Input Parameters:**
+- **Prompt:** `{data.get('prompt', 'No prompt provided')}`
+- **Type:** `{data.get('type', 'markdown')}`
+
+#### Raw Data:
+```json
+{json.dumps(data, indent=2)}
+```
+
+This is a basic omni widget response without citation tracking.
+"""
+
+    return OmniWidgetResponse(
+        content=content,
+        data_format=DataFormat(data_type="object", parse_as="text"),
+        citable=False
+    )
+
+
+# This is an example of an omni widget that includes citation information for data tracking
+# This is useful when you are interacting with an AI Agent and want to pass citations in the chat.
+@register_widget({
+    "name": "Omni Widget with Citations",
+    "description": "An omni widget that includes citation information for data tracking",
+    "category": "General",
+    "type": "omni",
+    "endpoint": "omni-widget-with-citations",
+    "params": [
+        {
+            "paramName": "prompt",
+            "type": "text",
+            "description": "The prompt to send to the LLM to make queries or ask questions.",
+            "label": "Prompt",
+            "show": False
+        },
+        {
+            "paramName": "type",
+            "type": "text",
+            "description": "Type of content to return",
+            "label": "Content Type",
+            "show": True,
+            "options": [
+                {"value": "markdown", "label": "Markdown"},
+                {"value": "chart", "label": "Chart"},
+                {"value": "table", "label": "Table"}
+            ]
+        },
+        {
+            "paramName": "include_metadata",
+            "type": "boolean",
+            "description": "Include metadata in response",
+            "label": "Include Metadata",
+            "show": True,
+            "value": True
+        }
+    ],
+    "gridData": {"w": 30, "h": 15}
+})
+@app.post("/omni-widget-with-citations")
+async def get_omni_widget_with_citations(
+    data: str | dict = Body(...)
+):
+    """Omni Widget example with citation support"""
+    if isinstance(data, str):
+        data = json.loads(data)
+
+    # Create citation information
+    source_info = SourceInfo(
+        type="widget",
+        widget_id=data.get("widget_id", "omni_widget_citations"),
+        origin=data.get("widget_origin", "omni_widget"),
+        name="Omni Widget with Citations",
+        description="Example widget demonstrating citation functionality",
+        metadata={
+            "filename": "omni_widget_response.md",
+            "extension": "md",
+            "input_args": data,
+            "timestamp": data.get("timestamp", "")
+        }
+    )
+
+    extra_citation = ExtraCitation(
+        source_info=source_info,
+        details=[
+            {
+                "Name": "Omni Widget with Citations",
+                "Query": data.get("prompt"),
+                "Type": data.get("type"),
+                "Timestamp": data.get("timestamp", ""),
+                "Data": json.dumps(data, indent=2)
+            }
+        ]
+    )
+
+    if data.get("type") == "table":
+        content = [
+            {"source": "Citation Example", "value": "123", "description": "Sample data with citation"},
+            {"source": "Citation Example", "value": "456", "description": "More sample data"},
+            {"source": "Citation Example", "value": "789", "description": "Additional sample data"},
+        ]
+
+        return OmniWidgetResponse(
+            content=content,
+            data_format=DataFormat(data_type="object", parse_as="table"),
+            extra_citations=[extra_citation],
+            citable=True
+        )
+
+    if data.get("type") == "chart":
+        # Create figure with base layout
+        fig = go.Figure()
+        
+        # Add traces with themed colors
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[4, 1, 2],
+            name="Cited Data Series 1",
+            marker_color="#26a69a"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 4, 5],
+            name="Cited Data Series 2",
+            marker_color="#ef5350"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 3, 6],
+            name="Cited Data Series 3",
+            marker_color="#f0a500"
+        ))
+        
+        # Apply base layout with theme
+        base_layout_config = base_layout(theme="dark")
+        # Override text colors with #216df1
+        base_layout_config.update({
+            'font': {'color': '#216df1'},
+            'title': {'font': {'color': '#216df1'}},
+            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
+            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
+        })
+        fig.update_layout(**base_layout_config)
+        
+        # Add specific layout updates for this chart
+        fig.update_layout(
+            title="Chart with Citation Support",
+            bargap=0.15,
+            bargroupgap=0.1,
+            margin=dict(t=50),  # Add 50px top margin
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.2,  # Position below the chart
+                xanchor="center",
+                x=0.5,  # Center horizontally
+                font=dict(color='#216df1'),  # Update legend text color
+                bgcolor='rgba(0,0,0,0)'  # Transparent background
+            )
+        )
+        
+        # Convert to JSON and add toolbar config
+        content = json.loads(fig.to_json())
+        content["config"] = get_toolbar_config()
+
+        return OmniWidgetResponse(
+            content=content,
+            data_format=DataFormat(data_type="object", parse_as="chart"),
+            extra_citations=[extra_citation],
+            citable=True
+        )
+
+    # Default to markdown with citations
+    content = f"""### Omni Widget with Citation Support
+**Input Parameters:**
+- **Prompt:** `{data.get('prompt', 'No prompt provided')}`
+- **Type:** `{data.get('type', 'markdown')}`
+
+#### Data with Citation Tracking: 
+This response includes citation information that will be automatically tracked and made available to agents and users.
+
+**Citation Details:**
+- **Name:** {source_info.name}
+- **Origin:** {source_info.origin}
+- **Timestamp:** {data.get('timestamp', 'Not provided')}
+"""
+
+    if data.get("include_metadata"):
+        content += f"""
+#### Additional Metadata:
+- **Include Metadata:** {data.get('include_metadata')}
+- **Full Input Data:**
+
+```json
+{json.dumps(data, indent=2)}
+```
+"""
+
+    return OmniWidgetResponse(
+        content=content,
+        data_format=DataFormat(data_type="object", parse_as="text"),
+        extra_citations=[extra_citation],
+        citable=True
+    )
+
+@register_widget({
+    "name": "Markdown Widget with Organized Parameters",
+    "description": "A markdown widget demonstrating various parameter types organized in a clean way",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_organized_params",
+    "gridData": {"w": 20, "h": 12},
+    "params": [
+        [
+            {
+                "paramName": "enable_feature",
+                "description": "Enable or disable the main feature",
+                "label": "Enable Feature",
+                "type": "boolean",
+                "value": True
+            }
+        ],
+        [
+            {
+                "paramName": "selected_date",
+                "description": "Select a date for analysis",
+                "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+                "label": "Analysis Date",
+                "type": "date"
+            },
+            {
+                "paramName": "analysis_type",
+                "description": "Select the type of analysis to perform",
+                "value": "technical",
+                "label": "Analysis Type",
+                "type": "text",
+                "options": [
+                    {"label": "Technical Analysis", "value": "technical"},
+                    {"label": "Fundamental Analysis", "value": "fundamental"},
+                    {"label": "Sentiment Analysis", "value": "sentiment"},
+                    {"label": "Risk Analysis", "value": "risk"}
+                ]
+            },
+            {
+                "paramName": "lookback_period",
+                "description": "Number of days to look back",
+                "value": 30,
+                "label": "Lookback Period (days)",
+                "type": "number",
+                "min": 1,
+                "max": 365
+            }
+        ],
+        [
+            {
+                "paramName": "analysis_notes",
+                "description": "Additional notes for the analysis",
+                "value": "",
+                "label": "Analysis Notes",
+                "type": "text"
+            }
+        ]
+    ]
+})
+@app.get("/markdown_widget_with_organized_params")
+def markdown_widget_with_organized_params(
+    enable_feature: bool = True,
+    selected_date: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+    analysis_type: str = "technical",
+    lookback_period: int = 30,
+    analysis_notes: str = ""
+):
+    """Returns a markdown widget with organized parameters"""
+    # Format the date for display
+    formatted_date = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%B %d, %Y")
+    
+    # Get the label for the selected analysis type
+    analysis_type_label = next(
+        (opt["label"] for opt in [
+            {"label": "Technical Analysis", "value": "technical"},
+            {"label": "Fundamental Analysis", "value": "fundamental"},
+            {"label": "Sentiment Analysis", "value": "sentiment"},
+            {"label": "Risk Analysis", "value": "risk"}
+        ] if opt["value"] == analysis_type),
+        analysis_type
+    )
+    
+    return f"""# Analysis Configuration
+*This widget demonstrates various parameter types including boolean toggles, date pickers, dropdowns, number inputs, and text fields.*
+
+## Feature Status
+- **Feature Enabled:** {'✅ Yes' if enable_feature else '❌ No'}
+
+## Analysis Parameters
+- **Selected Date:** {formatted_date}
+- **Analysis Type:** {analysis_type_label}
+- **Lookback Period:** {lookback_period} days
+
+## Additional Notes
+{analysis_notes if analysis_notes else "*No additional notes provided*"}
+"""
