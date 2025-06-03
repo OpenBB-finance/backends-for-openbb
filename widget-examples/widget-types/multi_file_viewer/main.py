@@ -82,10 +82,10 @@ async def get_options(category: str = "all") -> List[FileOption]:
 
 
 # This is an example of how to return a list of base64 encoded files.
-@app.get("/whitepapers/base64")
+@app.post("/whitepapers/base64")
 async def get_whitepapers_base64(
-    filenames: str,
-):
+    request: FileRequest,
+) -> List[DataContent | DataUrl | DataError]:
     files = []
     for name in request.filenames:
         if whitepaper := WHITEPAPERS.get(name):
