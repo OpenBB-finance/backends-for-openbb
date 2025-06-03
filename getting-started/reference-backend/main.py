@@ -1172,8 +1172,8 @@ Entered text: {text_box}
         {
             "paramName": "text_box",
             "value": "var1,var2,var3",
-            "label": "Enter Text",
-            "description": "Type something to display",
+            "label": "Variables to display",
+            "description": "Type the variables to display, separated by commas",
             "editable": True,
             "type": "text"
         }
