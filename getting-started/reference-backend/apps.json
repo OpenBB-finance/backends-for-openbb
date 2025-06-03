@@ -41,7 +41,7 @@
             "state": {
               "params": {
                 "pdf_name": [
-                  "Sample"
+                  null
                 ]
               }
             }
@@ -55,7 +55,7 @@
             "state": {
               "params": {
                 "pdf_name": [
-                  "Sample"
+                  null
                 ]
               }
             }
@@ -84,11 +84,6 @@
               "chartView": {
                 "enabled": false,
                 "chartType": "line"
-              },
-              "columnState": {
-                "default_undefined": {
-                  "version": "33.2.1"
-                }
               }
             }
           },
@@ -102,11 +97,6 @@
               "chartView": {
                 "enabled": false,
                 "chartType": "line"
-              },
-              "columnState": {
-                "default_undefined": {
-                  "version": "33.2.1"
-                }
               }
             }
           },
@@ -249,7 +239,7 @@
                 "chartType": "line"
               },
               "columnState": {
-                "default_undefined": {
+                "default": {
                   "columnPinning": {
                     "leftColIds": [
                       "symbol"
@@ -310,7 +300,7 @@
                 "chartType": "line"
               },
               "columnState": {
-                "default_undefined": {
+                "default": {
                   "columnPinning": {
                     "leftColIds": [
                       "name"
@@ -333,7 +323,7 @@
                 "chartType": "line"
               },
               "columnState": {
-                "default_undefined": {
+                "default": {
                   "columnPinning": {
                     "leftColIds": [
                       "name"
@@ -356,7 +346,7 @@
                 "chartType": "line"
               },
               "columnState": {
-                "default_undefined": {
+                "default": {
                   "columnPinning": {
                     "leftColIds": [
                       "name"
@@ -462,7 +452,7 @@
                 "chartType": "line"
               },
               "columnState": {
-                "default_undefined": {
+                "default": {
                   "focusedCell": {
                     "colId": "client_first_name",
                     "rowIndex": 1,
@@ -484,6 +474,52 @@
             "y": 2,
             "w": 40,
             "h": 21
+          }
+        ]
+      },
+      "omni": {
+        "id": "omni",
+        "name": "Omni",
+        "layout": [
+          {
+            "i": "omni-widget",
+            "x": 0,
+            "y": 2,
+            "w": 19,
+            "h": 22,
+            "state": {
+              "params": {
+                "prompt": "asda asd asd asd asd as dasd asd asda",
+                "type": "markdown"
+              }
+            }
+          },
+          {
+            "i": "omni-widget-with-citations",
+            "x": 19,
+            "y": 2,
+            "w": 21,
+            "h": 22,
+            "state": {
+              "params": {
+                "prompt": "test",
+                "type": "chart",
+                "include_metadata": "false"
+              }
+            }
+          }
+        ]
+      },
+      "": {
+        "id": "",
+        "name": "",
+        "layout": [
+          {
+            "i": "omni-widget-with-citations",
+            "x": 0,
+            "y": 0,
+            "w": 30,
+            "h": 15
           }
         ]
       }
@@ -513,7 +549,7 @@
         "name": "Group 3",
         "type": "endpointParam",
         "paramName": "symbol",
-        "defaultValue": "GOOGL",
+        "defaultValue": "AMZN",
         "widgetIds": [
           "table_widget_with_grouping_by_cell_click",
           "widget_managed_by_parameter_from_cell_click_on_table_widget"
