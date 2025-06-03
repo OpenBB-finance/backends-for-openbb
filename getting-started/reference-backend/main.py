@@ -3224,16 +3224,60 @@ async def get_omni_widget_with_citations(
         )
 
     if data.get("type") == "chart":
-        content = {
-            "data": [
-                {"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Cited Data Series 1"},
-                {"x": [1, 2, 3], "y": [2, 4, 5], "type": "bar", "name": "Cited Data Series 2"},
-            ],
-            "layout": {
-                "title": "Chart with Citation Support",
-                "template": "plotly_dark"
-            },
-        }
+        # Create figure with base layout
+        fig = go.Figure()
+        
+        # Add traces with themed colors
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[4, 1, 2],
+            name="Cited Data Series 1",
+            marker_color="#26a69a"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 4, 5],
+            name="Cited Data Series 2",
+            marker_color="#ef5350"
+        ))
+        fig.add_trace(go.Bar(
+            x=["A", "B", "C"],
+            y=[2, 3, 6],
+            name="Cited Data Series 3",
+            marker_color="#f0a500"
+        ))
+        
+        # Apply base layout with theme
+        base_layout_config = base_layout(theme="dark")
+        # Override text colors with #216df1
+        base_layout_config.update({
+            'font': {'color': '#216df1'},
+            'title': {'font': {'color': '#216df1'}},
+            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
+            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
+        })
+        fig.update_layout(**base_layout_config)
+        
+        # Add specific layout updates for this chart
+        fig.update_layout(
+            title="Chart with Citation Support",
+            bargap=0.15,
+            bargroupgap=0.1,
+            margin=dict(t=50),  # Add 50px top margin
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.2,  # Position below the chart
+                xanchor="center",
+                x=0.5,  # Center horizontally
+                font=dict(color='#216df1'),  # Update legend text color
+                bgcolor='rgba(0,0,0,0)'  # Transparent background
+            )
+        )
+        
+        # Convert to JSON and add toolbar config
+        content = json.loads(fig.to_json())
+        content["config"] = get_toolbar_config()
 
         return OmniWidgetResponse(
             content=content,
