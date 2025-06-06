@@ -12,7 +12,7 @@
       {
         "type": "endpoint",
         "paramName": "filenames",
-        "value": ["Bitcoin"],
+        "value": ["bitcoin.pdf"],
         "label": "Filenames",
         "description": "Whitepaper filenames.",
         "optionsEndpoint": "/options",
