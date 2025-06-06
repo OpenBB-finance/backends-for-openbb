@@ -3,7 +3,7 @@
     "type": "multi_file_viewer",
     "name": "Whitepapers",
     "description": "A collection of crypto whitepapers.",
-    "endpoint": "/whitepapers/view-base64",
+    "endpoint": "/whitepapers/base64",
     "gridData": {
       "w": 40,
       "h": 10
@@ -11,11 +11,11 @@
     "params": [
       {
         "type": "endpoint",
-        "paramName": "whitepaper",
-        "value": ["Bitcoin"],
-        "label": "Whitepaper",
-        "description": "Whitepaper to display.",
-        "optionsEndpoint": "/whitepapers",
+        "paramName": "filenames",
+        "value": ["bitcoin.pdf"],
+        "label": "Filenames",
+        "description": "Whitepaper filenames.",
+        "optionsEndpoint": "/options",
         "show": false,
         "optionsParams": {
           "category": "$category"
