@@ -4,7 +4,7 @@
     "description": "Use to query Google's Gemini LLM.",
     "category": "tools",
     "searchCategory": "tools",
-    "type": "prompt",
+    "type": "omni",
     "endpoint": "ask",
     "gridData": {
       "w": 20,
