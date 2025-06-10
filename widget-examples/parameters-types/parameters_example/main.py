@@ -44,6 +44,14 @@ def show_example_params(datePicker1: str = None, textBox1: str = None, daysPicke
 
     return {"datePicker1": datePicker1, "textBox1": textBox1, "daysPicker1": daysPicker1.split(","), "TrueFalse": TrueFalse}
 
+
+# example of how to use parameters
+@app.get("/moving_parameters_example")
+def moving_parameters_example(datePicker1: str = None, textBox1: str = None, daysPicker1: str = "1", TrueFalse: bool = True):
+    """Show example of how to move parameters - This will put them all on the second row of the widget"""
+
+    return {"datePicker1": datePicker1, "textBox1": textBox1, "daysPicker1": daysPicker1.split(","), "TrueFalse": TrueFalse}
+
 # example of how to get historical TVL of a chain using Defi LLama
 @app.get("/historical_chains")
 def get_historical_chains(chain: str = None):

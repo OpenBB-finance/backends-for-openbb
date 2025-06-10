@@ -63,6 +63,73 @@
       }
     ]
   },
+  "moving_parameters_example": {
+    "name": "Moving Parameters Example",
+    "description": "Show example of moving parameter positions",
+    "category": "New Category",
+    "searchCategory": "Custom",
+    "endpoint": "moving_parameters_example",
+    "gridData": {
+      "w": 20,
+      "h": 9
+    },
+    "params": [
+      [],
+      [
+        {
+          "paramName": "datePicker1",
+          "value": "$currentDate-1d",
+          "label": "Param 1",
+          "description": "I'm a Date Picker!",
+          "type": "date"
+        },
+        {
+          "paramName": "textBox1",
+          "value": "Hello!",
+          "label": "Param 2",
+          "description": "I'm a text input box!",
+          "type": "text"
+        },
+        {
+          "paramName": "TrueFalse",
+          "value": true,
+          "label": "True/False",
+          "description": "I'm a True/False selector!",
+          "type": "boolean"
+        },
+        {
+          "paramName": "daysPicker1",
+          "value": "1",
+          "label": "Days",
+          "type": "text",
+          "multiSelect": true,
+          "description": "Number of days to look back",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            },
+            {
+              "value": "20",
+              "label": "20"
+            },
+            {
+              "value": "30",
+              "label": "30"
+            }
+          ]
+        }
+      ]
+    ]
+  },
   "historical_chains_table": {
     "name": "Chains Historical table example",
     "description": "Get historical TVL of a chain using Defi LLama",

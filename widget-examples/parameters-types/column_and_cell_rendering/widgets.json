@@ -14,7 +14,7 @@
                         "cellDataType": "text",
                         "formatterFn": "none",
                         "renderFn": "titleCase",
-                        "maxWidth": 600,                    
+                        "maxWidth": 600,
                         "pinned": "left"
                     },
                     {
@@ -27,7 +27,8 @@
                         "field": "price",
                         "headerName": "Price",
                         "chartDataType": "series",
-                        "cellDataType": "number"
+                        "cellDataType": "number",
+                        "prefix": "$"
                     },
                     {
                         "field": "marketCap",
