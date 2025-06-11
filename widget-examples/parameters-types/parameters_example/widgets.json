@@ -25,6 +25,14 @@
         "type": "text"
       },
       {
+        "paramName": "textBox2",
+        "value": "var1,var2,var3",
+        "label": "Param 2",
+        "description": "I'm a text input box!",
+        "type": "text",
+        "editable": true
+      },
+      {
         "paramName": "TrueFalse",
         "value": true,
         "label": "True/False",
