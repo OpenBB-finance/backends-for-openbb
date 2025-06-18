@@ -39,10 +39,10 @@ def get_widgets():
 
 # example of how to use parameters
 @app.get("/show_example_params")
-def show_example_params(datePicker1: str = None, textBox1: str = None, daysPicker1: str = "1", TrueFalse: bool = True):
+def show_example_params(datePicker1: str = None, textBox1: str = None, textBox2: str = None, daysPicker1: str = "1", TrueFalse: bool = True):
     """Show example of how to use parameters"""
 
-    return {"datePicker1": datePicker1, "textBox1": textBox1, "daysPicker1": daysPicker1.split(","), "TrueFalse": TrueFalse}
+    return {"datePicker1": datePicker1, "textBox1": textBox1, "textBox2": textBox2.split(","), "daysPicker1": daysPicker1.split(","), "TrueFalse": TrueFalse}
 
 
 # example of how to use parameters
