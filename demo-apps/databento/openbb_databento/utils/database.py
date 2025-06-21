@@ -780,7 +780,13 @@ class CmeDatabase:
             return DataFrame()
 
         # Set default date to today if not provided
-        target_date = date or datetime.now(tz=timezone("America/Chicago")).strftime("%Y-%m-%d")
+        target_date = datetime.strptime(date, "%Y-%m-%d") if date else datetime.now().today()
+        target_date = (
+            target_date
+            if target_date.weekday() < 5
+            else target_date - timedelta(days=target_date.weekday() - 4)
+        ).strftime("%Y-%m-%d")
+
 
         # Check if term_structures table exists
         if "term_structures" not in table_names:

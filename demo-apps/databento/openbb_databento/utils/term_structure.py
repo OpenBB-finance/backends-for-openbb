@@ -48,21 +48,15 @@ def download_term_structure(
 
     client = cme_database.db_client()
 
-    now = (
-        (datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1))
-        if date is not None
-        else datetime.now()
-    )
+    now = datetime.strptime(date, "%Y-%m-%d") if date is not None else datetime.now().today()
 
     if now.weekday() in [5, 6]:
         # If today is Saturday or Sunday, set 'now' to the previous Friday
         now = now - timedelta(days=1 if now.weekday() == 5 else 2)
-    now = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    start_date = (now - timedelta(days=3)).strftime("%Y-%m-%d")
-    end_date = now.strftime("%Y-%m-%d")
 
+    now = now.replace(hour=0, minute=0, second=0, microsecond=0)
     results = DataFrame()
-    asset_symbols = cme_database.get_asset_symbols(asset, date)
+    asset_symbols = cme_database.get_asset_symbols(asset, now.strftime("%Y-%m-%d"))
     instrument_ids = asset_symbols.instrument_id.unique().tolist()
 
     try:
@@ -70,8 +64,7 @@ def download_term_structure(
             dataset="GLBX.MDP3",
             schema="statistics",
             symbols=instrument_ids,
-            start=start_date,
-            end=end_date,
+            start=now.strftime("%Y-%m-%d"),
             stype_in="instrument_id",
         )
         results = data.to_df().reset_index()
@@ -96,7 +89,7 @@ def download_term_structure(
                 dataset="GLBX.MDP3",
                 schema="statistics",
                 symbols=instrument_ids,
-                start=start_date,
+                start=now.strftime("%Y-%m-%d"),
                 end=end_date,
                 stype_in="instrument_id",
             )
@@ -123,12 +116,11 @@ def download_term_structure(
     if term_structure_df.empty:
         raise BentoError(f"No data found for asset: {asset}")
 
-    term_structure_df.instrument_id = term_structure_df.instrument_id.astype(int)
-    results.loc[:, "raw_symbol"] = results.instrument_id.map(instrument_id_map)
-
     results.loc[:, "settlement_price"] = results[
         results["stat_type"] == db.StatType.SETTLEMENT_PRICE]["price"]
     results = results.dropna(subset=["settlement_price"])
+    term_structure_df.instrument_id = term_structure_df.instrument_id.astype(int)
+    results.loc[:, "raw_symbol"] = results.instrument_id.map(instrument_id_map)
     results.loc[:, "date"] = results["ts_ref"].dt.date
     results = results.groupby(["date", "instrument_id"]).agg("last").reset_index()
     results = results.drop_duplicates(subset=["instrument_id"], keep="last")
