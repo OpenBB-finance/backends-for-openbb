@@ -1,0 +1,391 @@
+[
+  {
+    "name": "Databento Demo - CME",
+    "img": "https://images.squarespace-cdn.com/content/v1/63a17e2bca256c483b6e2453/1675877523309-SGDQXJ8K2KPHYLZI2AV5/Databento.png?format=250w",
+    "img_dark": "",
+    "img_light": "",
+    "description": "CME Globex MDP 3.0 Live & Historical",
+    "allowCustomization": true,
+    "tabs": {
+      "about": {
+        "id": "about",
+        "name": "About",
+        "layout": [
+          {
+            "i": "about",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 21
+          }
+        ]
+      },
+      "historical-continuous-chart": {
+        "id": "historical-continuous-chart",
+        "name": "Historical Continuous Chart",
+        "layout": [
+          {
+            "i": "continuous_futures_historical",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 21
+          }
+        ]
+      },
+      "term_structure": {
+        "id": "term_structure",
+        "name": "Term Structure",
+        "layout": [
+          {
+            "i": "term_structure",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 23,
+            "state": {
+              "params": {
+                "asset_class": "equity",
+                "asset": "ES"
+              },
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "line",
+                "chartOptions": {
+                  "common": {
+                    "axes": {
+                      "category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5,
+                          "autoRotate": true
+                        },
+                        "position": "bottom"
+                      },
+                      "radius-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "angle-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "grouped-category": {
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "minSpacing": 5
+                        }
+                      },
+                      "number": {
+                        "position": "left",
+                        "crosshair": {
+                          "label": {}
+                        },
+                        "label": {
+                          "fontSize": 11,
+                          "autoRotate": false,
+                          "avoidCollisions": true
+                        }
+                      },
+                      "time": {
+                        "position": "bottom",
+                        "label": {
+                          "avoidCollisions": true,
+                          "fontSize": 11,
+                          "rotation": 0
+                        }
+                      }
+                    },
+                    "legend": {
+                      "position": "top",
+                      "maxHeight": 50,
+                      "spacing": 20,
+                      "item": {
+                        "paddingX": 32,
+                        "paddingY": 8,
+                        "marker": {
+                          "shape": "square",
+                          "padding": 5,
+                          "size": 11
+                        },
+                        "label": {
+                          "color": "#fff",
+                          "fontSize": 11
+                        }
+                      }
+                    }
+                  },
+                  "line": {
+                    "title": {
+                      "text": "Chart Title",
+                      "enabled": false
+                    },
+                    "padding": {
+                      "top": 70,
+                      "right": 65,
+                      "bottom": 6
+                    },
+                    "series": {
+                      "strokeWidth": 2,
+                      "marker": {
+                        "enabled": true,
+                        "size": 12,
+                        "strokeWidth": 1
+                      },
+                      "strokeOpacity": 0.4,
+                      "lineDash": [
+                        5
+                      ]
+                    }
+                  }
+                },
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
+            }
+          }
+        ]
+      },
+      "index-futures-trades": {
+        "id": "index-futures-trades",
+        "name": "Index Futures Trades",
+        "layout": [
+          {
+            "i": "live_grid_index",
+            "x": 0,
+            "y": 2,
+            "w": 32,
+            "h": 12,
+            "state": {
+              "params": {
+                "symbol": [
+                  "ES.c.0",
+                  "ES.c.1",
+                  "MNQ.c.0",
+                  "MNQ.c.1",
+                  "RTY.c.0",
+                  "RTY.c.1",
+                  "YM.c.0",
+                  "YM.c.1"
+                ]
+              },
+              "columnState": {
+                "default_undefined": {
+                  "version": "33.2.1",
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "date",
+                      "symbol",
+                      "name",
+                      "side",
+                      "size",
+                      "price"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "fx-futures": {
+        "id": "fx-futures",
+        "name": "FX Futures Trades",
+        "layout": [
+          {
+            "i": "live_grid_fx",
+            "x": 0,
+            "y": 2,
+            "w": 31,
+            "h": 23,
+            "state": {
+              "params": {
+                "symbol": [
+                  "6N.c.0",
+                  "6E.c.0",
+                  "6S.c.0",
+                  "6L.c.0",
+                  "6B.c.0",
+                  "6J.c.0",
+                  "6C.c.0",
+                  "6M.c.0",
+                  "6A.c.0",
+                  "6N.c.0",
+                  "6Z.c.0",
+                  "CNH.c.0",
+                  "SIR.c.0",
+                  "BTC.c.0",
+                  "ETH.c.0"
+                ]
+              },
+              "columnState": {
+                "default_undefined": {
+                  "version": "33.2.1",
+                  "sort": {
+                    "sortModel": [
+                      {
+                        "colId": "name",
+                        "sort": "asc"
+                      }
+                    ]
+                  },
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "date",
+                      "symbol",
+                      "name",
+                      "side",
+                      "size",
+                      "price"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "interest-rate-futures": {
+        "id": "interest-rate-futures",
+        "name": "Interest Rate Futures Trades",
+        "layout": [
+          {
+            "i": "live_grid_interest_rates",
+            "x": 0,
+            "y": 2,
+            "w": 30,
+            "h": 15,
+            "state": {
+              "params": {
+                "symbol": [
+                  "SR1.c.0",
+                  "ZQ.c.0",
+                  "SR3.c.0",
+                  "ZT.c.0",
+                  "ZF.c.0",
+                  "ZN.c.0",
+                  "TN.c.0",
+                  "ZB.c.0",
+                  "UB.c.0"
+                ]
+              },
+              "columnState": {
+                "default_undefined": {
+                  "version": "33.2.1",
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "date",
+                      "symbol",
+                      "name",
+                      "side",
+                      "size",
+                      "price"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "energy-futures": {
+        "id": "energy-futures",
+        "name": "Energy Futures Trades",
+        "layout": [
+          {
+            "i": "live_grid_metals",
+            "x": 0,
+            "y": 2,
+            "w": 37,
+            "h": 13,
+            "state": {
+              "params": {
+                "symbol": [
+                  "CL.c.0",
+                  "CL.c.1",
+                  "BZ.c.0",
+                  "BZ.c.1",
+                  "NG.c.0",
+                  "NG.c.1",
+                  "HO.c.0",
+                  "HO.c.1",
+                  "RB.c.0",
+                  "RB.c.1"
+                ]
+              },
+              "columnState": {
+                "default_undefined": {
+                  "version": "33.2.1",
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "date",
+                      "symbol",
+                      "name",
+                      "size",
+                      "side",
+                      "price"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "metals-futures": {
+        "id": "metals-futures",
+        "name": "Metals Futures Trades",
+        "layout": [
+          {
+            "i": "live_grid_metals",
+            "x": 0,
+            "y": 2,
+            "w": 37,
+            "h": 13,
+            "state": {
+              "params": {
+                "symbol": [
+                  "GC.c.0",
+                  "GC.c.1",
+                  "QO.c.0",
+                  "MGC.c.0",
+                  "SI.c.0",
+                  "PA.c.0",
+                  "PL.c.0",
+                  "HG.c.0"
+                ]
+              },
+              "columnState": {
+                "default_undefined": {
+                  "version": "33.2.1",
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "date",
+                      "symbol",
+                      "name",
+                      "size",
+                      "side",
+                      "price"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "groups": []
+  }
+]
