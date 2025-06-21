@@ -1,5 +1,3 @@
-![image](https://github.com/user-attachments/assets/0b460fda-2b12-44fd-a43b-b4b69db7ef1a)
-
 ## Databento Demonstration Application
 
 This application is a demonstration integration of CME futures data, utilizing Databento's Python [client](https://github.com/databento/databento-python/tree/main).
