@@ -139,7 +139,8 @@ async def get_term_structure(
             )
         )
 
-    max_date = data.date.max().strftime("%Y-%m-%d")
+    max_date = data.date.max()
+    max_date = str(max_date)[:10]
 
     if date != max_date:
         udf_database.database().logger.warning(
