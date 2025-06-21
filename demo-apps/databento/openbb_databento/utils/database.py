@@ -1,5 +1,5 @@
 """Database utilities for OpenBB DataBento (async and sync versions)."""
-# pylint: disable=import-outside-toplevel,C0413
+# pylint: disable=import-outside-toplevel,C0413,R0902,R0904,R0913,R0917
 # flake8: noqa: E402
 import logging
 import os
@@ -26,7 +26,10 @@ from openbb_databento.utils.definition import (
     download_asset_symbols,
     create_futures_symbols_db
 )
-from openbb_databento.utils.historical import fetch_historical_continuous
+from openbb_databento.utils.historical import (
+    fetch_historical_continuous,
+    update_historical_continuous_table
+)
 from openbb_databento.utils.term_structure import download_term_structure
 
 db_logger = logging.getLogger("openbb_databento.utils.database")
@@ -44,7 +47,7 @@ def dict_factory(cursor: sqlite3.Cursor, row: tuple) -> dict[str, Any]:
     """Convert sqlite3 Row to a dictionary."""
     return dict(sqlite3.Row(cursor, row))
 
-# pylint: disable=R0902,R0904
+
 class CmeDatabase:
     """Synchronous SQLite database utility for managing read/write operations and connections.
     
@@ -84,10 +87,11 @@ class CmeDatabase:
     - fetchone: Fetches one result from a read query.
     - generate_futures_symbols_db: Generates or updates the `futures_symbols` table.
     - get_full_table: Returns the full table as a DataFrame.
+    - get_table_schema: Returns the schema for a given table in the read connection.
     - safe_to_sql: Thread-safe wrapper for pandas to_sql operation.
     - safe_read_sql: Thread-safe wrapper for pandas read_sql operation.
     - set_live_grid_assets: Sets the live grid assets DataFrame from the 'futures_symbols' table.
-    - get_table_schema: Returns the schema for a given table in the read connection.
+    - update_historical_continuous: Updates the continuous futures table with latest data.
 
     Raises
     ------
@@ -347,8 +351,8 @@ class CmeDatabase:
 
             assets["name"] = assets.apply(
                 lambda row: (
-                    row["name"].split(" - ")[0] + " - " + 
-                    contract_names.get(
+                    row["name"].split(" - ")[0] + " - "
+                    + contract_names.get(
                         row["contract_position"],
                         f"{row['contract_position'] + 1}th Contract"
                     )
@@ -636,6 +640,36 @@ class CmeDatabase:
             interval=interval,
             contract=contract,
             roll_rule=roll_rule
+        )
+
+    def update_historical_continuous(
+        self,
+        table_name: str,
+    ) -> DataFrame:
+        """Update the historical continuous futures data in the database.
+        
+        This function will update the `ohlcv_1{interval[0]}_continuous` table
+        with the latest data from the Databento API.
+
+        Parameters
+        ----------
+        table_name : str
+            The name of the table to update.
+            Should be in the format `ohlcv_1{interval[0]}_continuous`.
+
+        Returns
+        -------
+        DataFrame
+            A DataFrame containing the updated historical continuous futures data.
+        
+        Raises
+        ------
+        BentoError
+            If there is an error with the Databento API request.
+        """
+        return update_historical_continuous_table(
+            cme_database=self,
+            table_name=table_name,
         )
 
     def get_asset_symbols(

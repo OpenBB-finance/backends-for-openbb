@@ -3,10 +3,55 @@ from typing import Literal, Optional
 from datetime import datetime, timedelta
 
 from databento.common.error import BentoError
-from pandas import DataFrame
+from pandas import DataFrame, concat
 from pytz import timezone
 
 # pylint: disable=R0913,R0914,R0915,R0917
+
+def clean_historical_continuous(
+    cme_database,
+    dataframe: DataFrame,
+) -> DataFrame:
+    """Clean historical continuous futures data.
+
+    Parameters
+    ----------
+    cme_database : CmeDatabase
+        The CME database instance.
+    dataframe : DataFrame
+        The DataFrame containing the historical continuous futures data.
+
+    Returns
+    -------
+    DataFrame
+        A cleaned DataFrame with the necessary columns and types.
+    """
+    # pylint: disable=import-outside-toplevel
+    from openbb_databento.utils.database import CmeDatabase
+
+    if not isinstance(cme_database, CmeDatabase):
+        raise TypeError("cme_database must be an instance of CmeDatabase.")
+
+    if dataframe.empty:
+        return dataframe
+
+    assets_df = cme_database.live_grid_assets.copy()
+    names_map = assets_df.set_index("asset").name.to_dict()
+    assets = assets_df.asset.unique().tolist()
+
+    dataframe = dataframe.rename(
+        columns={
+            "ts_event": "date",
+            "instrument_id": "symbol",
+        }
+    )
+
+    dataframe["date"] = (
+        dataframe["date"].dt.tz_convert("America/Chicago")
+        if "date" in dataframe.columns else None
+    )
+
+    return dataframe
 
 def fetch_historical_continuous(
     cme_database,
@@ -206,3 +251,225 @@ def fetch_historical_continuous(
 
 
     return results
+
+# pylint: disable=R0912,W0612
+# flake8: noqa: F841
+def update_historical_continuous_table(
+    cme_database,
+    table_name: str,
+) -> DataFrame:
+    """Update historical continuous futures data."""
+    last_date_query = f"SELECT MAX(date) as max_date FROM {table_name}"
+    last_date_df = cme_database.safe_read_sql(last_date_query)
+
+    if last_date_df.empty or "max_date" not in last_date_df.columns:
+        raise ValueError(
+            f"No time series data found in table {table_name}."
+            + " Please ensure the table exists and has data."
+        )
+
+    last_date = last_date_df.max_date.iloc[0][:10]
+    db_symbols_query = f"SELECT DISTINCT symbol FROM {table_name}"
+    db_symbols_df = cme_database.safe_read_sql(db_symbols_query)
+
+    if db_symbols_df.empty or "symbol" not in db_symbols_df.columns:
+        raise ValueError(
+            f"No symbols found in table {table_name}."
+            + " Please ensure the table exists and has data."
+        )
+
+    db_symbols = db_symbols_df.symbol.unique().tolist()
+
+    all_metadata = cme_database.safe_read_sql(
+        "SELECT DISTINCT asset, asset_class, exchange, "
+        + "exchange_name, contract_unit, contract_unit_multiplier, "
+        + f" min_price_increment, name, currency FROM {table_name}"
+    )
+
+    metadata_cols = [
+        "asset", "asset_class", "exchange", "exchange_name", 
+        "contract_unit", "contract_unit_multiplier", "min_price_increment", 
+        "name", "currency"
+    ]
+
+    # Create metadata mapping ONCE from existing table data
+    metadata_map = (
+        all_metadata[metadata_cols]
+        .drop_duplicates("asset")
+        .set_index("asset")
+    )
+
+    # Chunk symbols into groups of 2000
+    chunk_size = 2000
+    symbol_chunks = [db_symbols[i:i + chunk_size] for i in range(0, len(db_symbols), chunk_size)]
+
+    msg = (
+        f"Processing {len(db_symbols)} symbols in "
+        + f"{len(symbol_chunks)} chunks of {chunk_size}"
+    )
+    cme_database.logger.info(msg)
+
+    all_results = []
+    client = cme_database.db_client()
+    now = datetime.now(tz=timezone("UTC")).replace(microsecond=0)
+
+    for chunk_idx, symbol_chunk in enumerate(symbol_chunks, 1):
+        msg = (
+            f"Processing chunk {chunk_idx}/{len(symbol_chunks)} "
+            + f"with {len(symbol_chunk)} symbols"
+        )
+        cme_database.logger.info(msg)
+
+        try:
+            data = client.timeseries.get_range(
+                dataset="GLBX.MDP3",
+                schema=table_name.replace("_continuous", "").replace("_", "-"),
+                stype_in="continuous",
+                symbols=symbol_chunk,
+                start=last_date,
+                end=now.isoformat(),
+            )
+        except BentoError as e:
+            end_date = None
+            err = e.args[0]
+
+            if err.get("case") == "data_end_after_available_end":
+                msg = err.get("message", "")
+                end_date = (
+                    msg.split("'")[1].replace(" ", "T").split(".")[0] + "+00:00"
+                    if "'" in msg
+                    else None
+                )
+            else:
+                err_msg = (
+                    f"Failed to update OHLCV table: {table_name} (chunk {chunk_idx})."
+                    f" -> case: {err.get('case', 'No case provided')}"
+                    f" -> message: {err.get('message', 'No additional error message provided')}"
+                )
+                cme_database.logger.error(err_msg)
+                continue
+
+            try:
+                data = client.timeseries.get_range(
+                    dataset="GLBX.MDP3",
+                    schema=table_name.replace("_continuous", "").replace("_", "-"),
+                    symbols=symbol_chunk,
+                    start=last_date,
+                    end=end_date,
+                    stype_in="continuous",
+                )
+            except BentoError as exc:
+                cme_database.logger.error(
+                    "Chunk %d - Case: %s -> Message: %s",
+                    chunk_idx,
+                    exc.args[0].get("case", "No case provided"),
+                    exc.args[0].get("message", "No additional error message provided")
+                )
+                continue
+
+        results = data.to_df().reset_index()
+        results = results.rename(
+            columns={
+                "ts_event": "date",
+            }
+        )
+
+        if table_name.split("_")[1] == "1d":
+            results.date = results.date.dt.date
+        else:
+            results.date = results.date.dt.tz_convert("America/Chicago")
+
+        results = DataFrame(
+            results[
+                [
+                    "date",
+                    "instrument_id",
+                    "symbol",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                ]
+            ]
+        )
+
+        # Get existing data for this chunk's symbols only for duplicate filtering
+        symbols_str = "', '".join(symbol_chunk)
+        existing_data = cme_database.safe_read_sql(
+            f"SELECT * FROM {table_name} "
+            + f"WHERE date >= '{last_date}' AND symbol IN ('{symbols_str}')"
+        )
+
+        # First, extract asset from symbol for new results
+        results["asset"] = results["symbol"].apply(lambda x: x.split(".")[0])
+
+        # Map metadata to new results using asset
+        for col in metadata_cols[1:]:  # Skip 'asset' since we already have it
+            results[col] = results["asset"].map(metadata_map[col])
+
+        # Get the column order from existing data if available, otherwise use a standard order
+        if not existing_data.empty:
+            column_order = existing_data.columns.tolist()
+        else:
+            column_order = [
+                "date", "instrument_id", "asset", "asset_class", "exchange",
+                "exchange_name", "contract_unit", "contract_unit_multiplier",
+                "min_price_increment", "name", "currency", "symbol",
+                "open", "high", "low", "close", "volume"
+            ]
+
+        # Reorder columns to match existing data structure
+        results = DataFrame(results[column_order])
+
+        # Filter out overlapping data to prevent duplicates
+        if not existing_data.empty:
+            existing_dates = existing_data.date.astype(str).unique()
+            results = results.query("~`date`.astype('string').isin(@existing_dates)")
+
+        if not results.empty:
+            all_results.append(results)
+
+    # Combine all chunks
+    if all_results:
+        final_results = concat(all_results, ignore_index=True)
+
+        dtypes = {
+            "date": "DATE",
+            "instrument_id": "INTEGER", 
+            "asset": "TEXT",
+            "asset_class": "TEXT",
+            "exchange": "TEXT",
+            "exchange_name": "TEXT",
+            "contract_unit": "TEXT",
+            "contract_unit_multiplier": "REAL",
+            "min_price_increment": "REAL",
+            "name": "TEXT",
+            "currency": "TEXT",
+            "symbol": "TEXT",
+            "open": "REAL",
+            "high": "REAL",
+            "low": "REAL",
+            "close": "REAL",
+            "volume": "INTEGER"
+        }
+
+        # Insert all new data
+        try:
+            cme_database.safe_to_sql(
+                final_results,
+                table_name,
+                if_exists="append",
+                index=False,
+                method=None,
+                dtype=dtypes,
+            )
+            cme_database.logger.info(f"Added {len(final_results)} new rows to {table_name}")
+        except Exception as e:  # pylint: disable=broad-except
+            cme_database.logger.error(f"Error writing to database: {e}", exc_info=True)
+
+        return final_results
+
+    cme_database.logger.info(f"No new data to add to {table_name}")
+
+    return DataFrame()
