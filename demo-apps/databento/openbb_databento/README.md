@@ -86,7 +86,7 @@ openbb-databento
 
 Open [Workspace](https://pro.openbb.co), and add the application with the URL of the running server.
 
-The sections below expand 
+The sections below expand on contents of this app, and how to use the code.
 
 
 ### Database File
