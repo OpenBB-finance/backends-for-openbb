@@ -24,7 +24,10 @@ router = APIRouter(prefix="/live")
 
 
 class ConnectionManager:
-    """Manages WebSocket connections and subscriptions for Databento Live API."""
+    """Manages WebSocket connections and subscriptions for Databento Live API.
+
+    This class holds the API router for the WebSocket endpoints.
+    """
     def __init__(
         self,
         cme_database: CmeDatabase,
@@ -35,7 +38,7 @@ class ConnectionManager:
         """Initialize a WebSocket connection manager for Databento Live API
 
         Args:
-            api_key: Databento API key
+            cme_database: Instance of the CmeDatabase sigleton
             connection_timeout: Timeout in seconds for connection attempts
             retry_delay: Delay in seconds between connection retries
             max_retries: Maximum number of connection retry attempts
