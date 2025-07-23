@@ -1,0 +1,811 @@
+{
+    "production_custom_obb": {
+        "name": "Quarterly Production Forecasts",
+        "description": "Visible Alpha quarterly production estimates (Boeing only).",
+        "category": "Production",
+        "type": "table",
+        "searchCategory": "Production",
+        "widgetId": "production_custom_obb",
+        "params": [],
+        "endpoint": "production",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true,
+                "columnsDefs": [
+                    {
+                        "field": "revision",
+                        "formatterFn": null,
+                        "headerName": "Revision",
+                        "headerTooltip": "",
+                        "cellDataType": "text",
+                        "chartDataType": "category"
+                    },
+                    {
+                        "field": "2025_q1",
+                        "formatterFn": "int",
+                        "headerName": "2025Q1",
+                        "headerTooltip": "2025 Q1 production.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "2025_q2",
+                        "formatterFn": "int",
+                        "headerName": "2025Q2",
+                        "headerTooltip": "2025 Q2 production.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "2025_q3",
+                        "formatterFn": "int",
+                        "headerName": "2025Q3",
+                        "headerTooltip": "2025 Q3 production.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "2025_q4",
+                        "formatterFn": "int",
+                        "headerName": "2025Q4",
+                        "headerTooltip": "2025 Q4 production.",
+                        "cellDataType": "number"
+                    }
+                ]
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    },
+    "deliveries_custom_obb": {
+        "name": "Quarterly Deliveries Forecasts",
+        "description": "Visible Alpha quarterly deliveries estimates (Boeing only).",
+        "category": "Deliveries",
+        "type": "table",
+        "searchCategory": "Deliveries",
+        "widgetId": "deliveries_custom_obb",
+        "params": [],
+        "endpoint": "deliveries",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true,
+                "columnsDefs": [
+                    {
+                        "field": "period",
+                        "formatterFn": null,
+                        "headerName": "Period",
+                        "headerTooltip": "Period",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "4-22",
+                        "formatterFn": "int",
+                        "headerName": "4-22",
+                        "headerTooltip": "4-22",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "5-7",
+                        "formatterFn": "int",
+                        "headerName": "5-7",
+                        "headerTooltip": "5-7",
+                        "cellDataType": "number"
+                    }
+                ]
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    },
+    "markets_eq_audio_analysis_custom_obb": {
+        "name": "MarketsEQ Audio Analysis",
+        "description": "MarketsEQ audio analysis of the earnings transcript (Boeing only).",
+        "category": "Markets Eq Audio Analysis",
+        "type": "table",
+        "searchCategory": "Markets Eq Audio Analysis",
+        "widgetId": "markets_eq_audio_analysis_custom_obb",
+        "params": [],
+        "endpoint": "markets_eq_audio_analysis",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true,
+                "columnsDefs": [
+                    {
+                        "field": "ticker",
+                        "formatterFn": null,
+                        "headerName": "Ticker",
+                        "headerTooltip": "Company ticker symbol",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 100
+                    },
+                    {
+                        "field": "name_entity",
+                        "formatterFn": null,
+                        "headerName": "Entity Name",
+                        "headerTooltip": "Name of the entity",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 150
+                    },
+                    {
+                        "field": "factsetid",
+                        "formatterFn": null,
+                        "headerName": "FactSet ID",
+                        "headerTooltip": "FactSet identifier",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 120
+                    },
+                    {
+                        "field": "type_entity",
+                        "formatterFn": null,
+                        "headerName": "Entity Type",
+                        "headerTooltip": "Type of entity",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 120
+                    },
+                    {
+                        "field": "name_participant",
+                        "formatterFn": null,
+                        "headerName": "Participant",
+                        "headerTooltip": "Name of the participant",
+                        "cellDataType": "text",
+                        "pinned": "left",
+                        "width": 150
+                    },
+                    {
+                        "field": "title",
+                        "pinned": "left",
+                        "formatterFn": null,
+                        "headerName": "Title",
+                        "headerTooltip": "Participant's title",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 150
+                    },
+                    {
+                        "field": "type_participant",
+                        "formatterFn": null,
+                        "headerName": "Participant Type",
+                        "headerTooltip": "Type of participant",
+                        "cellDataType": "text",
+                        "width": 120
+                    },
+                    {
+                        "field": "event",
+                        "formatterFn": null,
+                        "headerName": "Period",
+                        "headerTooltip": "Period",
+                        "cellDataType": "text",
+                        "hide": true,
+                        "width": 150
+                    },
+                    {
+                        "field": "event_phase",
+                        "formatterFn": null,
+                        "headerName": "Event Phase",
+                        "headerTooltip": "Phase of the event",
+                        "cellDataType": "text",
+                        "width": 120
+                    },
+                    {
+                        "field": "timestamps_start",
+                        "formatterFn": null,
+                        "headerName": "Start Time",
+                        "headerTooltip": "Start timestamp of the segment",
+                        "cellDataType": "date",
+                        "width": 160
+                    },
+                    {
+                        "field": "timestamps_end",
+                        "formatterFn": null,
+                        "headerName": "End Time",
+                        "headerTooltip": "End timestamp of the segment",
+                        "cellDataType": "date",
+                        "width": 160
+                    },
+                    {
+                        "field": "transcription_value",
+                        "formatterFn": null,
+                        "headerName": "Transcription",
+                        "headerTooltip": "Transcribed text",
+                        "cellDataType": "text",
+                        "width": 300
+                    },
+                    {
+                        "field": "speaker_confidence",
+                        "formatterFn": null,
+                        "headerName": "Speaker Confidence",
+                        "headerTooltip": "Confidence score for speaker identification",
+                        "cellDataType": "number",
+                        "width": 140
+                    },
+                    {
+                        "field": "transcription_confidence",
+                        "formatterFn": null,
+                        "headerName": "Transcription Confidence",
+                        "headerTooltip": "Confidence score for transcription",
+                        "cellDataType": "number",
+                        "width": 140
+                    },
+                    {
+                        "field": "quality_snr",
+                        "formatterFn": null,
+                        "headerName": "SNR",
+                        "headerTooltip": "Signal-to-Noise Ratio",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "quality_rt60",
+                        "formatterFn": null,
+                        "headerName": "RT60",
+                        "headerTooltip": "Reverberation Time",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "angry",
+                        "formatterFn": null,
+                        "headerName": "Angry",
+                        "headerTooltip": "Anger emotion score",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "happy",
+                        "formatterFn": null,
+                        "headerName": "Happy",
+                        "headerTooltip": "Happiness emotion score",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "neutral",
+                        "formatterFn": null,
+                        "headerName": "Neutral",
+                        "headerTooltip": "Neutral emotion score",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "sad",
+                        "formatterFn": null,
+                        "headerName": "Sad",
+                        "headerTooltip": "Sadness emotion score",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "arousal",
+                        "formatterFn": null,
+                        "headerName": "Arousal",
+                        "headerTooltip": "Emotional arousal level",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "dominance",
+                        "formatterFn": null,
+                        "headerName": "Dominance",
+                        "headerTooltip": "Dominance level in speech",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "valence",
+                        "formatterFn": null,
+                        "headerName": "Valence",
+                        "headerTooltip": "Emotional valence score",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "f0_minimum",
+                        "formatterFn": null,
+                        "headerName": "Min F0",
+                        "headerTooltip": "Minimum fundamental frequency",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "f0_maximum",
+                        "formatterFn": null,
+                        "headerName": "Max F0",
+                        "headerTooltip": "Maximum fundamental frequency",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "f0_average",
+                        "formatterFn": null,
+                        "headerName": "Avg F0",
+                        "headerTooltip": "Average fundamental frequency",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "f0_variation",
+                        "formatterFn": null,
+                        "headerName": "F0 Variation",
+                        "headerTooltip": "Variation in fundamental frequency",
+                        "cellDataType": "number",
+                        "width": 100
+                    },
+                    {
+                        "field": "loudness_minimum",
+                        "formatterFn": null,
+                        "headerName": "Min Loudness",
+                        "headerTooltip": "Minimum loudness level",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "loudness_maximum",
+                        "formatterFn": null,
+                        "headerName": "Max Loudness",
+                        "headerTooltip": "Maximum loudness level",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "loudness_average",
+                        "formatterFn": null,
+                        "headerName": "Avg Loudness",
+                        "headerTooltip": "Average loudness level",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "loudness_variation",
+                        "formatterFn": null,
+                        "headerName": "Loudness Variation",
+                        "headerTooltip": "Variation in loudness",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "speaking_rate",
+                        "formatterFn": null,
+                        "headerName": "Speaking Rate",
+                        "headerTooltip": "Rate of speech",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "speaking_rate_variation",
+                        "formatterFn": null,
+                        "headerName": "Speaking Rate Var",
+                        "headerTooltip": "Variation in speaking rate",
+                        "cellDataType": "number",
+                        "width": 120
+                    },
+                    {
+                        "field": "intonation_score",
+                        "formatterFn": null,
+                        "headerName": "Intonation",
+                        "headerTooltip": "Intonation score",
+                        "cellDataType": "number",
+                        "width": 100
+                    }
+                ]
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    },
+    "markets_eq_research_report_custom_obb": {
+        "name": "MarketsEQ Research Report",
+        "description": "MarketsEQ research report of the earnings transcript (Boeing only).",
+        "category": "File",
+        "type": "pdf",
+        "searchCategory": "File",
+        "widgetId": "markets_eq_research_report_custom_obb",
+        "params": [],
+        "endpoint": "markets_eq_research_report",
+        "runButton": false,
+        "gridData": {
+            "w": 20,
+            "h": 25
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false,
+        "subCategory": "PDF"
+    },
+    "eight_k_custom_obb": {
+        "name": "8-K",
+        "description": "Display the earnings announcement release for the given company.",
+        "category": "File",
+        "type": "pdf",
+        "searchCategory": "File",
+        "widgetId": "eight_k_custom_obb",
+        "params": [
+            {
+                "label": "Symbol",
+                "description": "Company to display.",
+                "optional": true,
+                "type": "text",
+                "value": "BA",
+                "show": true,
+                "options": [
+                    {
+                        "label": "Boeing",
+                        "value": "BA"
+                    },
+                    {
+                        "label": "Lockheed Martin",
+                        "value": "LMT"
+                    },
+                    {
+                        "label": "Embraer",
+                        "value": "ERJ"
+                    }
+                ],
+                "paramName": "symbol"
+            }
+        ],
+        "endpoint": "eight_k",
+        "runButton": false,
+        "gridData": {
+            "w": 20,
+            "h": 25
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false,
+        "subCategory": "PDF"
+    },
+    "price_action_custom_obb": {
+        "name": "Earnings Call Price Action",
+        "description": "One-minute resolution market prices +/- one-day of the conference call.",
+        "category": "Price Action",
+        "type": "table",
+        "searchCategory": "Price Action",
+        "widgetId": "price_action_custom_obb",
+        "params": [
+            {
+                "label": "Symbol",
+                "description": "Company to display.",
+                "optional": true,
+                "type": "text",
+                "value": "BA",
+                "show": true,
+                "options": [
+                    {
+                        "label": "Boeing",
+                        "value": "BA"
+                    },
+                    {
+                        "label": "Lockheed Martin",
+                        "value": "LMT"
+                    },
+                    {
+                        "label": "Embraer",
+                        "value": "ERJ"
+                    }
+                ],
+                "paramName": "symbol"
+            }
+        ],
+        "endpoint": "price_action",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true,
+                "columnsDefs": [
+                    {
+                        "field": "date",
+                        "pinned": "left",
+                        "formatterFn": null,
+                        "headerName": "Date",
+                        "headerTooltip": "The date and time of the interval.",
+                        "cellDataType": "date"
+                    },
+                    {
+                        "field": "open",
+                        "formatterFn": null,
+                        "headerName": "Open",
+                        "headerTooltip": "The opening price for the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "high",
+                        "formatterFn": null,
+                        "headerName": "High",
+                        "headerTooltip": "The highest price for the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "low",
+                        "formatterFn": null,
+                        "headerName": "Low",
+                        "headerTooltip": "The lowest price for the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "close",
+                        "formatterFn": null,
+                        "headerName": "Close",
+                        "headerTooltip": "The closing price for the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "volume",
+                        "formatterFn": "int",
+                        "headerName": "Volume",
+                        "headerTooltip": "The trading volume during the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "vwap",
+                        "formatterFn": null,
+                        "headerName": "VWAP",
+                        "headerTooltip": "The volume-weighted average price during the interval.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "transactions",
+                        "formatterFn": "int",
+                        "headerName": "Transactions",
+                        "headerTooltip": "The number of transactions during the interval.",
+                        "cellDataType": "number"
+                    }
+                ]
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    },
+    "investor_presentations_custom_obb": {
+        "name": "Investor Presentations",
+        "description": "Get the latest investors' presentation for the given company.",
+        "category": "File",
+        "type": "pdf",
+        "searchCategory": "File",
+        "widgetId": "investor_presentations_custom_obb",
+        "params": [
+            {
+                "label": "Symbol",
+                "description": "Company to display.",
+                "optional": true,
+                "type": "text",
+                "value": "BA",
+                "show": true,
+                "options": [
+                    {
+                        "label": "Boeing",
+                        "value": "BA"
+                    },
+                    {
+                        "label": "Lockheed Martin",
+                        "value": "LMT"
+                    },
+                    {
+                        "label": "Embraer",
+                        "value": "ERJ"
+                    }
+                ],
+                "paramName": "symbol"
+            }
+        ],
+        "endpoint": "investor_presentations",
+        "runButton": false,
+        "gridData": {
+            "w": 20,
+            "h": 25
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false,
+        "subCategory": "PDF"
+    },
+    "transcripts_custom_obb": {
+        "name": "Earnings Call Transcript",
+        "description": "Open the earnings call transcript.",
+        "category": "Transcripts",
+        "type": "markdown",
+        "searchCategory": "Transcripts",
+        "widgetId": "transcripts_custom_obb",
+        "params": [
+            {
+                "label": "Symbol",
+                "description": "Company to display.",
+                "optional": true,
+                "type": "text",
+                "value": "BA",
+                "show": true,
+                "options": [
+                    {
+                        "label": "Boeing",
+                        "value": "BA"
+                    },
+                    {
+                        "label": "Lockheed Martin",
+                        "value": "LMT"
+                    },
+                    {
+                        "label": "Embraer",
+                        "value": "ERJ"
+                    }
+                ],
+                "paramName": "symbol"
+            }
+        ],
+        "endpoint": "transcripts",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    },
+    "price_targets_custom_obb": {
+        "name": "Analysts' Price Targets",
+        "description": "Get the analysts' price targets for the given company.",
+        "category": "Price Targets",
+        "type": "table",
+        "searchCategory": "Price Targets",
+        "widgetId": "price_targets_custom_obb",
+        "params": [
+            {
+                "label": "Symbol",
+                "description": "Company to display.",
+                "optional": true,
+                "type": "text",
+                "value": "BA",
+                "show": true,
+                "options": [
+                    {
+                        "label": "Boeing",
+                        "value": "BA"
+                    },
+                    {
+                        "label": "Lockheed Martin",
+                        "value": "LMT"
+                    },
+                    {
+                        "label": "Embraer",
+                        "value": "ERJ"
+                    }
+                ],
+                "paramName": "symbol"
+            }
+        ],
+        "endpoint": "price_targets",
+        "runButton": false,
+        "gridData": {
+            "w": 40,
+            "h": 15
+        },
+        "data": {
+            "dataKey": "",
+            "table": {
+                "showAll": true,
+                "columnsDefs": [
+                    {
+                        "field": "date",
+                        "pinned": "left",
+                        "formatterFn": null,
+                        "headerName": "Date",
+                        "headerTooltip": "The date of publication.",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "analyst_name",
+                        "formatterFn": null,
+                        "headerName": "Analyst Name",
+                        "headerTooltip": "Name of the analyst.",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "firm_name",
+                        "formatterFn": null,
+                        "headerName": "Firm Name",
+                        "headerTooltip": "Name of the firm.",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "adjusted_price_target",
+                        "formatterFn": null,
+                        "headerName": "Adjusted Price Target",
+                        "headerTooltip": "Adjusted price target.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "adjusted_previous_price_target",
+                        "formatterFn": null,
+                        "headerName": "Adjusted Previous Price Target",
+                        "headerTooltip": "Adjusted previous price target.",
+                        "cellDataType": "number"
+                    },
+                    {
+                        "field": "rating_change",
+                        "formatterFn": null,
+                        "headerName": "Rating Change",
+                        "headerTooltip": "Rating change.",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "current_rating",
+                        "formatterFn": null,
+                        "headerName": "Current Rating",
+                        "headerTooltip": "Current rating.",
+                        "cellDataType": "text"
+                    },
+                    {
+                        "field": "previous_rating",
+                        "formatterFn": null,
+                        "headerName": "Previous Rating",
+                        "headerTooltip": "Previous rating.",
+                        "cellDataType": "text"
+                    }
+                ]
+            }
+        },
+        "source": [
+            "Custom"
+        ],
+        "refetchInterval": false
+    }
+}

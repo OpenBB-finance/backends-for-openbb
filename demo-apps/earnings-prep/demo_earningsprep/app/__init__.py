@@ -1,0 +1,1 @@
+"""Fast API module."""

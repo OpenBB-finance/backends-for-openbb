@@ -1,5 +1,12 @@
 __pycache__/
-venv/*
-
-**/.env
-**/.venv
+*.pyc
+.DS_Store
+*.env
+.venv
+venv*/
+venv
+.vscode
+*.ipynb
+env/
+venv/
+.ruff_cache/

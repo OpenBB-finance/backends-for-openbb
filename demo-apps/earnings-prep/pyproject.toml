@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "earningsprep"
+version = "0.1.0"
+description = ""
+authors = ["ihsan <saracgil@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "demo_earningsprep" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+openbb-platform-api = "^1.1.11"
+openbb-store = "^0.1.2"
+
+[tool.poetry.scripts]
+demo_earningsprep = "demo_earningsprep.app.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
