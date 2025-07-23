@@ -33,6 +33,9 @@ demo_earningsprep
 3. **Select App**
    - Click on the new "Earnings Prep" application
 
+<img width="295" height="394" alt="Boeing App Card" src="https://github.com/user-attachments/assets/02f198c0-2b86-47d2-8399-5317777f0fbb" />
+
+
 5. **Enjoy your earnings prep demo!**
 
 ## Available Endpoints
