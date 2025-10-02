@@ -694,6 +694,18 @@
                 "include_metadata": "false"
               }
             }
+          },
+          {
+            "i": "omni-widget-type",
+            "x": 19,
+            "y": 21,
+            "w": 10,
+            "h": 22,
+            "state": {
+              "params": {
+                "prompt": "test"
+              }
+            }
           }
         ]
       },
