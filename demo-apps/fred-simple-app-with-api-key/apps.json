@@ -1,37 +1,67 @@
-[
-  {
-    "name": "FRED Series",
-    "img": "",
-    "img_dark": "",
-    "img_light": "",
-    "description": "Simple FRED economic data series viewer",
-    "allowCustomization": true,
-    "tabs": {
-      "overview": {
-        "id": "",
-        "name": "",
-        "layout": [
-          {
-            "i": "fred_series",
-            "x": 0,
-            "y": 0,
-            "w": 40,
-            "h": 12,
-            "state": {
-              "params": {
-                "series_id": "RPI,PCE",
-                "start_date": "2010-01-01",
-                "api_key": ""
-              },
-              "chartView": {
-                "enabled": true,
-                "chartType": "line"
-              }
+{
+  "name": "FRED Series",
+  "img": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=250&h=200&fit=crop&auto=format",
+  "img_dark": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=250&h=200&fit=crop&auto=format",
+  "img_light": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=250&h=200&fit=crop&auto=format",
+  "description": "Simple FRED economic data series viewer",
+  "allowCustomization": true,
+  "tabs": {
+    "overview": {
+      "id": "overview",
+      "name": "Overview",
+      "layout": [
+        {
+          "i": "fred_series",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 16,
+          "state": {
+            "params": {
+              "series_id": "RPI,PCE",
+              "start_date": "2010-01-01",
+              "api_key": "b98e15f1fde39212bce9213f2e3e5afb"
+            },
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "line",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": true,
+              "chartType": "line"
             }
-          }
-        ]
-      }
+          },
+          "groups": [
+            "API Key Group"
+          ]
+        }
+      ]
     },
-    "groups": []
-  }
-]
+    "api-key": {
+      "id": "api-key",
+      "name": "API Key",
+      "layout": [
+        {
+          "i": "set_api_key",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 9,
+          "groups": [
+            "API Key Group"
+          ]
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "API Key Group",
+      "type": "param",
+      "paramName": "api_key",
+      "defaultValue": ""
+    }
+  ]
+}

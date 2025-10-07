@@ -1,4 +1,27 @@
 {
+  "set_api_key": {
+    "name": "Set API Key",
+    "description": "Set and validate FRED API key",
+    "category": "Economic Data",
+    "type": "markdown",
+    "endpoint": "set_api_key",
+    "gridData": {
+      "w": 12,
+      "h": 4
+    },
+    "source": "Federal Reserve Economic Data (FRED)",
+    "params": [
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "Enter your FRED API key",
+        "optional": false,
+        "show": true
+      }
+    ]
+  },
   "fred_series": {
     "name": "FRED Series",
     "description": "Fetch and display FRED economic data series",
@@ -47,7 +70,8 @@
         "value": "",
         "label": "API Key",
         "type": "text",
-        "description": "FRED API key (optional, overrides environment variable)"
+        "description": "FRED API key (optional, overrides environment variable)",
+        "show": false
       }
     ]
   }

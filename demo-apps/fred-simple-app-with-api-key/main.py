@@ -49,6 +49,66 @@ def get_apps():
     )
 
 
+@app.get("/set_api_key")
+def set_api_key(api_key: str = ""):
+    """Validate FRED API key and return status message.
+    
+    Args:
+        api_key (str): FRED API key to validate
+    
+    Returns:
+        str: Markdown formatted status message
+    """
+    if not api_key:
+        return """# ⚠️ API Key Required
+
+Please enter your FRED API key above to access Federal Reserve Economic Data.
+
+**How to get your API key:**
+1. Visit [FRED API Key Registration](https://fred.stlouisfed.org/docs/api/api_key.html)
+2. Create a free account
+3. Generate your API key
+4. Enter it in the field above
+
+---
+*Note: The API key will be used for all FRED data requests in this workspace.*"""
+
+    try:
+        # Test the API key by making a simple request
+        fred = Fred(api_key=api_key)
+        # Try to get series info for a common series to validate the key
+        fred.get_series_info('GDP')
+        
+        return """# ✅ API Key Valid
+
+Your FRED API key has been successfully validated and is ready to use.
+
+**Status:** Connected to Federal Reserve Economic Data
+**Access:** Full access to FRED time series data
+
+You can now use the FRED Series widget to fetch economic data!
+
+---
+*Your API key is working correctly.*"""
+        
+    except Exception as e:
+        return f"""# ❌ API Key Invalid
+
+There was an error validating your FRED API key.
+
+**Error:** {str(e)}
+
+**Please check:**
+- API key is correct (no extra spaces)
+- API key is active and not expired
+- Internet connection is working
+
+**Get a new API key:** [FRED API Registration](https://fred.stlouisfed.org/docs/api/api_key.html)
+
+---
+*Please verify your API key and try again.*"""
+
+
 @app.get("/fred_series")
 def fred_series(series_id: str = "SP500", start_date: str = "2020-01-01", api_key: str = ""):
     """Fetch FRED series data and return as a table.
