@@ -1,0 +1,37 @@
+[
+  {
+    "name": "FRED Series",
+    "img": "",
+    "img_dark": "",
+    "img_light": "",
+    "description": "Simple FRED economic data series viewer",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "",
+        "name": "",
+        "layout": [
+          {
+            "i": "fred_series",
+            "x": 0,
+            "y": 0,
+            "w": 40,
+            "h": 12,
+            "state": {
+              "params": {
+                "series_id": "RPI,PCE",
+                "start_date": "2010-01-01",
+                "api_key": ""
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "groups": []
+  }
+]

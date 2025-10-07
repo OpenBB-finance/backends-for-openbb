@@ -1,0 +1,54 @@
+{
+  "fred_series": {
+    "name": "FRED Series",
+    "description": "Fetch and display FRED economic data series",
+    "category": "Economic Data",
+    "type": "table",
+    "endpoint": "fred_series",
+    "gridData": {
+      "w": 12,
+      "h": 8
+    },
+    "source": "Federal Reserve Economic Data (FRED)",
+    "data": {
+      "table": {
+        "enableCharts": true,
+        "showAll": false,
+        "chartView": {
+          "enabled": true,
+          "chartType": "line"
+        }
+      }
+    },
+    "params": [
+      {
+        "paramName": "series_id",
+        "value": "SP500",
+        "label": "Series ID",
+        "type": "text",
+        "description": "FRED series identifier(s). Multiple comma separated items allowed.",
+        "optional": false,
+        "show": true,
+        "multiSelect": true,
+        "multiple": true,
+        "style": {
+          "popupWidth": 450
+        }
+      },
+      {
+        "paramName": "start_date",
+        "value": "2020-01-01",
+        "label": "Start Date",
+        "type": "date",
+        "description": "Start date for data retrieval"
+      },
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "FRED API key (optional, overrides environment variable)"
+      }
+    ]
+  }
+}
