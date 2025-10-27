@@ -1,0 +1,102 @@
+{
+  "name": "Etherscan Portfolio Viewer",
+  "img": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=250&h=200&fit=crop&auto=format",
+  "img_dark": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=250&h=200&fit=crop&auto=format",
+  "img_light": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=250&h=200&fit=crop&auto=format",
+  "description": "Ethereum address portfolio analysis using Etherscan API",
+  "allowCustomization": true,
+  "tabs": {
+    "overview": {
+      "id": "overview",
+      "name": "overview",
+      "layout": [
+        {
+          "i": "address_info",
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 12,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            }
+          },
+          "groups": [
+            "Address Group"
+          ]
+        },
+        {
+          "i": "token_balances",
+          "x": 0,
+          "y": 12,
+          "w": 40,
+          "h": 8,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "pie",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "pie"
+            }
+          },
+          "groups": [
+            "Address Group"
+          ]
+        },
+        {
+          "i": "transactions",
+          "x": 0,
+          "y": 20,
+          "w": 40,
+          "h": 8,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": [
+            "Address Group"
+          ]
+        },
+        {
+          "i": "token_transfers",
+          "x": 0,
+          "y": 28,
+          "w": 40,
+          "h": 9,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": [
+            "Address Group"
+          ]
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Address Group",
+      "type": "param",
+      "paramName": "address",
+      "defaultValue": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "address_info": {
+    "name": "Address Validator",
+    "description": "Validates Ethereum address and shows basic account information including balance and status",
+    "category": "Portfolio",
+    "subcategory": "Address Info",
+    "type": "markdown",
+    "endpoint": "address_info",
+    "gridData": {
+      "w": 40,
+      "h": 4
+    },
+    "source": [
+      "Etherscan API"
+    ],
+    "params": [
+      {
+        "paramName": "address",
+        "value": "",
+        "label": "Ethereum Address",
+        "type": "text",
+        "description": "Enter an Ethereum address (0x...)",
+        "optional": false,
+        "show": true
+      },
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "Etherscan API key (optional, uses env if not provided)",
+        "show": false
+      }
+    ]
+  },
+  "transactions": {
+    "name": "Transaction History",
+    "description": "Shows normal ETH transactions for the address",
+    "category": "Portfolio",
+    "subcategory": "Transactions",
+    "type": "table",
+    "endpoint": "transactions",
+    "gridData": {
+      "w": 30,
+      "h": 8
+    },
+    "source": [
+      "Etherscan API"
+    ],
+    "data": {
+      "table": {
+        "enableCharts": true,
+        "showAll": false,
+        "chartView": {
+          "enabled": false,
+          "chartType": "line"
+        },
+        "columnsDefs": [
+          {
+            "field": "Date",
+            "headerName": "Date",
+            "cellDataType": "dateString",
+            "chartDataType": "time",
+            "width": 150
+          },
+          {
+            "field": "Hash",
+            "headerName": "Tx Hash",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "width": 120
+          },
+          {
+            "field": "From",
+            "headerName": "From",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "width": 120
+          },
+          {
+            "field": "To",
+            "headerName": "To",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "width": 120
+          },
+          {
+            "field": "Value (ETH)",
+            "headerName": "Value (ETH)",
+            "cellDataType": "number",
+            "chartDataType": "series",
+            "formatterFn": "none",
+            "width": 120
+          },
+          {
+            "field": "Gas Fee (ETH)",
+            "headerName": "Gas Fee (ETH)",
+            "cellDataType": "number",
+            "chartDataType": "series",
+            "formatterFn": "none",
+            "width": 120
+          },
+          {
+            "field": "Status",
+            "headerName": "Status",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "renderFn": "greenRed",
+            "renderFnParams": {
+              "greenValue": "Success",
+              "redValue": "Failed"
+            },
+            "width": 100
+          },
+          {
+            "field": "Block",
+            "headerName": "Block",
+            "cellDataType": "number",
+            "chartDataType": "excluded",
+            "width": 100
+          }
+        ]
+      }
+    },
+    "params": [
+      {
+        "paramName": "address",
+        "value": "",
+        "label": "Ethereum Address",
+        "type": "text",
+        "description": "Ethereum address to fetch transactions",
+        "optional": false,
+        "show": true
+      },
+      {
+        "paramName": "limit",
+        "value": 100,
+        "label": "Limit",
+        "type": "number",
+        "description": "Number of transactions to fetch",
+        "optional": true,
+        "show": true
+      },
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "Etherscan API key",
+        "show": false
+      }
+    ]
+  },
+  "token_transfers": {
+    "name": "Token Transfers",
+    "description": "Shows ERC-20 token transfers for the address",
+    "category": "Portfolio",
+    "subcategory": "Tokens",
+    "type": "table",
+    "endpoint": "token_transfers",
+    "gridData": {
+      "w": 30,
+      "h": 8
+    },
+    "source": [
+      "Etherscan API"
+    ],
+    "data": {
+      "table": {
+        "enableCharts": false,
+        "showAll": false,
+        "columnsDefs": [
+          {
+            "field": "Date",
+            "headerName": "Date",
+            "cellDataType": "dateString",
+            "width": 150
+          },
+          {
+            "field": "Token",
+            "headerName": "Token",
+            "cellDataType": "text",
+            "width": 80
+          },
+          {
+            "field": "Name",
+            "headerName": "Token Name",
+            "cellDataType": "text",
+            "width": 150
+          },
+          {
+            "field": "Direction",
+            "headerName": "Direction",
+            "cellDataType": "text",
+            "renderFn": "greenRed",
+            "renderFnParams": {
+              "greenValue": "IN",
+              "redValue": "OUT"
+            },
+            "width": 80
+          },
+          {
+            "field": "From",
+            "headerName": "From",
+            "cellDataType": "text",
+            "width": 120
+          },
+          {
+            "field": "To",
+            "headerName": "To",
+            "cellDataType": "text",
+            "width": 120
+          },
+          {
+            "field": "Value",
+            "headerName": "Amount",
+            "cellDataType": "number",
+            "formatterFn": "none",
+            "width": 120
+          },
+          {
+            "field": "Hash",
+            "headerName": "Tx Hash",
+            "cellDataType": "text",
+            "width": 120
+          }
+        ]
+      }
+    },
+    "params": [
+      {
+        "paramName": "address",
+        "value": "",
+        "label": "Ethereum Address",
+        "type": "text",
+        "description": "Ethereum address to fetch token transfers",
+        "optional": false,
+        "show": true
+      },
+      {
+        "paramName": "limit",
+        "value": 100,
+        "label": "Limit",
+        "type": "number",
+        "description": "Number of transfers to fetch",
+        "optional": true,
+        "show": true
+      },
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "Etherscan API key",
+        "show": false
+      }
+    ]
+  },
+  "token_balances": {
+    "name": "Token Balances",
+    "description": "Shows current token balances calculated from transfer history",
+    "category": "Portfolio",
+    "subcategory": "Balances",
+    "type": "table",
+    "endpoint": "token_balances",
+    "gridData": {
+      "w": 20,
+      "h": 8
+    },
+    "source": [
+      "Etherscan API"
+    ],
+    "data": {
+      "table": {
+        "enableCharts": true,
+        "showAll": false,
+        "chartView": {
+          "enabled": true,
+          "chartType": "pie"
+        },
+        "columnsDefs": [
+          {
+            "field": "Token",
+            "headerName": "Token",
+            "cellDataType": "text",
+            "chartDataType": "category",
+            "width": 100
+          },
+          {
+            "field": "Name",
+            "headerName": "Name",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "width": 200
+          },
+          {
+            "field": "Balance",
+            "headerName": "Balance",
+            "cellDataType": "text",
+            "chartDataType": "series",
+            "width": 120
+          },
+          {
+            "field": "Contract",
+            "headerName": "Contract",
+            "cellDataType": "text",
+            "chartDataType": "excluded",
+            "width": 120
+          }
+        ]
+      }
+    },
+    "params": [
+      {
+        "paramName": "address",
+        "value": "",
+        "label": "Ethereum Address",
+        "type": "text",
+        "description": "Ethereum address to calculate token balances",
+        "optional": false,
+        "show": true
+      },
+      {
+        "paramName": "api_key",
+        "value": "",
+        "label": "API Key",
+        "type": "text",
+        "description": "Etherscan API key",
+        "show": false
+      }
+    ]
+  }
+}
