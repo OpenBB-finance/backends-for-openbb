@@ -21,16 +21,16 @@ A simple OpenBB Workspace app that fetches FRED economic data using API key auth
 2. **Run the Application**:
 
    ```bash
-   uvicorn main:app --reload --port 8001
+   uvicorn main:app --reload --port 8002
    ```
 
 3. **Add to OpenBB Workspace**:
-   - Add new backend with URL: `http://localhost:8001`
+   - Add new backend with URL: `http://localhost:8002`
    - Add custom header:
      - Name: `X-FRED-API-KEY`
      - Value: `your_fred_api_key_here`
     
-<img width="1658" height="1264" alt="CleanShot 2025-10-27 at 17 16 43@2x" src="https://github.com/user-attachments/assets/1e0a838b-9dcf-468f-be2c-e7df5f9c3da3" />
+<img width="800" alt="CleanShot 2025-10-27 at 17 16 43@2x" src="https://github.com/user-attachments/assets/1e0a838b-9dcf-468f-be2c-e7df5f9c3da3" />
 
 ## Getting a FRED API Key
 
