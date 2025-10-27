@@ -6,7 +6,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fredapi import Fred
+import requests
 import pandas as pd
 import numpy as np
 
@@ -71,8 +71,6 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
                 detail="FRED API key required. Please add 'X-FRED-API-KEY' or 'fred-api-key' header when connecting backend to OpenBB Workspace."
             )
         
-        fred = Fred(api_key=api_key)
-        
         # Validate and parse start date
         try:
             datetime.strptime(start_date, '%Y-%m-%d')
@@ -85,16 +83,58 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
         if not series_ids:
             raise HTTPException(status_code=400, detail="At least one series ID is required")
         
+        # FRED API base URL
+        fred_base_url = "https://api.stlouisfed.org/fred/series/observations"
+        
         # Fetch data for all series
         all_series_data = {}
         for sid in series_ids:
             try:
-                data = fred.get_series(sid, observation_start=start_date)
-                if not data.empty:
-                    all_series_data[sid] = data
-            except Exception as e:
-                # Continue with other series if one fails
+                # Make request to FRED API
+                params = {
+                    "series_id": sid,
+                    "api_key": api_key,
+                    "file_type": "json",
+                    "observation_start": start_date
+                }
+                response = requests.get(fred_base_url, params=params)
+                response.raise_for_status()
+                
+                data = response.json()
+                
+                # Check for errors in the response
+                if "error_code" in data:
+                    print(f"FRED API error for {sid}: {data.get('error_message', 'Unknown error')}")
+                    continue
+                    
+                # Convert observations to pandas Series
+                observations = data.get("observations", [])
+                if observations:
+                    # Create DataFrame from observations
+                    dates = [obs["date"] for obs in observations]
+                    values = []
+                    for obs in observations:
+                        val = obs["value"]
+                        # Handle FRED's missing data indicator "."
+                        if val == "." or val == "":
+                            values.append(None)
+                        else:
+                            try:
+                                values.append(float(val))
+                            except (ValueError, TypeError):
+                                values.append(None)
+                    
+                    series_data = pd.Series(data=values, index=pd.to_datetime(dates), name=sid)
+                    # Remove NaN values
+                    series_data = series_data.dropna()
+                    if not series_data.empty:
+                        all_series_data[sid] = series_data
+                        
+            except requests.exceptions.RequestException as e:
                 print(f"Failed to fetch {sid}: {e}")
+                continue
+            except Exception as e:
+                print(f"Error processing {sid}: {e}")
                 continue
         
         if not all_series_data:
