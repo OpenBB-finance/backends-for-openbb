@@ -1,6 +1,5 @@
 # Import required libraries
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
@@ -63,29 +62,32 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
     """
     try:
         # Get API key from custom header
-        api_key = request.headers.get('X-FRED-API-KEY') or request.headers.get('fred-api-key')
-        
+        api_key = request.headers.get('X-FRED-API-KEY')
+
         if not api_key:
             raise HTTPException(
-                status_code=401, 
-                detail="FRED API key required. Please add 'X-FRED-API-KEY' or 'fred-api-key' header when connecting backend to OpenBB Workspace."
+                status_code=401,
+                detail="FRED API key required. Please add 'X-FRED-API-KEY' header when connecting backend to OpenBB Workspace."
             )
         
         # Validate and parse start date
         try:
             datetime.strptime(start_date, '%Y-%m-%d')
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid start_date format. Use YYYY-MM-DD")
-        
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid start_date format. Use YYYY-MM-DD"
+            ) from exc
+
         # Parse multiple series IDs
         series_ids = [sid.strip() for sid in series_id.split(',') if sid.strip()]
-        
+
         if not series_ids:
             raise HTTPException(status_code=400, detail="At least one series ID is required")
-        
+
         # FRED API base URL
         fred_base_url = "https://api.stlouisfed.org/fred/series/observations"
-        
+
         # Fetch data for all series
         all_series_data = {}
         for sid in series_ids:
@@ -99,14 +101,15 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
                 }
                 response = requests.get(fred_base_url, params=params)
                 response.raise_for_status()
-                
+
                 data = response.json()
-                
+
                 # Check for errors in the response
                 if "error_code" in data:
-                    print(f"FRED API error for {sid}: {data.get('error_message', 'Unknown error')}")
+                    error_msg = data.get('error_message', 'Unknown error')
+                    print(f"FRED API error for {sid}: {error_msg}")
                     continue
-                    
+
                 # Convert observations to pandas Series
                 observations = data.get("observations", [])
                 if observations:
@@ -116,41 +119,46 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
                     for obs in observations:
                         val = obs["value"]
                         # Handle FRED's missing data indicator "."
-                        if val == "." or val == "":
+                        if val in (".", ""):
                             values.append(None)
                         else:
                             try:
                                 values.append(float(val))
                             except (ValueError, TypeError):
                                 values.append(None)
-                    
-                    series_data = pd.Series(data=values, index=pd.to_datetime(dates), name=sid)
+
+                    series_data = pd.Series(
+                        data=values,
+                        index=pd.to_datetime(dates),
+                        name=sid
+                    )
                     # Remove NaN values
                     series_data = series_data.dropna()
                     if not series_data.empty:
                         all_series_data[sid] = series_data
-                        
+
             except requests.exceptions.RequestException as e:
                 print(f"Failed to fetch {sid}: {e}")
                 continue
-            except Exception as e:
+            except (ValueError, KeyError) as e:
                 print(f"Error processing {sid}: {e}")
                 continue
-        
+
         if not all_series_data:
-            raise HTTPException(status_code=404, detail=f"No data found for any of the series: {', '.join(series_ids)}")
-        
+            error_detail = f"No data found for any of the series: {', '.join(series_ids)}"
+            raise HTTPException(status_code=404, detail=error_detail)
+
         # Combine all series into a single DataFrame
         df_list = []
         for sid, data in all_series_data.items():
             temp_df = data.to_frame(name=sid)
             df_list.append(temp_df)
-        
+
         # Merge all series on date index
         combined_df = df_list[0]
         for df_item in df_list[1:]:
             combined_df = combined_df.join(df_item, how='outer')
-        
+
         # Reset index and format date
         combined_df = combined_df.reset_index()
         # The index column might be named differently, let's ensure it's called 'Date'
@@ -158,15 +166,19 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
             # Find the date column (should be the first column after reset_index)
             date_col = combined_df.columns[0]
             combined_df = combined_df.rename(columns={date_col: 'Date'})
-        
+
         combined_df['Date'] = pd.to_datetime(combined_df['Date']).dt.strftime('%Y-%m-%d')
-        
+
         # Handle NaN and inf values for all series columns
         for col in combined_df.columns:
             if col != 'Date':
-                combined_df[col] = combined_df[col].replace([float('inf'), float('-inf')], None)
-                combined_df[col] = combined_df[col].where(pd.notna(combined_df[col]), None)
-        
+                combined_df[col] = combined_df[col].replace(
+                    [float('inf'), float('-inf')], None
+                )
+                combined_df[col] = combined_df[col].where(
+                    pd.notna(combined_df[col]), None
+                )
+
         # Convert to records with explicit handling of problematic values
         records = []
         for _, row in combined_df.iterrows():
@@ -180,12 +192,13 @@ def fred_series(request: Request, series_id: str = "SP500", start_date: str = "2
                         value = None
                     record[col] = value
             records.append(record)
-        
+
         # Return simple array of records for AgGrid
         return records
-        
+
     except Exception as e:
         print(f"Error in fred_series: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error processing FRED data: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing FRED data: {str(e)}"
+        ) from e
