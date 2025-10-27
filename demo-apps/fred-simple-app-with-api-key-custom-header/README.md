@@ -2,6 +2,8 @@
 
 A simple OpenBB Workspace app that fetches FRED economic data using API key authentication via custom headers.
 
+<img width="2804" height="1240" alt="CleanShot 2025-10-27 at 17 38 42@2x" src="https://github.com/user-attachments/assets/b9449263-3b3b-445c-8add-63754fc5d09e" />
+
 ## Features
 
 - **Custom Header Authentication**: API key passed via `X-FRED-API-KEY` header when connecting to OpenBB Workspace
@@ -27,6 +29,8 @@ A simple OpenBB Workspace app that fetches FRED economic data using API key auth
    - Add custom header:
      - Name: `X-FRED-API-KEY`
      - Value: `your_fred_api_key_here`
+    
+<img width="1658" height="1264" alt="CleanShot 2025-10-27 at 17 16 43@2x" src="https://github.com/user-attachments/assets/1e0a838b-9dcf-468f-be2c-e7df5f9c3da3" />
 
 ## Getting a FRED API Key
 
