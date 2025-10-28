@@ -98,4 +98,15 @@ Each Integration below has a folder which contains an example of different imple
 | [ArticDB](/widget-examples/database-connectors/articdb_python/README.md) | Using ArticDB to add data to a widget. |
 | [Snowflake](/widget-examples/database-connectors/snowflake_connector_python/README.md) | Snowflake is a cloud-based data warehousing platform. |
 
+### Community Apps
+
+- https://github.com/jose-donato/openbb-polymarket
+- https://github.com/MattMaximo/CryptoBB
+- https://github.com/DidierRLopes/dharmatech-openbb
+- https://github.com/DidierRLopes/opening-bell-daily-openbb
+- https://github.com/DidierRLopes/openbb-datamule-indicators
+- https://github.com/jose-donato/openbb-app-tao/tree/main
+
 For more examples on setting up your own App - you can head to our documentation at <https://docs.openbb.co/workspace>.
+
+
