@@ -1,0 +1,140 @@
+{
+  "name": "DTCC Equities & ETF",
+  "description": "Comprehensive equities and ETF market monitoring dashboard tracking settlement obligations, ETF creation/redemption flows, short interest dynamics, concentration risks, and crowded trade alerts.",
+  "img": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "equities_etf/notes",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "settlement": {
+      "id": "settlement",
+      "name": "Settlement & Flows",
+      "layout": [
+        {
+          "i": "equities_etf/metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "equities_etf/settlement_timeline",
+          "x": 0,
+          "y": 16,
+          "w": 40,
+          "h": 9,
+          "groups": []
+        },
+        {
+          "i": "equities_etf/etf_flows",
+          "x": 0,
+          "y": 7,
+          "w": 40,
+          "h": 9,
+          "state": {
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "groupedColumn",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": true,
+              "chartType": "groupedColumn"
+            }
+          },
+          "groups": []
+        }
+      ]
+    },
+    "risk_monitoring": {
+      "id": "risk_monitoring",
+      "name": "Risk Monitoring",
+      "layout": [
+        {
+          "i": "equities_etf/short_interest",
+          "x": 0,
+          "y": 12,
+          "w": 40,
+          "h": 9,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "column"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "symbol"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "equities_etf/concentration_risk",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 10,
+          "state": {
+            "params": {
+              "risk_scoring": "Volatility Weighted",
+              "market_cap_filter": "Mid Cap"
+            },
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "scatter",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": true,
+              "chartType": "scatter"
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "equities_etf/crowded_trades",
+          "x": 0,
+          "y": 21,
+          "w": 40,
+          "h": 10,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [],
+  "prompts": [
+    "What are the T+1 vs T+2 settlement obligations for the next week?",
+    "Show me the largest ETF creation and redemption flows today",
+    "Which stocks have the highest short interest ratios?",
+    "Are there any concentration risk alerts for major securities?",
+    "Identify crowded trades with high borrow rates"
+  ]
+}

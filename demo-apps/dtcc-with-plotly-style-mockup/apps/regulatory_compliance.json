@@ -1,0 +1,156 @@
+{
+  "name": "DTCC Regulatory & Compliance",
+  "description": "Comprehensive regulatory compliance monitoring dashboard providing audit trails, exception reporting, KYC/AML risk flagging, and real-time compliance alerting across all regulatory frameworks.",
+  "img": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "regulatory_compliance/notes",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "compliance_overview": {
+      "id": "compliance_overview",
+      "name": "Compliance Overview",
+      "layout": [
+        {
+          "i": "regulatory_compliance/metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "regulatory_compliance/regulation_heatmap",
+          "x": 0,
+          "y": 7,
+          "w": 20,
+          "h": 16,
+          "groups": []
+        },
+        {
+          "i": "regulatory_compliance/alerts_ticker",
+          "x": 20,
+          "y": 7,
+          "w": 20,
+          "h": 16,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": []
+        }
+      ]
+    },
+    "audit_exceptions": {
+      "id": "audit_exceptions",
+      "name": "Audit & Exceptions",
+      "layout": [
+        {
+          "i": "regulatory_compliance/audit_trail",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 12,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "trade_id"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": [
+            "Trade Filter Sync"
+          ]
+        },
+        {
+          "i": "regulatory_compliance/exceptions",
+          "x": 0,
+          "y": 14,
+          "w": 20,
+          "h": 13,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "exception_id"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "regulatory_compliance/kyc_aml_flags",
+          "x": 20,
+          "y": 14,
+          "w": 20,
+          "h": 13,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "column"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "entity"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Trade Filter Sync",
+      "type": "param",
+      "paramName": "trade_filter",
+      "defaultValue": "All",
+      "widgetIds": [
+        "regulatory_compliance/audit_trail"
+      ]
+    }
+  ],
+  "prompts": [
+    "What is our overall regulatory compliance status?",
+    "Show me all critical compliance exceptions from the last 24 hours",
+    "Which entities have active KYC/AML risk flags?",
+    "Trace the lifecycle of trade TRD-123456 from execution to settlement",
+    "Are there any Dodd-Frank or MiFID II violations that need attention?"
+  ]
+}

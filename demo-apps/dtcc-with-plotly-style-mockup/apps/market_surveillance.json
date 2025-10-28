@@ -1,0 +1,116 @@
+{
+  "name": "DTCC Market Surveillance",
+  "description": "Comprehensive market transparency and surveillance dashboard providing real-time monitoring of trade volumes, anomaly detection, counterparty exposure analysis, and regulatory compliance tracking across all asset classes.",
+  "img": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "market_surveillance/notes",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "overview": {
+      "id": "overview",
+      "name": "Market Overview",
+      "layout": [
+        {
+          "i": "market_surveillance/activity_metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "market_surveillance/trade_volume_heatmap",
+          "x": 0,
+          "y": 7,
+          "w": 20,
+          "h": 18,
+          "groups": [
+            "Time Period Sync"
+          ]
+        },
+        {
+          "i": "market_surveillance/counterparty_network",
+          "x": 20,
+          "y": 7,
+          "w": 20,
+          "h": 18,
+          "groups": []
+        }
+      ]
+    },
+    "anomalies": {
+      "id": "anomalies",
+      "name": "Anomaly Detection",
+      "layout": [
+        {
+          "i": "market_surveillance/anomaly_detector",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 12,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "id"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "market_surveillance/compliance_ticker",
+          "x": 0,
+          "y": 14,
+          "w": 40,
+          "h": 9,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Time Period Sync",
+      "type": "param",
+      "paramName": "date_range",
+      "defaultValue": "7d",
+      "widgetIds": [
+        "market_surveillance/trade_volume_heatmap"
+      ]
+    }
+  ],
+  "prompts": [
+    "What anomalies have been detected in the last 24 hours?",
+    "Show me the largest counterparty exposures by sector",
+    "Which asset classes have the highest trade volumes today?",
+    "Are there any critical compliance alerts that need attention?",
+    "Analyze the network relationships between major dealers"
+  ]
+}

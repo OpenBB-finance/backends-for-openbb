@@ -1,0 +1,28 @@
+# DTCC OpenBB Dashboard System - Requirements
+# Core web framework and server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Data manipulation and analysis
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization and charting
+plotly>=5.17.0
+
+# HTTP client for external API calls (if needed for future enhancements)
+httpx>=0.25.0
+requests>=2.31.0
+
+# Additional utilities
+python-multipart>=0.0.6
+
+# Optional: For better performance and production deployment
+# gunicorn>=21.2.0  # Uncomment for production WSGI server
+# python-jose[cryptography]>=3.3.0  # Uncomment if adding authentication
+
+# Development and testing dependencies (optional)
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# black>=23.0.0  # Code formatting
+# flake8>=6.0.0  # Linting

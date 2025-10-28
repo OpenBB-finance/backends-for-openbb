@@ -1,0 +1,132 @@
+{
+  "name": "DTCC Fixed Income Markets",
+  "description": "Comprehensive treasury and repo market monitoring dashboard tracking trade volumes by tenor, repo rate spreads, settlement failures, dealer activity, and liquidity conditions across fixed income securities.",
+  "img": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "fixed_income/notes",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "treasury_market": {
+      "id": "treasury_market",
+      "name": "Treasury Market",
+      "layout": [
+        {
+          "i": "fixed_income/metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "fixed_income/treasury_volumes",
+          "x": 0,
+          "y": 18,
+          "w": 40,
+          "h": 15,
+          "state": {
+            "params": {
+              "time_period": "1Y",
+              "trading_venue": "Electronic"
+            }
+          },
+          "groups": [
+            "Time Period Sync"
+          ]
+        },
+        {
+          "i": "fixed_income/repo_spreads",
+          "x": 0,
+          "y": 7,
+          "w": 40,
+          "h": 11,
+          "groups": []
+        }
+      ]
+    },
+    "repo_market": {
+      "id": "repo_market",
+      "name": "Repo Market",
+      "layout": [
+        {
+          "i": "fixed_income/dealer_activity",
+          "x": 0,
+          "y": 2,
+          "w": 20,
+          "h": 13,
+          "state": {
+            "params": {
+              "dealer_tier": "Tier1"
+            },
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "groupedColumn",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": true,
+              "chartType": "groupedColumn"
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "fixed_income/liquidity_curve",
+          "x": 20,
+          "y": 2,
+          "w": 20,
+          "h": 13,
+          "groups": []
+        },
+        {
+          "i": "fixed_income/fails_to_deliver",
+          "x": 0,
+          "y": 15,
+          "w": 40,
+          "h": 12,
+          "state": {
+            "params": {
+              "maturity_range": "1-3Y"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "bar"
+            }
+          },
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Time Period Sync",
+      "type": "param",
+      "paramName": "period",
+      "defaultValue": "30d",
+      "widgetIds": [
+        "fixed_income/treasury_volumes"
+      ]
+    }
+  ],
+  "prompts": [
+    "What are the current repo rate spreads vs SOFR?",
+    "Show me treasury trading volumes by tenor for the last month",
+    "Which dealers are the most active in repo markets?",
+    "Are there any significant fails-to-deliver issues?",
+    "Analyze liquidity conditions across different collateral types"
+  ]
+}

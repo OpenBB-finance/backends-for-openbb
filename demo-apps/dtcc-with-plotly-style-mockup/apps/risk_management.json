@@ -1,0 +1,132 @@
+{
+  "name": "DTCC Risk Management",
+  "description": "Advanced risk management and stress testing dashboard featuring counterparty exposure analysis, collateral requirement forecasting, settlement risk monitoring, and comprehensive stress scenario modeling.",
+  "img": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "risk_management/notes",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "exposures": {
+      "id": "exposures",
+      "name": "Exposure Analysis",
+      "layout": [
+        {
+          "i": "risk_management/risk_metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "risk_management/exposure_treemap",
+          "x": 0,
+          "y": 7,
+          "w": 20,
+          "h": 19,
+          "state": {
+            "params": {
+              "exposure_type": "collateral"
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "risk_management/liquidity_heatmap",
+          "x": 20,
+          "y": 7,
+          "w": 20,
+          "h": 19,
+          "groups": []
+        }
+      ]
+    },
+    "stress_testing": {
+      "id": "stress_testing",
+      "name": "Stress Testing",
+      "layout": [
+        {
+          "i": "risk_management/collateral_forecast",
+          "x": 0,
+          "y": 12,
+          "w": 40,
+          "h": 9,
+          "groups": [
+            "Forecast Period Sync"
+          ]
+        },
+        {
+          "i": "risk_management/settlement_fails",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 10,
+          "groups": []
+        },
+        {
+          "i": "risk_management/stress_test_results",
+          "x": 0,
+          "y": 21,
+          "w": 40,
+          "h": 14,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "column"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "scenario"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Exposure Type Sync",
+      "type": "param",
+      "paramName": "exposure_type",
+      "defaultValue": "gross",
+      "widgetIds": [
+        "risk_management/exposure_treemap"
+      ]
+    },
+    {
+      "name": "Forecast Period Sync",
+      "type": "param",
+      "paramName": "forecast_days",
+      "defaultValue": 30,
+      "widgetIds": [
+        "risk_management/collateral_forecast"
+      ]
+    }
+  ],
+  "prompts": [
+    "What is our current overall risk exposure?",
+    "Run a 2008-style stress test scenario",
+    "Show me collateral requirements for the next 90 days",
+    "Which counterparties have the highest concentration risk?",
+    "Analyze settlement fails by asset class this week"
+  ]
+}

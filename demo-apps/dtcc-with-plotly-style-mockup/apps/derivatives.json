@@ -1,0 +1,135 @@
+{
+  "name": "DTCC Derivatives Analytics",
+  "description": "Advanced derivatives market analysis dashboard providing insights into swap notionals, CDS spreads, volatility surfaces, net positions, and counterparty networks across OTC derivatives markets.",
+  "img": "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400&h=300&fit=crop",
+  "allowCustomization": true,
+  "tabs": {
+    "notes": {
+      "id": "notes",
+      "name": "Notes",
+      "layout": [
+        {
+          "i": "derivatives/notes",
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 30,
+          "groups": []
+        }
+      ]
+    },
+    "swaps_credit": {
+      "id": "swaps_credit",
+      "name": "Swaps & Credit",
+      "layout": [
+        {
+          "i": "derivatives/metrics",
+          "x": 0,
+          "y": 2,
+          "w": 40,
+          "h": 5,
+          "groups": []
+        },
+        {
+          "i": "derivatives/swap_notionals",
+          "x": 0,
+          "y": 18,
+          "w": 40,
+          "h": 13,
+          "state": {
+            "params": {
+              "currency_pairs": "All",
+              "notional_threshold": "10",
+              "include_compression": "false"
+            },
+            "chartModel": {
+              "modelType": "range",
+              "chartType": "heatmap",
+              "chartOptions": {},
+              "suppressChartRanges": true
+            },
+            "chartView": {
+              "enabled": true,
+              "chartType": "heatmap"
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "derivatives/cds_spreads",
+          "x": 0,
+          "y": 7,
+          "w": 40,
+          "h": 11,
+          "groups": [
+            "CDS View Sync"
+          ]
+        }
+      ]
+    },
+    "risk_positions": {
+      "id": "risk_positions",
+      "name": "Risk & Positions",
+      "layout": [
+        {
+          "i": "derivatives/volatility_surface",
+          "x": 0,
+          "y": 2,
+          "w": 20,
+          "h": 13,
+          "groups": []
+        },
+        {
+          "i": "derivatives/net_positions",
+          "x": 20,
+          "y": 2,
+          "w": 20,
+          "h": 13,
+          "state": {
+            "chartView": {
+              "enabled": false,
+              "chartType": "groupedColumn"
+            },
+            "columnState": {
+              "default": {
+                "columnPinning": {
+                  "leftColIds": [
+                    "asset_class"
+                  ],
+                  "rightColIds": []
+                }
+              }
+            }
+          },
+          "groups": []
+        },
+        {
+          "i": "derivatives/counterparty_network",
+          "x": 0,
+          "y": 15,
+          "w": 40,
+          "h": 16,
+          "groups": []
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "CDS View Sync",
+      "type": "param",
+      "paramName": "view",
+      "defaultValue": "indices",
+      "widgetIds": [
+        "derivatives/cds_spreads"
+      ]
+    }
+  ],
+  "prompts": [
+    "What are the current CDS spreads for major indices?",
+    "Show me the implied volatility surface for equity options",
+    "Analyze swap notionals by currency and tenor",
+    "Which asset classes have the largest net open positions?",
+    "Map the derivatives exposure network between major dealers"
+  ]
+}
