@@ -22,14 +22,6 @@
         "description": "Enter an Ethereum address (0x...)",
         "optional": false,
         "show": true
-      },
-      {
-        "paramName": "api_key",
-        "value": "",
-        "label": "API Key",
-        "type": "text",
-        "description": "Etherscan API key (optional, uses env if not provided)",
-        "show": false
       }
     ]
   },
@@ -130,7 +122,7 @@
         "type": "text",
         "description": "Ethereum address to fetch transactions",
         "optional": false,
-        "show": true
+        "show": false
       },
       {
         "paramName": "limit",
@@ -140,14 +132,6 @@
         "description": "Number of transactions to fetch",
         "optional": true,
         "show": true
-      },
-      {
-        "paramName": "api_key",
-        "value": "",
-        "label": "API Key",
-        "type": "text",
-        "description": "Etherscan API key",
-        "show": false
       }
     ]
   },
@@ -235,7 +219,7 @@
         "type": "text",
         "description": "Ethereum address to fetch token transfers",
         "optional": false,
-        "show": true
+        "show": false
       },
       {
         "paramName": "limit",
@@ -245,14 +229,6 @@
         "description": "Number of transfers to fetch",
         "optional": true,
         "show": true
-      },
-      {
-        "paramName": "api_key",
-        "value": "",
-        "label": "API Key",
-        "type": "text",
-        "description": "Etherscan API key",
-        "show": false
       }
     ]
   },
@@ -318,14 +294,6 @@
         "type": "text",
         "description": "Ethereum address to calculate token balances",
         "optional": false,
-        "show": true
-      },
-      {
-        "paramName": "api_key",
-        "value": "",
-        "label": "API Key",
-        "type": "text",
-        "description": "Etherscan API key",
         "show": false
       }
     ]

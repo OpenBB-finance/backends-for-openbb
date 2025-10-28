@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
@@ -74,7 +74,7 @@ def get_apps():
 
 
 @app.get("/address_info")
-def address_info(address: str = "", api_key: str = ""):
+def address_info(request: Request, address: str = ""):
     """Validate address and show basic information.
     
     Args:
@@ -116,8 +116,8 @@ The address you entered is not a valid Ethereum address.
 *Please enter a valid Ethereum address.*"""
     
     # Get API key from parameter or environment
-    if not api_key:
-        api_key = os.getenv('ETHERSCAN_API_KEY')
+    # Get API key from custom header or environment
+    api_key = request.headers.get('X-ETHERSCAN-API-KEY') or os.getenv('ETHERSCAN_API_KEY')
     
     # For testing, we'll proceed without API key but warn about rate limits
     if not api_key:
@@ -184,7 +184,9 @@ Your Etherscan API key is invalid.
 1. Visit [Etherscan API Keys](https://etherscan.io/apis)
 2. Sign up for a free account
 3. Generate a new API key
-4. Update your `.env` file: `ETHERSCAN_API_KEY=your_new_key`
+4. Either:
+   - Add to `.env` file: `ETHERSCAN_API_KEY=your_new_key`
+   - Or configure OpenBB Workspace with header: `X-ETHERSCAN-API-KEY`
 
 **Current key (first 10 chars):** `{api_key[:10]}...`
 
@@ -227,45 +229,9 @@ Failed to connect to Etherscan API.
 *Unable to fetch address data.*"""
 
 
-@app.get("/eth_balance")
-def eth_balance(address: str = "", api_key: str = ""):
-    """Get ETH balance for an address.
-    
-    Returns a single metric value.
-    """
-    if not address or not validate_eth_address(address):
-        return {"value": "N/A", "label": "ETH Balance"}
-    
-    if not api_key:
-        api_key = os.getenv('ETHERSCAN_API_KEY')
-    
-    if not api_key:
-        return {"value": "No API Key", "label": "ETH Balance"}
-    
-    try:
-        params = {
-            "chainid": "1",
-            "module": "account",
-            "action": "balance",
-            "address": address,
-            "tag": "latest",
-            "apikey": api_key
-        }
-        response = requests.get(ETHERSCAN_API_URL, params=params, timeout=10)
-        data = response.json()
-        
-        if data.get("status") == "1":
-            balance_wei = data.get("result", "0")
-            balance_eth = wei_to_eth(balance_wei)
-            return {"value": f"{balance_eth:.4f}", "label": "ETH Balance"}
-        
-        return {"value": "Error", "label": "ETH Balance"}
-        
-    except Exception:
-        return {"value": "Error", "label": "ETH Balance"}
 
 @app.get("/transactions")
-def transactions(address: str = "", limit: int = 100, api_key: str = ""):
+def transactions(request: Request, address: str = "", limit: int = 100):
     """Get normal transactions for an address.
     
     Returns transaction data as a table.
@@ -273,11 +239,14 @@ def transactions(address: str = "", limit: int = 100, api_key: str = ""):
     if not address or not validate_eth_address(address):
         return []
     
-    if not api_key:
-        api_key = os.getenv('ETHERSCAN_API_KEY')
+    # Get API key from custom header or environment
+    api_key = request.headers.get('X-ETHERSCAN-API-KEY') or os.getenv('ETHERSCAN_API_KEY')
     
     if not api_key:
-        raise HTTPException(status_code=400, detail="API key required")
+        raise HTTPException(
+            status_code=401, 
+            detail="Etherscan API key required. Add 'X-ETHERSCAN-API-KEY' header or set ETHERSCAN_API_KEY environment variable."
+        )
     
     try:
         params = {
@@ -324,7 +293,7 @@ def transactions(address: str = "", limit: int = 100, api_key: str = ""):
         return []
 
 @app.get("/token_transfers")
-def token_transfers(address: str = "", limit: int = 100, api_key: str = ""):
+def token_transfers(request: Request, address: str = "", limit: int = 100):
     """Get ERC-20 token transfers for an address.
     
     Returns token transfer data as a table.
@@ -332,11 +301,14 @@ def token_transfers(address: str = "", limit: int = 100, api_key: str = ""):
     if not address or not validate_eth_address(address):
         return []
     
-    if not api_key:
-        api_key = os.getenv('ETHERSCAN_API_KEY')
+    # Get API key from custom header or environment
+    api_key = request.headers.get('X-ETHERSCAN-API-KEY') or os.getenv('ETHERSCAN_API_KEY')
     
     if not api_key:
-        raise HTTPException(status_code=400, detail="API key required")
+        raise HTTPException(
+            status_code=401, 
+            detail="Etherscan API key required. Add 'X-ETHERSCAN-API-KEY' header or set ETHERSCAN_API_KEY environment variable."
+        )
     
     try:
         params = {
@@ -385,7 +357,7 @@ def token_transfers(address: str = "", limit: int = 100, api_key: str = ""):
         return []
 
 @app.get("/token_balances")
-def token_balances(address: str = "", api_key: str = ""):
+def token_balances(request: Request, address: str = ""):
     """Get current token balances by analyzing token transfers.
     
     Returns aggregated token balance data.
@@ -393,11 +365,14 @@ def token_balances(address: str = "", api_key: str = ""):
     if not address or not validate_eth_address(address):
         return []
     
-    if not api_key:
-        api_key = os.getenv('ETHERSCAN_API_KEY')
+    # Get API key from custom header or environment
+    api_key = request.headers.get('X-ETHERSCAN-API-KEY') or os.getenv('ETHERSCAN_API_KEY')
     
     if not api_key:
-        raise HTTPException(status_code=400, detail="API key required")
+        raise HTTPException(
+            status_code=401, 
+            detail="Etherscan API key required. Add 'X-ETHERSCAN-API-KEY' header or set ETHERSCAN_API_KEY environment variable."
+        )
     
     try:
         # Get all token transfers to calculate balances

@@ -25,9 +25,15 @@ An Ethereum portfolio analysis app that uses the Etherscan API to provide compre
    pip install -r requirements.txt
    ```
 
-2. **Configure API Key**:
+2. **Configure API Key (Choose one method)**:
+   
+   **Method A - Environment Variable:**
    - Obtain a free API key from [Etherscan.io](https://etherscan.io/apis)
    - Add it to the `.env` file: `ETHERSCAN_API_KEY=your_key_here`
+   
+   **Method B - Authentication Header:**
+   - Get your API key from [Etherscan.io](https://etherscan.io/apis)
+   - Configure OpenBB Workspace with custom header: `X-ETHERSCAN-API-KEY: your_key_here`
 
 3. **Run the Application**:
    ```bash
@@ -115,3 +121,12 @@ This app uses **Etherscan API V2** endpoints:
 - **Token Transfers**: `/v2/api?chainid=1&module=account&action=tokentx` - Get ERC-20 transfers
 
 All endpoints include `chainid=1` for Ethereum mainnet and return data formatted for OpenBB Workspace widgets.
+
+## Authentication
+
+The app supports two authentication methods:
+
+1. **Environment Variable**: Set `ETHERSCAN_API_KEY` in your `.env` file
+2. **Custom Header**: Send API key via `X-ETHERSCAN-API-KEY` header
+
+The app will check for the header first, then fall back to the environment variable. This allows flexible deployment where OpenBB Workspace can manage the API key via headers.

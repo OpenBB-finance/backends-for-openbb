@@ -22,7 +22,76 @@
             }
           },
           "groups": [
-            "Address Group"
+            "Group 1"
+          ]
+        },
+        {
+          "i": "transactions",
+          "x": 0,
+          "y": 20,
+          "w": 40,
+          "h": 8,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            },
+            "columnState": {
+              "default": {
+                "sort": {
+                  "sortModel": [
+                    {
+                      "colId": "Date",
+                      "sort": "desc"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "groups": [
+            "Group 1"
+          ]
+        },
+        {
+          "i": "token_transfers",
+          "x": 0,
+          "y": 28,
+          "w": 40,
+          "h": 9,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": [
+            "Group 1"
+          ]
+        },
+        {
+          "i": "transactions",
+          "x": 0,
+          "y": 37,
+          "w": 40,
+          "h": 8,
+          "state": {
+            "params": {
+              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "chartView": {
+              "enabled": false,
+              "chartType": "line"
+            }
+          },
+          "groups": [
+            "Group 1"
           ]
         },
         {
@@ -44,48 +113,22 @@
             "chartView": {
               "enabled": false,
               "chartType": "pie"
-            }
-          },
-          "groups": [
-            "Address Group"
-          ]
-        },
-        {
-          "i": "transactions",
-          "x": 0,
-          "y": 20,
-          "w": 40,
-          "h": 8,
-          "state": {
-            "params": {
-              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
             },
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
+            "columnState": {
+              "default": {
+                "sort": {
+                  "sortModel": [
+                    {
+                      "colId": "Balance",
+                      "sort": "desc"
+                    }
+                  ]
+                }
+              }
             }
           },
           "groups": [
-            "Address Group"
-          ]
-        },
-        {
-          "i": "token_transfers",
-          "x": 0,
-          "y": 28,
-          "w": 40,
-          "h": 9,
-          "state": {
-            "params": {
-              "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-            },
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
-            }
-          },
-          "groups": [
-            "Address Group"
+            "Group 1"
           ]
         }
       ]
@@ -93,7 +136,7 @@
   },
   "groups": [
     {
-      "name": "Address Group",
+      "name": "Group 1",
       "type": "param",
       "paramName": "address",
       "defaultValue": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
