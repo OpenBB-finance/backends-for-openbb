@@ -1,0 +1,868 @@
+[
+    {
+        "name": "Financial Datasets",
+        "img": "https://financialdatasets.ai/og-image.png",
+        "img_dark": "",
+        "img_light": "",
+        "description": "Developer-friendly stock market API.",
+        "allowCustomization": true,
+        "tabs": {
+          "overview": {
+            "id": "overview",
+            "name": "Overview",
+            "layout": [
+              {
+                "i": "company_facts",
+                "x": 0,
+                "y": 2,
+                "w": 13,
+                "h": 21,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "fact",
+                          "value"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "stock_news",
+                "x": 13,
+                "y": 2,
+                "w": 27,
+                "h": 21,
+                "state": {
+                  "params": {
+                    "limit": "20"
+                  },
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "date"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "title",
+                          "author",
+                          "date",
+                          "sentiment",
+                          "url",
+                          "source"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "stock_prices_historical",
+                "x": 0,
+                "y": 23,
+                "w": 40,
+                "h": 14,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "time"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "open",
+                          "close",
+                          "high",
+                          "low",
+                          "volume",
+                          "time"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "financials": {
+            "id": "financials",
+            "name": "Financials",
+            "layout": [
+              {
+                "i": "balance",
+                "x": 0,
+                "y": 23,
+                "w": 40,
+                "h": 20,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "metric",
+                          "2025-01-26",
+                          "2024-01-28",
+                          "2023-01-29",
+                          "2022-01-30",
+                          "2021-01-31",
+                          "2020-01-26",
+                          "2019-01-27",
+                          "2018-01-28",
+                          "2017-01-29",
+                          "2016-01-31"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "cash_flow",
+                "x": 0,
+                "y": 43,
+                "w": 40,
+                "h": 18,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "metric",
+                          "2025-01-26",
+                          "2024-01-28",
+                          "2023-01-29",
+                          "2022-01-30",
+                          "2021-01-31",
+                          "2020-01-26",
+                          "2019-01-27",
+                          "2018-01-28",
+                          "2017-01-29",
+                          "2016-01-31"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "income",
+                "x": 0,
+                "y": 61,
+                "w": 40,
+                "h": 20,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "metric",
+                          "2025-01-26",
+                          "2024-01-28",
+                          "2023-01-29",
+                          "2022-01-30",
+                          "2021-01-31",
+                          "2020-01-26",
+                          "2019-01-27",
+                          "2018-01-28",
+                          "2017-01-29",
+                          "2016-01-31"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "financial_metrics",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 21,
+                "state": {
+                  "chartModel": {
+                    "modelType": "range",
+                    "chartType": "groupedColumn",
+                    "chartOptions": {
+                      "theme": {
+                        "baseTheme": "ag-default-dark",
+                        "overrides": {
+                          "pie": {
+                            "series": {
+                              "calloutLabel": {},
+                              "sectorLabel": {
+                                "enabled": true
+                              }
+                            }
+                          },
+                          "donut": {
+                            "series": {
+                              "calloutLabel": {},
+                              "sectorLabel": {
+                                "enabled": true
+                              }
+                            }
+                          },
+                          "scatter": {
+                            "axes": {
+                              "number": {
+                                "title": {
+                                  "fontSize": 11,
+                                  "spacing": 10,
+                                  "enabled": true,
+                                  "text": ""
+                                }
+                              }
+                            }
+                          },
+                          "common": {
+                            "axes": {
+                              "number": {
+                                "label": {}
+                              },
+                              "angle-number": {
+                                "label": {}
+                              },
+                              "radius-number": {
+                                "label": {}
+                              }
+                            },
+                            "padding": {
+                              "top": 20,
+                              "bottom": 5,
+                              "left": 20,
+                              "right": 40
+                            },
+                            "background": {
+                              "visible": false
+                            },
+                            "zoom": {
+                              "enabled": true,
+                              "anchorPointX": "pointer",
+                              "anchorPointY": "pointer",
+                              "minVisibleItems": 4,
+                              "autoScaling": {
+                                "enabled": true
+                              }
+                            },
+                            "legend": {
+                              "position": "top",
+                              "maxHeight": 50,
+                              "spacing": 20,
+                              "item": {
+                                "paddingX": 32,
+                                "paddingY": 8,
+                                "marker": {
+                                  "shape": "square",
+                                  "padding": 5,
+                                  "size": 11
+                                },
+                                "label": {
+                                  "color": "#fff",
+                                  "fontSize": 11
+                                }
+                              }
+                            },
+                            "title": {
+                              "fontSize": 12
+                            }
+                          }
+                        }
+                      },
+                      "common": {
+                        "axes": {
+                          "category": {
+                            "type": "category",
+                            "label": {
+                              "avoidCollisions": true,
+                              "fontSize": 11,
+                              "minSpacing": 5,
+                              "autoRotate": true
+                            },
+                            "position": "bottom"
+                          },
+                          "radius-category": {
+                            "type": "category",
+                            "label": {
+                              "avoidCollisions": true,
+                              "fontSize": 11,
+                              "minSpacing": 5
+                            }
+                          },
+                          "angle-category": {
+                            "type": "category",
+                            "label": {
+                              "avoidCollisions": true,
+                              "fontSize": 11,
+                              "minSpacing": 5
+                            }
+                          },
+                          "grouped-category": {
+                            "type": "category",
+                            "label": {
+                              "avoidCollisions": true,
+                              "fontSize": 11,
+                              "minSpacing": 5
+                            }
+                          },
+                          "number": {
+                            "type": "number",
+                            "position": "left",
+                            "crosshair": {
+                              "label": {}
+                            },
+                            "label": {
+                              "fontSize": 11,
+                              "autoRotate": false,
+                              "avoidCollisions": true
+                            }
+                          },
+                          "time": {
+                            "type": "time",
+                            "position": "bottom",
+                            "label": {
+                              "avoidCollisions": true,
+                              "fontSize": 11,
+                              "rotation": 0
+                            }
+                          }
+                        },
+                        "legend": {
+                          "position": "top",
+                          "maxHeight": 50,
+                          "spacing": 20,
+                          "item": {
+                            "paddingX": 32,
+                            "paddingY": 8,
+                            "marker": {
+                              "shape": "square",
+                              "padding": 5,
+                              "size": 11
+                            },
+                            "label": {
+                              "color": "#fff",
+                              "fontSize": 11
+                            }
+                          }
+                        }
+                      },
+                      "line": {
+                        "series": {
+                          "marker": {
+                            "enabled": false
+                          },
+                          "connectMissingData": true,
+                          "label": {
+                            "enabled": false
+                          },
+                          "tooltip": {
+                            "enabled": true
+                          }
+                        }
+                      },
+                      "pie": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "calloutLabel": {
+                            "enabled": true
+                          },
+                          "sectorLabel": {
+                            "enabled": true
+                          }
+                        }
+                      },
+                      "donut": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "calloutLabel": {
+                            "enabled": true
+                          },
+                          "sectorLabel": {
+                            "enabled": true
+                          }
+                        }
+                      },
+                      "area": {
+                        "series": {
+                          "marker": {
+                            "enabled": false
+                          },
+                          "label": {
+                            "enabled": false
+                          },
+                          "tooltip": {
+                            "enabled": true
+                          }
+                        }
+                      },
+                      "bubble": {
+                        "series": {
+                          "marker": {
+                            "enabled": false
+                          },
+                          "label": {
+                            "enabled": false
+                          },
+                          "tooltip": {
+                            "enabled": true
+                          }
+                        }
+                      },
+                      "histogram": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      },
+                      "bar": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false,
+                            "placement": "outside-end"
+                          }
+                        }
+                      },
+                      "scatter": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false,
+                            "placement": "top"
+                          }
+                        }
+                      },
+                      "treemap": {
+                        "series": {
+                          "group": {
+                            "label": {
+                              "enabled": true
+                            }
+                          },
+                          "tile": {
+                            "label": {
+                              "enabled": true
+                            }
+                          },
+                          "tooltip": {
+                            "enabled": true
+                          }
+                        },
+                        "padding": {
+                          "bottom": 10
+                        }
+                      },
+                      "sunburst": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true,
+                            "position": {
+                              "type": "pointer"
+                            },
+                            "interaction": {
+                              "enabled": true
+                            }
+                          },
+                          "label": {
+                            "enabled": true
+                          }
+                        },
+                        "padding": {
+                          "bottom": 10
+                        }
+                      },
+                      "heatmap": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": true
+                          }
+                        },
+                        "padding": {
+                          "bottom": 10
+                        }
+                      },
+                      "waterfall": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false,
+                            "placement": "inside"
+                          }
+                        }
+                      },
+                      "radar-line": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      },
+                      "radar-area": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      },
+                      "radial-bar": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      },
+                      "radial-column": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      },
+                      "nightingale": {
+                        "series": {
+                          "tooltip": {
+                            "enabled": true
+                          },
+                          "label": {
+                            "enabled": false
+                          }
+                        }
+                      }
+                    },
+                    "cellRange": {
+                      "columns": [
+                        "metric",
+                        "2024-06-30",
+                        "2023-06-30",
+                        "2022-06-30",
+                        "2021-06-30",
+                        "2020-06-30",
+                        "2019-06-30",
+                        "2018-06-30",
+                        "2017-06-30",
+                        "2016-06-30",
+                        "2015-06-30"
+                      ]
+                    },
+                    "suppressChartRanges": true
+                  },
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "groupedColumn"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "metric",
+                          "2025-01-26",
+                          "2024-01-28",
+                          "2023-01-29",
+                          "2022-01-30",
+                          "2021-01-31",
+                          "2020-01-26",
+                          "2019-01-27",
+                          "2018-01-28",
+                          "2017-01-29",
+                          "2016-01-31"
+                        ]
+                      },
+                      "focusedCell": {
+                        "colId": "metric",
+                        "rowIndex": 0,
+                        "rowPinned": null
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "insider-trades": {
+            "id": "insider-trades",
+            "name": "Insider Trades",
+            "layout": [
+              {
+                "i": "insider_trades",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 24,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "transaction_date"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "issuer",
+                          "name",
+                          "title",
+                          "is_board_director",
+                          "transaction_date",
+                          "transaction_shares",
+                          "transaction_price_per_share",
+                          "transaction_value",
+                          "shares_owned_before_transaction",
+                          "shares_owned_after_transaction",
+                          "security_title"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "press-releases": {
+            "id": "press-releases",
+            "name": "Press Releases",
+            "layout": [
+              {
+                "i": "earnings_press_releases",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 20
+              }
+            ]
+          },
+          "institutional-ownership": {
+            "id": "institutional-ownership",
+            "name": "Institutional Ownership",
+            "layout": [
+              {
+                "i": "institutional_ownership_by_investor",
+                "x": 0,
+                "y": 21,
+                "w": 40,
+                "h": 15,
+                "state": {
+                  "chartModel": {
+                    "modelType": "range",
+                    "chartType": "line",
+                    "chartOptions": {},
+                    "cellRange": {
+                      "columns": [
+                        "ticker",
+                        "price",
+                        "shares",
+                        "market_value"
+                      ]
+                    },
+                    "suppressChartRanges": true
+                  },
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "ticker"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "ticker",
+                          "report_period",
+                          "price",
+                          "shares",
+                          "market_value"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "i": "institutional_ownership_by_ticker",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 19,
+                "state": {
+                  "chartModel": {
+                    "modelType": "range",
+                    "chartType": "stackedLine",
+                    "chartOptions": {
+                      "line": {
+                        "legend": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "cellRange": {
+                      "columns": [
+                        "investor",
+                        "price"
+                      ]
+                    },
+                    "suppressChartRanges": true
+                  },
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "stackedLine"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnPinning": {
+                        "leftColIds": [
+                          "investor"
+                        ],
+                        "rightColIds": []
+                      },
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "investor",
+                          "report_period",
+                          "price",
+                          "shares",
+                          "market_value"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "crypto": {
+            "id": "crypto",
+            "name": "Crypto",
+            "layout": [
+              {
+                "i": "crypto_prices",
+                "x": 0,
+                "y": 2,
+                "w": 40,
+                "h": 20,
+                "state": {
+                  "chartView": {
+                    "enabled": false,
+                    "chartType": "line"
+                  },
+                  "columnState": {
+                    "default": {
+                      "columnOrder": {
+                        "orderedColIds": [
+                          "open",
+                          "close",
+                          "high",
+                          "low",
+                          "volume",
+                          "time"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "groups": [
+          {
+            "name": "Group 1",
+            "type": "endpointParam",
+            "paramName": "ticker",
+            "defaultValue": "NVDA",
+            "widgetIds": [
+              "company_facts",
+              "stock_news",
+              "stock_prices_historical",
+              "balance",
+              "cash_flow",
+              "income",
+              "financial_metrics",
+              "insider_trades",
+              "institutional_ownership_by_ticker",
+              "earnings_press_releases"
+            ]
+          },
+          {
+            "name": "Group 2",
+            "type": "param",
+            "paramName": "period",
+            "defaultValue": "annual",
+            "widgetIds": [
+              "balance",
+              "cash_flow",
+              "income",
+              "financial_metrics"
+            ]
+          }
+        ]
+      }
+]

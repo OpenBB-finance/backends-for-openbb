@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "openbb-financialdatasets-backend"
+version = "0.1.0"
+description = ""
+authors = ["DidierRLopes <dro.lopes@campus.fct.unl.pt>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.32.3"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
