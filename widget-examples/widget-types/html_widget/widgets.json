@@ -1,7 +1,7 @@
 {
   "html_binance_ohlc": {
     "name": "BinanceUS OHLC",
-    "description": "Displays OHLC for a given symbol",
+    "description": "Displays OHLC for a given symbol with real-time updates",
     "category": "Crypto",
     "type": "html",
     "endpoint": "html_binance_ohlc",
@@ -9,6 +9,19 @@
       "w": 20,
       "h": 9
     },
-    "source": "BinanceUS"
+    "source": "BinanceUS",
+    "raw": true,
+    "params": {
+      "symbol": {
+        "label": "Symbol",
+        "type": "text",
+        "value": "BTCUSDT"
+      },
+      "interval": {
+        "label": "Interval",
+        "type": "text",
+        "value": "1h"
+      }
+    }
   }
 }
