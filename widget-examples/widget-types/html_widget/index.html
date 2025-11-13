@@ -64,6 +64,7 @@
         // These values are injected server-side
         const symbol = '{{SYMBOL}}';
         const interval = '{{INTERVAL}}';
+        const exchange = '{{EXCHANGE}}';
         const theme = '{{THEME}}';
 
         // Theme colors
@@ -93,7 +94,8 @@
         document.body.style.color = currentTheme.textColor;
 
         // Update info display
-        document.getElementById('info').textContent = `${symbol} - ${interval}`;
+        const exchangeLabel = exchange === 'binancef' ? 'Binance Futures' : 'BinanceUS';
+        document.getElementById('info').textContent = `${exchangeLabel} - ${symbol} - ${interval}`;
 
         // Create chart with theme
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
@@ -131,7 +133,7 @@
 
         function connectWebSocket() {
             // Hardcoded backend URL for development
-            const wsUrl = `ws://localhost:8000/ws/binance?symbol=${symbol}&interval=${interval}`;
+            const wsUrl = `ws://localhost:8000/ws/binance?symbol=${symbol}&interval=${interval}&exchange=${exchange}`;
 
             document.getElementById('status').textContent = 'Connecting...';
             document.getElementById('status').className = 'loading';

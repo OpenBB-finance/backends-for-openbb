@@ -43,11 +43,27 @@ def get_widgets():
     )
 
 
-async def fetch_binance_historical_data(symbol: str, interval: str) -> list:
+def get_exchange_config(exchange: str) -> dict:
+    """Get exchange-specific configuration"""
+    configs = {
+        "BinanceUS": {
+            "rest_url": "https://api.binance.us/api/v3/klines",
+            "ws_url": "wss://stream.binance.us:9443/ws"
+        },
+        "binancef": {
+            "rest_url": "https://fapi.binance.com/fapi/v1/klines",
+            "ws_url": "wss://fstream.binance.com/ws"
+        } # this one isnt gonna work on US IPs
+    }
+    return configs.get(exchange, configs["BinanceUS"])
+
+
+async def fetch_binance_historical_data(symbol: str, interval: str, exchange: str = "BinanceUS") -> list:
     """Fetch historical OHLC data from Binance"""
     try:
+        config = get_exchange_config(exchange)
         response = requests.get(
-            f"https://api.binance.us/api/v3/klines",
+            config["rest_url"],
             params={"symbol": symbol, "interval": interval, "limit": 1000}
         )
 
@@ -71,14 +87,15 @@ async def fetch_binance_historical_data(symbol: str, interval: str) -> list:
         return []
 
 
-async def connect_to_binance_websocket(symbol: str, interval: str, stream_key: str):
+async def connect_to_binance_websocket(symbol: str, interval: str, exchange: str, stream_key: str):
     """Connect to Binance WebSocket and broadcast to connected clients"""
-    ws_url = f"wss://stream.binance.us:9443/ws/{symbol.lower()}@kline_{interval}"
+    config = get_exchange_config(exchange)
+    ws_url = f"{config['ws_url']}/{symbol.lower()}@kline_{interval}"
 
     while True:
         try:
             async with websockets.connect(ws_url) as binance_ws:
-                print(f"Connected to Binance WebSocket: {stream_key}")
+                print(f"Connected to {exchange} WebSocket: {stream_key}")
 
                 async for message in binance_ws:
                     data = json.loads(message)
@@ -112,24 +129,29 @@ async def connect_to_binance_websocket(symbol: str, interval: str, stream_key: s
 
 
 @app.websocket("/ws/binance")
-async def websocket_endpoint(websocket: WebSocket, symbol: str = "BTCUSDT", interval: str = "1h"):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    symbol: str = "BTCUSDT",
+    interval: str = "1h",
+    exchange: str = "BinanceUS"
+):
     """WebSocket endpoint for clients to receive real-time data"""
     await websocket.accept()
 
-    stream_key = f"{symbol}_{interval}"
+    stream_key = f"{exchange}_{symbol}_{interval}"
 
     # Add connection to active connections
     if stream_key not in active_connections:
         active_connections[stream_key] = set()
         # Start background task to connect to Binance if not already running
-        asyncio.create_task(connect_to_binance_websocket(symbol, interval, stream_key))
+        asyncio.create_task(connect_to_binance_websocket(symbol, interval, exchange, stream_key))
 
     active_connections[stream_key].add(websocket)
 
     try:
         # Send historical data first
         if stream_key not in historical_data_cache:
-            historical_data_cache[stream_key] = await fetch_binance_historical_data(symbol, interval)
+            historical_data_cache[stream_key] = await fetch_binance_historical_data(symbol, interval, exchange)
 
         await websocket.send_json({
             "type": "historical",
@@ -149,6 +171,7 @@ async def websocket_endpoint(websocket: WebSocket, symbol: str = "BTCUSDT", inte
 async def html_binance_ohlc(
     symbol: str = "BTCUSDT",
     interval: str = "1h",
+    exchange: str = "BinanceUS",
     raw: bool = False,
     theme: str = "dark"
 ):
@@ -156,9 +179,9 @@ async def html_binance_ohlc(
 
     # If raw=true, return the historical data as JSON for AI
     if raw:
-        stream_key = f"{symbol}_{interval}"
+        stream_key = f"{exchange}_{symbol}_{interval}"
         if stream_key not in historical_data_cache:
-            historical_data_cache[stream_key] = await fetch_binance_historical_data(symbol, interval)
+            historical_data_cache[stream_key] = await fetch_binance_historical_data(symbol, interval, exchange)
         return historical_data_cache[stream_key]
 
     # Otherwise, return themed HTML with injected parameters
@@ -167,6 +190,7 @@ async def html_binance_ohlc(
     # Inject the parameters into the HTML
     html_content = html_content.replace("{{SYMBOL}}", symbol)
     html_content = html_content.replace("{{INTERVAL}}", interval)
+    html_content = html_content.replace("{{EXCHANGE}}", exchange)
     html_content = html_content.replace("{{THEME}}", theme)
 
     return HTMLResponse(content=html_content)
