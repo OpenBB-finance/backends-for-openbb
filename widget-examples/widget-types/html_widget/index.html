@@ -61,11 +61,10 @@
     <div id="chart"></div>
 
     <script>
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const symbol = urlParams.get('symbol') || 'BTCUSDT';
-        const interval = urlParams.get('interval') || '1h';
-        const theme = urlParams.get('theme') || 'dark';
+        // These values are injected server-side
+        const symbol = '{{SYMBOL}}';
+        const interval = '{{INTERVAL}}';
+        const theme = '{{THEME}}';
 
         // Theme colors
         const themes = {
@@ -131,10 +130,8 @@
         let reconnectTimeout;
 
         function connectWebSocket() {
-            // Get the backend URL - assume it's the same origin as this page was loaded from
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const host = window.location.host;
-            const wsUrl = `${protocol}//${host}/ws/binance?symbol=${symbol}&interval=${interval}`;
+            // Hardcoded backend URL for development
+            const wsUrl = `ws://localhost:8000/ws/binance?symbol=${symbol}&interval=${interval}`;
 
             document.getElementById('status').textContent = 'Connecting...';
             document.getElementById('status').className = 'loading';

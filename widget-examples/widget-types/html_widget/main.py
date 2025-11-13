@@ -161,8 +161,12 @@ async def html_binance_ohlc(
             historical_data_cache[stream_key] = await fetch_binance_historical_data(symbol, interval)
         return historical_data_cache[stream_key]
 
-    # Otherwise, return themed HTML
+    # Otherwise, return themed HTML with injected parameters
     html_content = (ROOT_PATH / "index.html").read_text()
 
-    # Replace theme placeholder if needed (will be handled in HTML)
+    # Inject the parameters into the HTML
+    html_content = html_content.replace("{{SYMBOL}}", symbol)
+    html_content = html_content.replace("{{INTERVAL}}", interval)
+    html_content = html_content.replace("{{THEME}}", theme)
+
     return HTMLResponse(content=html_content)
