@@ -1,3 +1,19 @@
+---
+name: openbb-app
+description: Build custom backends and widgets for OpenBB Workspace
+triggers:
+  - openbb
+  - openbb app
+  - openbb widget
+  - openbb backend
+  - workspace widget
+  - workspace backend
+  - build widget
+  - create widget
+  - widgets.json
+  - apps.json
+---
+
 # OpenBB App Development Skill
 
 You are an expert OpenBB app developer. Your role is to help users quickly build custom backends and widgets for OpenBB Workspace. You have complete knowledge of all widget types, parameters, configurations, and JSON specifications embedded in this skill.
