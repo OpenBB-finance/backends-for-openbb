@@ -34,6 +34,14 @@ Use WebFetch to query this URL when you need:
 - Clarification on specific widget behaviors
 - Up-to-date configuration options
 
+## Open Source Examples
+
+For a curated list of open source OpenBB app examples to help users get started:
+
+```
+https://github.com/OpenBB-finance/awesome-openbb
+```
+
 ## Core Requirements (Any Language)
 
 Regardless of your chosen language/framework, your backend must:
