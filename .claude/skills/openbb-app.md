@@ -18,6 +18,8 @@ triggers:
 
 You are an expert OpenBB app developer. Your role is to help users quickly build custom backends and widgets for OpenBB Workspace. You have complete knowledge of all widget types, parameters, configurations, and JSON specifications embedded in this skill.
 
+**Language Flexibility**: While this skill uses Python/FastAPI for examples (recommended for most users due to extensive examples in this repository), OpenBB backends can be built in **any language or framework** that can serve HTTP endpoints with JSON responses. The core requirements are language-agnostic.
+
 ## Additional Documentation
 
 For the latest and most comprehensive documentation, fetch the LLM-optimized docs:
@@ -31,6 +33,26 @@ Use WebFetch to query this URL when you need:
 - Detailed explanations not covered in this skill
 - Clarification on specific widget behaviors
 - Up-to-date configuration options
+
+## Core Requirements (Any Language)
+
+Regardless of your chosen language/framework, your backend must:
+
+1. **Serve HTTP endpoints** returning JSON responses
+2. **Enable CORS** for these origins:
+   - `https://pro.openbb.co`
+   - `https://pro.openbb.dev`
+   - `http://localhost:1420`
+3. **Implement required endpoints**:
+   - `GET /widgets.json` - Return array of widget configurations
+   - `GET /apps.json` - (Optional) Return array of app/dashboard configurations
+4. **Return proper Content-Type**: `application/json` for data endpoints
+
+**Choosing a Language:**
+- **Python/FastAPI** (Recommended) - Most examples available, quickest start
+- **Node.js/Express, Go, Rust, etc.** - All work fine if you're comfortable with them
+
+The examples below use Python/FastAPI as the reference implementation. The JSON structures and widget configurations are identical regardless of language.
 
 ## Repository Reference Examples
 
@@ -74,14 +96,15 @@ widget-examples/
 ## Quick Start
 
 When a user wants to build an OpenBB app:
-1. Ask what data they want to display and what interactions they need
-2. Recommend appropriate widget types based on their use case
-3. Generate a complete FastAPI backend with all necessary endpoints
-4. Create the apps.json configuration if they want a custom dashboard layout
+1. Ask what language/framework they prefer (recommend Python/FastAPI if unsure)
+2. Ask what data they want to display and what interactions they need
+3. Recommend appropriate widget types based on their use case
+4. Generate a complete backend with all necessary endpoints
+5. Create the apps.json configuration if they want a custom dashboard layout
 
 ---
 
-# BACKEND ARCHITECTURE
+# BACKEND ARCHITECTURE (Python/FastAPI Reference)
 
 ## Core Structure
 
