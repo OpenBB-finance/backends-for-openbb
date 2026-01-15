@@ -5,14 +5,14 @@ import requests
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, HTMLResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 from plotly_config import get_theme_colors, base_layout, get_toolbar_config
 import random
 from pydantic import BaseModel, Field
 from uuid import UUID
-from typing import Any, List, Literal, List, Union
+from typing import Any, Literal, List, Union
 from functools import wraps
 import asyncio
 
@@ -20,35 +20,41 @@ import asyncio
 # Pydantic models for multi-file viewer POST endpoints
 class FileOption(BaseModel):
     """File option for multi-file viewer selection"""
+
     label: str
     value: str
 
 
 class FileRequest(BaseModel):
     """Request model for multi-file viewer POST endpoints"""
+
     filenames: List[str]
 
 
 class FileDataFormat(BaseModel):
     """Data format specification for files"""
+
     data_type: str
     filename: str
 
 
 class DataContent(BaseModel):
     """Response model for file content in base64 format"""
+
     content: str
     data_format: FileDataFormat
 
 
 class DataUrl(BaseModel):
     """Response model for file URL"""
+
     url: str
     data_format: FileDataFormat
 
 
 class DataError(BaseModel):
     """Error response model for file requests"""
+
     error_type: str
     content: str
 
@@ -57,16 +63,12 @@ class DataError(BaseModel):
 app = FastAPI(
     title="Simple Backend",
     description="Simple backend app for OpenBB Workspace",
-    version="0.0.1"
+    version="0.0.1",
 )
 
 # Define allowed origins for CORS (Cross-Origin Resource Sharing)
 # This restricts which domains can access the API
-origins = [
-    "https://pro.openbb.co",
-    "https://pro.openbb.dev",
-    "http://localhost:1420"
-]
+origins = ["https://pro.openbb.co", "https://pro.openbb.dev", "http://localhost:1420"]
 
 # Configure CORS middleware to handle cross-origin requests
 # This allows the specified origins to make requests to the API
@@ -80,10 +82,12 @@ app.add_middleware(
 
 ROOT_PATH = Path(__file__).parent.resolve()
 
+
 @app.get("/")
 def read_root():
     """Root endpoint that returns basic information about the API"""
     return {"Info": "Hello World"}
+
 
 # Initialize empty dictionary for widgets
 WIDGETS = {}
@@ -94,13 +98,14 @@ def register_widget(widget_config):
     Decorator that registers a widget configuration in the WIDGETS dictionary.
 
     Args:
-        widget_config (dict): The widget configuration to add to the WIDGETS 
-            dictionary. This should follow the same structure as other entries 
+        widget_config (dict): The widget configuration to add to the WIDGETS
+            dictionary. This should follow the same structure as other entries
             in WIDGETS.
 
     Returns:
         function: The decorated function.
     """
+
     def decorator(func):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -127,6 +132,7 @@ def register_widget(widget_config):
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
 
 
@@ -136,10 +142,10 @@ def register_widget(widget_config):
 @app.get("/widgets.json")
 def get_widgets():
     """Returns the configuration of all registered widgets
-    
+
     The widgets are automatically registered through the @register_widget decorator
     and stored in the WIDGETS dictionary from registry.py
-    
+
     Returns:
         dict: The configuration of all registered widgets
     """
@@ -152,7 +158,7 @@ def get_widgets():
 @app.get("/apps.json")
 def get_apps():
     """Apps configuration file for the OpenBB Workspace
-    
+
     Returns:
         JSONResponse: The contents of apps.json file
     """
@@ -164,107 +170,121 @@ def get_apps():
 
 # Simple markdown widget
 # Note that the gridData specifies the size of the widget in the OpenBB Workspace
-@register_widget({
-    "name": "Markdown Widget",
-    "description": "A markdown widget",
-    "type": "markdown",
-    "endpoint": "markdown_widget",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        "name": "Markdown Widget",
+        "description": "A markdown widget",
+        "type": "markdown",
+        "endpoint": "markdown_widget",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/markdown_widget")
 def markdown_widget():
     """Returns a markdown widget"""
     return "# Markdown Widget"
 
+
 # Simple markdown widget with category and subcategory
 # Note that the category and subcategory specify the category and subcategory of the widget in the OpenBB Workspace
-# This is important to organize the widgets in the OpenBB Workspace, but also for AI agents to find the best 
+# This is important to organize the widgets in the OpenBB Workspace, but also for AI agents to find the best
 # widgets to utilize for a given task
-@register_widget({
-    "name": "Markdown Widget with Category and Subcategory",
-    "description": "A markdown widget with category and subcategory",
-    "type": "markdown",
-    "category": "Widgets",
-    "subcategory": "Markdown Widgets",
-    "endpoint": "markdown_widget_with_category_and_subcategory",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Category and Subcategory",
+        "description": "A markdown widget with category and subcategory",
+        "type": "markdown",
+        "category": "Widgets",
+        "subcategory": "Markdown Widgets",
+        "endpoint": "markdown_widget_with_category_and_subcategory",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/markdown_widget_with_category_and_subcategory")
 def markdown_widget_with_category_and_subcategory():
     """Returns a markdown widget with category and subcategory"""
-    return f"# Markdown Widget with Category and Subcategory"
+    return "# Markdown Widget with Category and Subcategory"
 
 
 # Markdown Widget with Error Handling
 # This is a simple widget that demonstrates how to handle errors
-@register_widget({
-    "name": "Markdown Widget with Error Handling",
-    "description": "A markdown widget with error handling",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_error_handling",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Error Handling",
+        "description": "A markdown widget with error handling",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_error_handling",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/markdown_widget_with_error_handling")
 def markdown_widget_with_error_handling():
     """Returns a markdown widget with error handling"""
-    raise HTTPException(
-        status_code=500,
-        detail="Error that just occurred"
-    )
+    raise HTTPException(status_code=500, detail="Error that just occurred")
+
 
 # Markdown Widget with a Run button
 # The run button is a button that will execute the code in the widget
 # this is useful for widgets that are not static and require some computation
 # that may take a while to complete - e.g. running a model, fetching data, etc.
-@register_widget({
-    "name": "Markdown Widget with Run Button",
-    "description": "A markdown widget with a run button",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_run_button",
-    "gridData": {"w": 12, "h": 4},
-    "runButton": True,
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Run Button",
+        "description": "A markdown widget with a run button",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_run_button",
+        "gridData": {"w": 12, "h": 4},
+        "runButton": True,
+    }
+)
 @app.get("/markdown_widget_with_run_button")
 def markdown_widget_with_run_button():
     """Returns a markdown widget with current time"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
 
+
 # Markdown Widget with a Short Refetch Interval
 # The refetch interval is the interval at which the widget will be refreshed
 # Use lower values for real-time data (e.g., 60000 for 1-minute updates)
 # Higher values recommended for static or slowly changing data
-@register_widget({
-    "name": "Markdown Widget with Short Refetch Interval",
-    "description": "A markdown widget with a short refetch interval",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_short_refetch_interval",
-    "gridData": {"w": 12, "h": 4},
-    "refetchInterval": 1000
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Short Refetch Interval",
+        "description": "A markdown widget with a short refetch interval",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_short_refetch_interval",
+        "gridData": {"w": 12, "h": 4},
+        "refetchInterval": 1000,
+    }
+)
 @app.get("/markdown_widget_with_short_refetch_interval")
 def markdown_widget_with_short_refetch_interval():
     """Returns a markdown widget with current time"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
 
+
 # Markdown Widget with a Short Refetch Interval and a Run Button
 # The refresh interval is set to 10000ms (10 seconds) but the run button is enabled
 # which means that the user can refresh the widget manually
-@register_widget({
-    "name": "Markdown Widget with Short Refetch Interval and a Run Button",
-    "description": "A markdown widget with a short refetch interval and a run button",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_short_refetch_interval_and_run_button",
-    "gridData": {"w": 12, "h": 4},
-    "refetchInterval": 10000,
-    "runButton": True
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Short Refetch Interval and a Run Button",
+        "description": "A markdown widget with a short refetch interval and a run button",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_short_refetch_interval_and_run_button",
+        "gridData": {"w": 12, "h": 4},
+        "refetchInterval": 10000,
+        "runButton": True,
+    }
+)
 @app.get("/markdown_widget_with_short_refetch_interval_and_run_button")
 def markdown_widget_with_short_refetch_interval_and_run_button():
     """Returns a markdown widget with current time"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
+
 
 # Structured API Widget Example
 # Demonstrates how to organize API endpoints by vendor/domain for better maintainability
@@ -275,15 +295,17 @@ def markdown_widget_with_short_refetch_interval_and_run_button():
 # - Improved code organization and readability
 # Example structure: /vendor1/endpoint1, /vendor1/endpoint2, /vendor2/endpoint1, /vendor2/endpoint2, ...
 # This can be done not only based on vendors, but also based on the type of data, e.g. /stocks/endpoint1, /commodities/endpoint2, etc.
-@register_widget({
-    "name": "Markdown Widget with better structured API",
-    "description": "A simple markdown widget with a better structured API",
-    "type": "markdown",
-    "endpoint": "/vendor1/markdown_widget_with_better_structured_api",
-    "gridData": {"w": 12, "h": 4},
-    "refetchInterval": 10000,
-    "runButton": True
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with better structured API",
+        "description": "A simple markdown widget with a better structured API",
+        "type": "markdown",
+        "endpoint": "/vendor1/markdown_widget_with_better_structured_api",
+        "gridData": {"w": 12, "h": 4},
+        "refetchInterval": 10000,
+        "runButton": True,
+    }
+)
 @app.get("/vendor1/markdown_widget_with_better_structured_api")
 def markdown_widget_with_better_structured_api():
     """Returns a markdown widget with current time"""
@@ -293,30 +315,32 @@ def markdown_widget_with_better_structured_api():
 # Markdown Widget with String and Int Parameters
 # This widget demonstrates how to use string and integer input parameters
 # with a run button for manual execution
-@register_widget({
-    "name": "Markdown Widget with String and Int Params",
-    "description": "A markdown widget with string and integer input parameters",
-    "type": "markdown",
-    "endpoint": "/vendor1/markdown_widget_with_str_and_int",
-    "gridData": {"w": 12, "h": 5},
-    "runButton": True,
-    "params": [
-        {
-            "paramName": "text_input",
-            "value": "hello",
-            "label": "Text Input",
-            "description": "Enter a string value",
-            "type": "text"
-        },
-        {
-            "paramName": "number_input",
-            "value": 42,
-            "label": "Number Input",
-            "description": "Enter an integer value",
-            "type": "number"
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with String and Int Params",
+        "description": "A markdown widget with string and integer input parameters",
+        "type": "markdown",
+        "endpoint": "/vendor1/markdown_widget_with_str_and_int",
+        "gridData": {"w": 12, "h": 5},
+        "runButton": True,
+        "params": [
+            {
+                "paramName": "text_input",
+                "value": "hello",
+                "label": "Text Input",
+                "description": "Enter a string value",
+                "type": "text",
+            },
+            {
+                "paramName": "number_input",
+                "value": 42,
+                "label": "Number Input",
+                "description": "Enter an integer value",
+                "type": "number",
+            },
+        ],
+    }
+)
 @app.get("/vendor1/markdown_widget_with_str_and_int")
 def markdown_widget_with_str_and_int(text_input: str, number_input: int):
     """Returns a markdown widget with string and int parameters"""
@@ -333,28 +357,30 @@ def markdown_widget_with_str_and_int(text_input: str, number_input: int):
 # Table Widget with String Parameter
 # This widget demonstrates a simple table with a string input parameter
 # and a run button for manual execution
-@register_widget({
-    "name": "Table Widget with String Param",
-    "description": "A table widget with a string input parameter",
-    "type": "table",
-    "endpoint": "/vendor1/table_widget_with_str_param",
-    "gridData": {"w": 12, "h": 7},
-    "runButton": True,
-    "params": [
-        {
-            "paramName": "filter_text",
-            "value": "A",
-            "label": "Filter Text",
-            "description": "Filter items by name",
-            "type": "text",
-            "options": [
-                {"label": "A", "value": "A"},
-                {"label": "B", "value": "B"},
-                {"label": "C", "value": "C"}
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Table Widget with String Param",
+        "description": "A table widget with a string input parameter",
+        "type": "table",
+        "endpoint": "/vendor1/table_widget_with_str_param",
+        "gridData": {"w": 12, "h": 7},
+        "runButton": True,
+        "params": [
+            {
+                "paramName": "filter_text",
+                "value": "A",
+                "label": "Filter Text",
+                "description": "Filter items by name",
+                "type": "text",
+                "options": [
+                    {"label": "A", "value": "A"},
+                    {"label": "B", "value": "B"},
+                    {"label": "C", "value": "C"},
+                ],
+            }
+        ],
+    }
+)
 @app.get("/vendor1/table_widget_with_str_param")
 def table_widget_with_str_param(filter_text: str):
     """Returns a table widget with filtered data"""
@@ -373,93 +399,101 @@ def table_widget_with_str_param(filter_text: str):
 # Markdown Widget with Stale Time
 # The stale time is the time after which the data will be considered stale
 # and you will see a refresh button in the widget becoming orange to indicate that the data is stale
-@register_widget({
-    "name": "Markdown Widget with Stale Time",
-    "description": "A markdown widget with stale time",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_stale_time",
-    "gridData": {"w": 12, "h": 4},
-    "staleTime": 5000
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Stale Time",
+        "description": "A markdown widget with stale time",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_stale_time",
+        "gridData": {"w": 12, "h": 4},
+        "staleTime": 5000,
+    }
+)
 @app.get("/markdown_widget_with_stale_time")
 def markdown_widget_with_stale_time():
     """Returns a markdown widget with current time"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
 
+
 # Markdown Widget with Refetch Interval and Stale Time
 # The refetch interval is set to 10000ms (10 seconds) and the stale time is set to 5000ms (5 seconds)
 # Data older than stale time will make the refresh button in the widget become orange to indicate that the data is stale
 # and once it reaches the refetch interval, the widget will be refreshed and the indicator will turn green again
-@register_widget({
-    "name": "Markdown Widget with Refetch Interval and Shorter Stale Time",
-    "description": "A markdown widget with a short refetch interval and a shorter stale time",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
-    "gridData": {"w": 12, "h": 4},
-    "refetchInterval": 10000,
-    "staleTime": 5000
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Refetch Interval and Shorter Stale Time",
+        "description": "A markdown widget with a short refetch interval and a shorter stale time",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+        "gridData": {"w": 12, "h": 4},
+        "refetchInterval": 10000,
+        "staleTime": 5000,
+    }
+)
 @app.get("/markdown_widget_with_refetch_interval_and_shorter_stale_time")
 def markdown_widget_with_refetch_interval_and_shorter_stale_time():
     """Returns a markdown widget with current time"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f"### Current time: {current_time}"
 
+
 # Markdown Widget with Image from URL
 # This is a simple widget that demonstrates how to display an image from a URL
-@register_widget({
-    "name": "Markdown Widget with Image from URL",
-    "description": "A markdown widget with an image from a URL",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_image_from_url",
-    "gridData": {"w": 20, "h": 20},
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Image from URL",
+        "description": "A markdown widget with an image from a URL",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_image_from_url",
+        "gridData": {"w": 20, "h": 20},
+    }
+)
 @app.get("/markdown_widget_with_image_from_url")
 def markdown_widget_with_image_from_url():
     """Returns a markdown widget with an image from a URL"""
     # Use a simpler, more reliable image URL
     image_url = "https://api.star-history.com/svg?repos=openbb-finance/OpenBB&type=Date&theme=dark"
-    
+
     try:
         response = requests.get(image_url, timeout=10)
         response.raise_for_status()  # Raise an exception for bad status codes
-        
+
         # Verify the response is actually an image
-        content_type = response.headers.get('content-type', '')
-        if not content_type.startswith('image/'):
+        content_type = response.headers.get("content-type", "")
+        if not content_type.startswith("image/"):
             raise HTTPException(
                 status_code=500,
-                detail=f"URL did not return an image. Content-Type: {content_type}"
+                detail=f"URL did not return an image. Content-Type: {content_type}",
             )
 
         # Convert the image to base64
-        image_base64 = base64.b64encode(response.content).decode('utf-8')
-        
+        image_base64 = base64.b64encode(response.content).decode("utf-8")
+
         # Return the markdown with the base64 image
         return f"![OpenBB Logo](data:{content_type};base64,{image_base64})"
-        
+
     except requests.RequestException as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to fetch image: {str(e)}"
+            status_code=500, detail=f"Failed to fetch image: {str(e)}"
         ) from e
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Error processing image: {str(e)}"
+            status_code=500, detail=f"Error processing image: {str(e)}"
         ) from e
 
 
 # Markdown Widget with Local Image
 # This is a simple widget that demonstrates how to display a local image
-@register_widget({
-    "name": "Markdown Widget with Local Image",
-    "description": "A markdown widget with a local image",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_local_image",
-    "gridData": {"w": 20, "h": 20},
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Local Image",
+        "description": "A markdown widget with a local image",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_local_image",
+        "gridData": {"w": 20, "h": 20},
+    }
+)
 @app.get("/markdown_widget_with_local_image")
 def markdown_widget_with_local_image():
     """Returns a markdown widget with a local image"""
@@ -467,49 +501,93 @@ def markdown_widget_with_local_image():
     try:
         with open("img.png", "rb") as image_file:
             # Convert the image to base64
-            image_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+            image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
             return f"![Local Image](data:image/png;base64,{image_base64})"
     except FileNotFoundError:
-        raise HTTPException(
-            status_code=500,
-            detail="Image file not found"
-        ) from e
+        raise HTTPException(status_code=500, detail="Image file not found") from e
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Error reading image: {str(e)}"
+            status_code=500, detail=f"Error reading image: {str(e)}"
         ) from e
 
 
 # Simple HTML widget with mockup data
 # Note that the gridData specifies the size of the widget in the OpenBB Workspace
-@register_widget({
-    "name": "HTML Widget",
-    "description": "A HTML widget with interactive dashboard",
-    "type": "html",
-    "endpoint": "html_widget",
-    "gridData": {"w": 40, "h": 20},
-    "raw": True,
-})
+@register_widget(
+    {
+        "name": "HTML Widget",
+        "description": "A HTML widget with interactive dashboard",
+        "type": "html",
+        "endpoint": "html_widget",
+        "gridData": {"w": 40, "h": 20},
+        "raw": True,
+    }
+)
 @app.get("/html_widget", response_class=HTMLResponse)
 def html_widget(raw: bool = False):
     """Returns an HTML widget with mockup data"""
     # Raw data for AI agent - flat list for table display
     dashboard_data = [
-        {"metric": "Total Portfolio Value", "value": "$124,563", "change": "+5.4%", "period": "today"},
-        {"metric": "Active Positions", "value": "42", "change": "+3", "period": "this week"},
-        {"metric": "Daily P&L", "value": "$8,421", "change": "+12.3%", "period": "today"},
-        {"metric": "Sharpe Ratio", "value": "0.87", "change": "-0.05", "period": "current"},
-        {"metric": "Tech Stocks Allocation", "value": "68%", "change": "", "period": "current"},
-        {"metric": "Fixed Income Allocation", "value": "32%", "change": "", "period": "current"},
-        {"metric": "Recent Trade: AAPL", "value": "Bought 100 @ $182.50", "change": "", "period": "2 hours ago"},
-        {"metric": "Recent Trade: GOOGL", "value": "Sold 50 @ $141.20", "change": "", "period": "5 hours ago"},
-        {"metric": "Recent Trade: MSFT", "value": "Bought 75 @ $378.80", "change": "", "period": "Yesterday"},
+        {
+            "metric": "Total Portfolio Value",
+            "value": "$124,563",
+            "change": "+5.4%",
+            "period": "today",
+        },
+        {
+            "metric": "Active Positions",
+            "value": "42",
+            "change": "+3",
+            "period": "this week",
+        },
+        {
+            "metric": "Daily P&L",
+            "value": "$8,421",
+            "change": "+12.3%",
+            "period": "today",
+        },
+        {
+            "metric": "Sharpe Ratio",
+            "value": "0.87",
+            "change": "-0.05",
+            "period": "current",
+        },
+        {
+            "metric": "Tech Stocks Allocation",
+            "value": "68%",
+            "change": "",
+            "period": "current",
+        },
+        {
+            "metric": "Fixed Income Allocation",
+            "value": "32%",
+            "change": "",
+            "period": "current",
+        },
+        {
+            "metric": "Recent Trade: AAPL",
+            "value": "Bought 100 @ $182.50",
+            "change": "",
+            "period": "2 hours ago",
+        },
+        {
+            "metric": "Recent Trade: GOOGL",
+            "value": "Sold 50 @ $141.20",
+            "change": "",
+            "period": "5 hours ago",
+        },
+        {
+            "metric": "Recent Trade: MSFT",
+            "value": "Bought 75 @ $378.80",
+            "change": "",
+            "period": "Yesterday",
+        },
     ]
 
     if raw:
         return JSONResponse(content=dashboard_data)
-    return HTMLResponse(content="""
+    return HTMLResponse(
+        content="""
 <!DOCTYPE html>
 <html>
 <head>
@@ -601,33 +679,33 @@ def html_widget(raw: bool = False):
         <div class="header">
             <h1>Portfolio Dashboard</h1>
         </div>
-        
+
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value">$124,563</div>
                 <div class="stat-label">Total Portfolio Value</div>
                 <span class="stat-change positive">+5.4% today</span>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-value">42</div>
                 <div class="stat-label">Active Positions</div>
                 <span class="stat-change positive">+3 this week</span>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-value">$8,421</div>
                 <div class="stat-label">Daily P&L</div>
                 <span class="stat-change positive">+12.3%</span>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-value">0.87</div>
                 <div class="stat-label">Sharpe Ratio</div>
                 <span class="stat-change negative">-0.05</span>
             </div>
         </div>
-        
+
         <div class="chart-container">
             <h3>Performance Overview</h3>
             <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -645,7 +723,7 @@ def html_widget(raw: bool = False):
                 </div>
             </div>
         </div>
-        
+
         <div class="chart-container">
             <h3>Recent Activity</h3>
             <ul style="list-style: none; padding: 0;">
@@ -664,7 +742,7 @@ def html_widget(raw: bool = False):
             </ul>
         </div>
     </div>
-    
+
     <script>
         // Add some interactive behavior
         document.querySelectorAll('.stat-card').forEach(card => {
@@ -678,83 +756,51 @@ def html_widget(raw: bool = False):
     </script>
 </body>
 </html>
-""")
+"""
+    )
 
 
-@register_widget({
-    "name": "Metric Widget",
-    "description": "A metric widget",
-    "endpoint": "metric_widget",
-    "gridData": {
-      "w": 5,
-      "h": 5
-    },
-    "type": "metric"
-})
+@register_widget(
+    {
+        "name": "Metric Widget",
+        "description": "A metric widget",
+        "endpoint": "metric_widget",
+        "gridData": {"w": 5, "h": 5},
+        "type": "metric",
+    }
+)
 @app.get("/metric_widget")
 def metric_widget():
     # Data structure
     data = [
-        {
-            "label": "Total Users",
-            "value": "1,234,567",
-            "delta": "12.5"
-        },
-        {
-            "label": "Active Sessions",
-            "value": "45,678",
-            "delta": "-2.3"
-        },
-        {
-            "label": "Revenue (USD)",
-            "value": "$89,432",
-            "delta": "8.9"
-        },
-        {
-            "label": "Conversion Rate",
-            "value": "3.2%",
-            "delta": "0.0"
-        },
-        {
-            "label": "Avg. Session Duration",
-            "value": "4m 32s",
-            "delta": "0.5"
-        }
+        {"label": "Total Users", "value": "1,234,567", "delta": "12.5"},
+        {"label": "Active Sessions", "value": "45,678", "delta": "-2.3"},
+        {"label": "Revenue (USD)", "value": "$89,432", "delta": "8.9"},
+        {"label": "Conversion Rate", "value": "3.2%", "delta": "0.0"},
+        {"label": "Avg. Session Duration", "value": "4m 32s", "delta": "0.5"},
     ]
 
     return JSONResponse(content=data)
 
+
 # Simple table widget
 # Utilize mock data for demonstration purposes on how a table widget can be used
-@register_widget({
-    "name": "Table Widget",
-    "description": "A table widget",
-    "type": "table",
-    "endpoint": "table_widget",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        "name": "Table Widget",
+        "description": "A table widget",
+        "type": "table",
+        "endpoint": "table_widget",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/table_widget")
 def table_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
-        {
-            "name": "Ethereum",
-            "tvl": 45000000000,
-            "change_1d": 2.5,
-            "change_7d": 5.2
-        },
-        {
-            "name": "Bitcoin",
-            "tvl": 35000000000,
-            "change_1d": 1.2,
-            "change_7d": 4.8
-        },
-        {
-            "name": "Solana",
-            "tvl": 8000000000,
-            "change_1d": -0.5,
-            "change_7d": 2.1
-        }
+        {"name": "Ethereum", "tvl": 45000000000, "change_1d": 2.5, "change_7d": 5.2},
+        {"name": "Bitcoin", "tvl": 35000000000, "change_1d": 1.2, "change_7d": 4.8},
+        {"name": "Solana", "tvl": 8000000000, "change_1d": -0.5, "change_7d": 2.1},
     ]
     return mock_data
 
@@ -788,77 +834,64 @@ def table_widget():
 #         Example: "left""right"
 # headerTooltip: Tooltip text for the column header.
 #                Example: "This is a tooltip"
-@register_widget({
-    "name": "Table Widget with Column Definitions",
-    "description": "A table widget with column definitions",
-    "type": "table",
-    "endpoint": "table_widget_with_column_definitions",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "name",
-                    "headerName": "Asset",
-                    "cellDataType": "text",
-                    "formatterFn": "none",
-                    "renderFn": "titleCase",
-                    "width": 120,
-                    "pinned": "left"
-                },
-                {
-                    "field": "tvl",
-                    "headerName": "TVL (USD)",
-                    "headerTooltip": "Total Value Locked",
-                    "cellDataType": "number",
-                    "formatterFn": "int",
-                    "width": 150
-                },
-                {
-                    "field": "change_1d",
-                    "headerName": "24h Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                },
-                {
-                    "field": "change_7d",
-                    "headerName": "7d Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                    "hide": True
-                },
-            ]
-        }
-    },
-})
+@register_widget(
+    {
+        "name": "Table Widget with Column Definitions",
+        "description": "A table widget with column definitions",
+        "type": "table",
+        "endpoint": "table_widget_with_column_definitions",
+        "gridData": {"w": 20, "h": 6},
+        "data": {
+            "table": {
+                "columnsDefs": [
+                    {
+                        "field": "name",
+                        "headerName": "Asset",
+                        "cellDataType": "text",
+                        "formatterFn": "none",
+                        "renderFn": "titleCase",
+                        "width": 120,
+                        "pinned": "left",
+                    },
+                    {
+                        "field": "tvl",
+                        "headerName": "TVL (USD)",
+                        "headerTooltip": "Total Value Locked",
+                        "cellDataType": "number",
+                        "formatterFn": "int",
+                        "width": 150,
+                    },
+                    {
+                        "field": "change_1d",
+                        "headerName": "24h Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                    },
+                    {
+                        "field": "change_7d",
+                        "headerName": "7d Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                        "hide": True,
+                    },
+                ]
+            }
+        },
+    }
+)
 @app.get("/table_widget_with_column_definitions")
 def table_widget_with_column_definitions():
     """Returns a mock table data for demonstration"""
     mock_data = [
-        {
-            "name": "Ethereum",
-            "tvl": 45000000000,
-            "change_1d": 2.5,
-            "change_7d": 5.2
-        },
-        {
-            "name": "Bitcoin",
-            "tvl": 35000000000,
-            "change_1d": 1.2,
-            "change_7d": 4.8
-        },
-        {
-            "name": "Solana",
-            "tvl": 8000000000,
-            "change_1d": -0.5,
-            "change_7d": 2.1
-        }
+        {"name": "Ethereum", "tvl": 45000000000, "change_1d": 2.5, "change_7d": 5.2},
+        {"name": "Bitcoin", "tvl": 35000000000, "change_1d": 1.2, "change_7d": 4.8},
+        {"name": "Solana", "tvl": 8000000000, "change_1d": -0.5, "change_7d": 2.1},
     ]
     return mock_data
 
@@ -866,7 +899,7 @@ def table_widget_with_column_definitions():
 # Simple table widget with hover card
 # The most important part of this widget that hasn't been covered in the previous widget is the hover card is the "renderFn" key in the columnsDefs object
 # renderFn: Specifies a rendering function for cell data.
-#           Example: "titleCase"Possible values: 
+#           Example: "titleCase"Possible values:
 #           - greenRed: Applies a green or red color based on conditions
 #           - titleCase: Converts text to title case
 #           - hoverCard: Displays additional information when hovering over a cell
@@ -877,104 +910,88 @@ def table_widget_with_column_definitions():
 #                 Example:
 #                 - if renderFn is "columnColor", then renderFnParams is required and must be a "colorRules" dictionary with the following keys: condition, color, range, fill.
 #                 - if renderFn is "hoverCard", then renderFnParams is required and must be a "hoverCard" dictionary with the following keys: cellField, title, markdown.
-@register_widget({
-    "name": "Table Widget with Render Functions",
-    "description": "A table widget with render functions",
-    "type": "table",
-    "endpoint": "table_widget_with_render_functions",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "name",
-                    "headerName": "Asset",
-                    "cellDataType": "text",
-                    "formatterFn": "none",
-                    "renderFn": "titleCase",
-                    "width": 120,
-                    "pinned": "left"
-                },
-                {
-                    "field": "tvl",
-                    "headerName": "TVL (USD)",
-                    "headerTooltip": "Total Value Locked",
-                    "cellDataType": "number",
-                    "formatterFn": "int",               
-                    "width": 150,
-                    "renderFn": "columnColor",
-                    "renderFnParams": {
-                        "colorRules": [
-                            {
-                                "condition": "between",
-                                "range": {
-                                    "min": 30000000000,
-                                    "max": 40000000000
+@register_widget(
+    {
+        "name": "Table Widget with Render Functions",
+        "description": "A table widget with render functions",
+        "type": "table",
+        "endpoint": "table_widget_with_render_functions",
+        "gridData": {"w": 20, "h": 6},
+        "data": {
+            "table": {
+                "columnsDefs": [
+                    {
+                        "field": "name",
+                        "headerName": "Asset",
+                        "cellDataType": "text",
+                        "formatterFn": "none",
+                        "renderFn": "titleCase",
+                        "width": 120,
+                        "pinned": "left",
+                    },
+                    {
+                        "field": "tvl",
+                        "headerName": "TVL (USD)",
+                        "headerTooltip": "Total Value Locked",
+                        "cellDataType": "number",
+                        "formatterFn": "int",
+                        "width": 150,
+                        "renderFn": "columnColor",
+                        "renderFnParams": {
+                            "colorRules": [
+                                {
+                                    "condition": "between",
+                                    "range": {"min": 30000000000, "max": 40000000000},
+                                    "color": "blue",
+                                    "fill": False,
                                 },
-                                "color": "blue",
-                                "fill": False
-                            },
-                            {
-                                "condition": "lt",
-                                "value": 10000000000,
-                                "color": "#FFA500",
-                                "fill": False
-                            },
-                            {
-                                "condition": "gt",
-                                "value": 40000000000,
-                                "color": "green",
-                                "fill": True
-                            }
-                        ]
-                    }
-                },
-                {
-                    "field": "change_1d",
-                    "headerName": "24h Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                },
-                {
-                    "field": "change_7d",
-                    "headerName": "7d Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                }
-            ]
-        }
-    },
-})
+                                {
+                                    "condition": "lt",
+                                    "value": 10000000000,
+                                    "color": "#FFA500",
+                                    "fill": False,
+                                },
+                                {
+                                    "condition": "gt",
+                                    "value": 40000000000,
+                                    "color": "green",
+                                    "fill": True,
+                                },
+                            ]
+                        },
+                    },
+                    {
+                        "field": "change_1d",
+                        "headerName": "24h Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                    },
+                    {
+                        "field": "change_7d",
+                        "headerName": "7d Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                    },
+                ]
+            }
+        },
+    }
+)
 @app.get("/table_widget_with_render_functions")
 def table_widget_with_render_functions():
     """Returns a mock table data for demonstration"""
     mock_data = [
-        {
-            "name": "Ethereum",
-            "tvl": 45000000000,
-            "change_1d": 2.5,
-            "change_7d": 5.2
-        },
-        {
-            "name": "Bitcoin",
-            "tvl": 35000000000,
-            "change_1d": 1.2,
-            "change_7d": 4.8
-        },
-        {
-            "name": "Solana",
-            "tvl": 8000000000,
-            "change_1d": -0.5,
-            "change_7d": 2.1
-        }
+        {"name": "Ethereum", "tvl": 45000000000, "change_1d": 2.5, "change_7d": 5.2},
+        {"name": "Bitcoin", "tvl": 35000000000, "change_1d": 1.2, "change_7d": 4.8},
+        {"name": "Solana", "tvl": 8000000000, "change_1d": -0.5, "change_7d": 2.1},
     ]
     return mock_data
 
@@ -982,64 +999,66 @@ def table_widget_with_render_functions():
 # Simple table widget with hover card
 # The most important part of this widget that hasn't been covered in the previous widgets is the hover card
 # which is a feature that allows you to display additional information when hovering over a cell
-@register_widget({
-    "name": "Table Widget with Hover Card",
-    "description": "A table widget with hover card",
-    "type": "table",
-    "endpoint": "table_widget_with_hover_card",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "name",
-                    "headerName": "Asset",
-                    "cellDataType": "text",
-                    "formatterFn": "none",
-                    "width": 120,
-                    "pinned": "left",
-                    "renderFn": "hoverCard",
-                    "renderFnParams": {
-                        "hoverCard": {
-                            "cellField": "value",
-                            "title": "Project Details",
-                            "markdown": "### {value} (since {foundedDate})\n**Description:** {description}"
-                        }
-                    }
-                },
-                {
-                    "field": "tvl",
-                    "headerName": "TVL (USD)",
-                    "headerTooltip": "Total Value Locked",
-                    "cellDataType": "number",
-                    "formatterFn": "int",               
-                    "width": 150,
-                    "renderFn": "columnColor",
-                },
-                {
-                    "field": "change_1d",
-                    "headerName": "24h Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                },
-                {
-                    "field": "change_7d",
-                    "headerName": "7d Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",
-                    "width": 120,
-                    "maxWidth": 150,
-                    "minWidth": 70,
-                }
-            ]
-        }
-    },
-})
+@register_widget(
+    {
+        "name": "Table Widget with Hover Card",
+        "description": "A table widget with hover card",
+        "type": "table",
+        "endpoint": "table_widget_with_hover_card",
+        "gridData": {"w": 20, "h": 6},
+        "data": {
+            "table": {
+                "columnsDefs": [
+                    {
+                        "field": "name",
+                        "headerName": "Asset",
+                        "cellDataType": "text",
+                        "formatterFn": "none",
+                        "width": 120,
+                        "pinned": "left",
+                        "renderFn": "hoverCard",
+                        "renderFnParams": {
+                            "hoverCard": {
+                                "cellField": "value",
+                                "title": "Project Details",
+                                "markdown": "### {value} (since {foundedDate})\n**Description:** {description}",
+                            }
+                        },
+                    },
+                    {
+                        "field": "tvl",
+                        "headerName": "TVL (USD)",
+                        "headerTooltip": "Total Value Locked",
+                        "cellDataType": "number",
+                        "formatterFn": "int",
+                        "width": 150,
+                        "renderFn": "columnColor",
+                    },
+                    {
+                        "field": "change_1d",
+                        "headerName": "24h Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                    },
+                    {
+                        "field": "change_7d",
+                        "headerName": "7d Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",
+                        "width": 120,
+                        "maxWidth": 150,
+                        "minWidth": 70,
+                    },
+                ]
+            }
+        },
+    }
+)
 @app.get("/table_widget_with_hover_card")
 def table_widget_with_hover_card():
     """Returns a mock table data for demonstration"""
@@ -1048,32 +1067,32 @@ def table_widget_with_hover_card():
             "name": {
                 "value": "Ethereum",
                 "description": "A decentralized, open-source blockchain with smart contract functionality",
-                "foundedDate": "2015-07-30"
+                "foundedDate": "2015-07-30",
             },
             "tvl": 45000000000,
             "change_1d": 2.5,
-            "change_7d": 5.2
+            "change_7d": 5.2,
         },
         {
             "name": {
                 "value": "Bitcoin",
                 "description": "The first decentralized cryptocurrency",
-                "foundedDate": "2009-01-03"
+                "foundedDate": "2009-01-03",
             },
             "tvl": 35000000000,
             "change_1d": 1.2,
-            "change_7d": 4.8
+            "change_7d": 4.8,
         },
         {
             "name": {
                 "value": "Solana",
                 "description": "A high-performance blockchain supporting builders around the world",
-                "foundedDate": "2020-03-16"
+                "foundedDate": "2020-03-16",
             },
             "tvl": 8000000000,
             "change_1d": -0.5,
-            "change_7d": 2.1
-        }
+            "change_7d": 2.1,
+        },
     ]
     return mock_data
 
@@ -1083,151 +1102,111 @@ def table_widget_with_hover_card():
 # chartDataType: Specifies how data is treated in a chart.
 #                Example: "category"
 #                Possible values: "category", "series", "time", "excluded"
-@register_widget({
-    "name": "Table to Chart Widget",
-    "description": "A table widget",
-    "type": "table",
-    "endpoint": "table_to_chart_widget",
-    "gridData": {"w": 20, "h": 12},
-    "data": {
-        "table": {
-            "enableCharts": True,
-            "showAll": False,
-            "chartView": {
-                "enabled": True,
-                "chartType": "column"
-            },
-            "columnsDefs": [
-                {
-                    "field": "name",
-                    "headerName": "Asset",
-                    "chartDataType": "category",
-                },
-                {
-                    "field": "tvl",
-                    "headerName": "TVL (USD)",
-                    "chartDataType": "series",
-                },
-            ]
-        }
-    },
-})
+@register_widget(
+    {
+        "name": "Table to Chart Widget",
+        "description": "A table widget",
+        "type": "table",
+        "endpoint": "table_to_chart_widget",
+        "gridData": {"w": 20, "h": 12},
+        "data": {
+            "table": {
+                "enableCharts": True,
+                "showAll": False,
+                "chartView": {"enabled": True, "chartType": "column"},
+                "columnsDefs": [
+                    {
+                        "field": "name",
+                        "headerName": "Asset",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "field": "tvl",
+                        "headerName": "TVL (USD)",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
+    }
+)
 @app.get("/table_to_chart_widget")
 def table_to_chart_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
-        {
-            "name": "Ethereum",
-            "tvl": 45000000000,
-            "change_1d": 2.5,
-            "change_7d": 5.2
-        },
-        {
-            "name": "Bitcoin",
-            "tvl": 35000000000,
-            "change_1d": 1.2,
-            "change_7d": 4.8
-        },
-        {
-            "name": "Solana",
-            "tvl": 8000000000,
-            "change_1d": -0.5,
-            "change_7d": 2.1
-        }
+        {"name": "Ethereum", "tvl": 45000000000, "change_1d": 2.5, "change_7d": 5.2},
+        {"name": "Bitcoin", "tvl": 35000000000, "change_1d": 1.2, "change_7d": 4.8},
+        {"name": "Solana", "tvl": 8000000000, "change_1d": -0.5, "change_7d": 2.1},
     ]
     return mock_data
-
 
 
 # Table to time series Widget
 # In here we will see how to use a table widget to display a time series chart
-@register_widget({
-    "name": "Table to Time Series Widget",
-    "description": "A table widget",
-    "type": "table",
-    "endpoint": "table_to_time_series_widget",
-    "gridData": {"w": 20, "h": 12},
-    "data": {
-        "table": {
-            "enableCharts": True,
-            "showAll": False,
-            "chartView": {
-                "enabled": True,
-                "chartType": "line"
-            },
-            "columnsDefs": [
-                {
-                    "field": "date",
-                    "headerName": "Date",
-                    "chartDataType": "time",
-                },
-                {
-                    "field": "Ethereum",
-                    "headerName": "Ethereum",
-                    "chartDataType": "series",
-                },
-                {
-                    "field": "Bitcoin",
-                    "headerName": "Bitcoin",
-                    "chartDataType": "series",
-                },
-                {
-                    "field": "Solana",
-                    "headerName": "Solana",
-                    "chartDataType": "series",
-                }
-            ]
-        }
-    },
-})
+@register_widget(
+    {
+        "name": "Table to Time Series Widget",
+        "description": "A table widget",
+        "type": "table",
+        "endpoint": "table_to_time_series_widget",
+        "gridData": {"w": 20, "h": 12},
+        "data": {
+            "table": {
+                "enableCharts": True,
+                "showAll": False,
+                "chartView": {"enabled": True, "chartType": "line"},
+                "columnsDefs": [
+                    {
+                        "field": "date",
+                        "headerName": "Date",
+                        "chartDataType": "time",
+                    },
+                    {
+                        "field": "Ethereum",
+                        "headerName": "Ethereum",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "field": "Bitcoin",
+                        "headerName": "Bitcoin",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "field": "Solana",
+                        "headerName": "Solana",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
+    }
+)
 @app.get("/table_to_time_series_widget")
 def table_to_time_series_widget():
     """Returns a mock table data for demonstration"""
     mock_data = [
-        {
-            "date": "2024-06-06",
-            "Ethereum": 1.0000,
-            "Bitcoin": 1.0000,
-            "Solana": 1.0000
-        },
-        {
-            "date": "2024-06-07",
-            "Ethereum": 1.0235,
-            "Bitcoin": 0.9822,
-            "Solana": 1.0148
-        },
-        {
-            "date": "2024-06-08",
-            "Ethereum": 0.9945,
-            "Bitcoin": 1.0072,
-            "Solana": 0.9764
-        },
-        {
-            "date": "2024-06-09",
-            "Ethereum": 1.0205,
-            "Bitcoin": 0.9856,
-            "Solana": 1.0300
-        },
-        {
-            "date": "2024-06-10",
-            "Ethereum": 0.9847,
-            "Bitcoin": 1.0195,
-            "Solana": 0.9897
-        }
+        {"date": "2024-06-06", "Ethereum": 1.0000, "Bitcoin": 1.0000, "Solana": 1.0000},
+        {"date": "2024-06-07", "Ethereum": 1.0235, "Bitcoin": 0.9822, "Solana": 1.0148},
+        {"date": "2024-06-08", "Ethereum": 0.9945, "Bitcoin": 1.0072, "Solana": 0.9764},
+        {"date": "2024-06-09", "Ethereum": 1.0205, "Bitcoin": 0.9856, "Solana": 1.0300},
+        {"date": "2024-06-10", "Ethereum": 0.9847, "Bitcoin": 1.0195, "Solana": 0.9897},
     ]
     return mock_data
+
 
 # Simple table widget from an API endpoint
 # This is a simple widget that demonstrates how to use a table widget from an API endpoint
 # Note that the endpoint is the endpoint of the API that will be used to fetch the data
 # and the data is returned in the JSON format
-@register_widget({
-    "name": "Table Widget from API Endpoint",
-    "description": "A table widget from an API endpoint",
-    "type": "table",
-    "endpoint": "table_widget_from_api_endpoint",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        "name": "Table Widget from API Endpoint",
+        "description": "A table widget from an API endpoint",
+        "type": "table",
+        "endpoint": "table_widget_from_api_endpoint",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/table_widget_from_api_endpoint")
 def table_widget_from_api_endpoint():
     """Get current TVL of all chains using Defi LLama"""
@@ -1237,23 +1216,18 @@ def table_widget_from_api_endpoint():
         return response.json()
 
     print(f"Request error {response.status_code}: {response.text}")
-    raise HTTPException(
-        status_code=response.status_code,
-        detail=response.text
-    )
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
-
-@register_widget({
-    "name": "PDF Widget with Base64",
-    "description": "Display a PDF file with base64 encoding",
-    "endpoint": "pdf_widget_base64",
-    "gridData": {
-        "w": 20,
-        "h": 20
-    },
-    "type": "pdf",
-})
+@register_widget(
+    {
+        "name": "PDF Widget with Base64",
+        "description": "Display a PDF file with base64 encoding",
+        "endpoint": "pdf_widget_base64",
+        "gridData": {"w": 20, "h": 20},
+        "type": "pdf",
+    }
+)
 @app.get("/pdf_widget_base64")
 def get_pdf_widget_base64():
     """Serve a file through base64 encoding."""
@@ -1263,13 +1237,10 @@ def get_pdf_widget_base64():
             file_data = file.read()
             encoded_data = base64.b64encode(file_data)
             content = encoded_data.decode("utf-8")
-    
+
     except FileNotFoundError as exc:
-        raise HTTPException(
-            status_code=404,
-            detail="File not found"
-        ) from exc
-    
+        raise HTTPException(status_code=404, detail="File not found") from exc
+
     return JSONResponse(
         headers={"Content-Type": "application/json"},
         content={
@@ -1282,20 +1253,21 @@ def get_pdf_widget_base64():
     )
 
 
-@register_widget({
-    "name": "PDF Widget with URL",
-    "description": "Display a PDF file",
-    "type": "pdf", 
-    "endpoint": "pdf_widget_url",
-    "gridData": {
-        "w": 20,
-        "h": 20
-    },
-})
+@register_widget(
+    {
+        "name": "PDF Widget with URL",
+        "description": "Display a PDF file",
+        "type": "pdf",
+        "endpoint": "pdf_widget_url",
+        "gridData": {"w": 20, "h": 20},
+    }
+)
 @app.get("/pdf_widget_url")
 def get_pdf_widget_url():
     """Serve a file through URL."""
-    file_reference = "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/sample.pdf"
+    file_reference = (
+        "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/sample.pdf"
+    )
     if not file_reference:
         raise HTTPException(status_code=404, detail="File not found")
     return JSONResponse(
@@ -1309,6 +1281,7 @@ def get_pdf_widget_url():
         },
     )
 
+
 # Sample PDF files data
 SAMPLE_PDFS = [
     {
@@ -1317,11 +1290,12 @@ SAMPLE_PDFS = [
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/sample.pdf",
     },
     {
-        "name": "Bitcoin Whitepaper", 
+        "name": "Bitcoin Whitepaper",
         "location": "bitcoin.pdf",
         "url": "https://openbb-assets.s3.us-east-1.amazonaws.com/testing/bitcoin.pdf",
-    }
+    },
 ]
+
 
 # Sample PDF options endpoint
 # This is a simple endpoint to get the list of available PDFs
@@ -1330,34 +1304,31 @@ SAMPLE_PDFS = [
 @app.get("/get_pdf_options")
 async def get_pdf_options() -> List[FileOption]:
     """Get list of available PDFs"""
-    return [
-        FileOption(label=pdf["name"], value=pdf["name"]) 
-        for pdf in SAMPLE_PDFS
-    ]
+    return [FileOption(label=pdf["name"], value=pdf["name"]) for pdf in SAMPLE_PDFS]
 
-@register_widget({
-    "name": "Multi PDF Viewer - Base64",
-    "description": "View multiple PDF files using base64 encoding",
-    "type": "multi_file_viewer",
-    "endpoint": "/multi_pdf_base64",
-    "gridData": {
-        "w": 20,
-        "h": 10
-    },
-    "params": [
-        {
-            "paramName": "pdf_name",
-            "description": "PDF file to display",
-            "type": "endpoint",
-            "label": "PDF File",
-            "optionsEndpoint": "/get_pdf_options",
-            "show": False,
-            "value": ["Bitcoin Whitepaper"],
-            "multiSelect": True,
-            "roles": ["fileSelector"]
-        }
-    ]
-})
+
+@register_widget(
+    {
+        "name": "Multi PDF Viewer - Base64",
+        "description": "View multiple PDF files using base64 encoding",
+        "type": "multi_file_viewer",
+        "endpoint": "/multi_pdf_base64",
+        "gridData": {"w": 20, "h": 10},
+        "params": [
+            {
+                "paramName": "pdf_name",
+                "description": "PDF file to display",
+                "type": "endpoint",
+                "label": "PDF File",
+                "optionsEndpoint": "/get_pdf_options",
+                "show": False,
+                "value": ["Bitcoin Whitepaper"],
+                "multiSelect": True,
+                "roles": ["fileSelector"],
+            }
+        ],
+    }
+)
 @app.post("/multi_pdf_base64")
 async def get_multi_pdf_base64(
     pdf_name: List[str] = Body(..., embed=True)
@@ -1369,8 +1340,7 @@ async def get_multi_pdf_base64(
         if not pdf:
             files.append(
                 DataError(
-                    error_type="not_found", 
-                    content=f"PDF '{name}' not found"
+                    error_type="not_found", content=f"PDF '{name}' not found"
                 ).model_dump()
             )
             continue
@@ -1380,7 +1350,7 @@ async def get_multi_pdf_base64(
             files.append(
                 DataError(
                     error_type="not_found",
-                    content=f"PDF file '{pdf['location']}' not found on disk"
+                    content=f"PDF file '{pdf['location']}' not found on disk",
                 ).model_dump()
             )
             continue
@@ -1391,40 +1361,36 @@ async def get_multi_pdf_base64(
                 DataContent(
                     content=base64_content,
                     data_format=FileDataFormat(
-                        data_type="pdf",
-                        filename=f"{pdf['name']}.pdf"
-                    )
+                        data_type="pdf", filename=f"{pdf['name']}.pdf"
+                    ),
                 ).model_dump()
             )
 
-    return JSONResponse(
-        headers={"Content-Type": "application/json"},
-        content=files
-    )
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
 
-@register_widget({
-    "name": "Multi PDF Viewer - URL",
-    "description": "View multiple PDF files using URLs",
-    "type": "multi_file_viewer", 
-    "endpoint": "/multi_pdf_url",
-    "gridData": {
-        "w": 20,
-        "h": 10
-    },
-    "params": [
-        {
-            "paramName": "pdf_name",
-            "description": "PDF file to display",
-            "type": "endpoint",
-            "label": "PDF File",
-            "optionsEndpoint": "/get_pdf_options",
-            "value": ["Sample"],
-            "show": False,
-            "multiSelect": True,
-            "roles": ["fileSelector"]
-        }
-    ]
-})
+
+@register_widget(
+    {
+        "name": "Multi PDF Viewer - URL",
+        "description": "View multiple PDF files using URLs",
+        "type": "multi_file_viewer",
+        "endpoint": "/multi_pdf_url",
+        "gridData": {"w": 20, "h": 10},
+        "params": [
+            {
+                "paramName": "pdf_name",
+                "description": "PDF file to display",
+                "type": "endpoint",
+                "label": "PDF File",
+                "optionsEndpoint": "/get_pdf_options",
+                "value": ["Sample"],
+                "show": False,
+                "multiSelect": True,
+                "roles": ["fileSelector"],
+            }
+        ],
+    }
+)
 @app.post("/multi_pdf_url")
 async def get_multi_pdf_url(
     pdf_name: List[str] = Body(..., embed=True)
@@ -1436,8 +1402,7 @@ async def get_multi_pdf_url(
         if not pdf:
             files.append(
                 DataError(
-                    error_type="not_found",
-                    content=f"PDF '{name}' not found"
+                    error_type="not_found", content=f"PDF '{name}' not found"
                 ).model_dump()
             )
             continue
@@ -1447,126 +1412,132 @@ async def get_multi_pdf_url(
                 DataUrl(
                     url=url,
                     data_format=FileDataFormat(
-                        data_type="pdf",
-                        filename=f"{pdf['name']}.pdf"
-                    )
+                        data_type="pdf", filename=f"{pdf['name']}.pdf"
+                    ),
                 ).model_dump()
             )
         else:
             files.append(
                 DataError(
-                    error_type="not_found",
-                    content=f"URL not found for '{name}'"
+                    error_type="not_found", content=f"URL not found for '{name}'"
                 ).model_dump()
             )
 
-    return JSONResponse(
-        headers={"Content-Type": "application/json"},
-        content=files
-    )
+    return JSONResponse(headers={"Content-Type": "application/json"}, content=files)
+
 
 # This is a simple markdown widget with a date picker parameter
 # The date picker parameter is a date picker that allows users to select a specific date
-# and we pass this parameter to the widget as the date_picker parameter 
-@register_widget({
-    "name": "Markdown Widget with Date Picker",
-    "description": "A markdown widget with a date picker parameter",
-    "endpoint": "markdown_widget_with_date_picker",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "date_picker",
-            "description": "Choose a date to display",
-            "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
-            "label": "Select Date",
-            "type": "date"
-        }
-    ]
-})
+# and we pass this parameter to the widget as the date_picker parameter
+@register_widget(
+    {
+        "name": "Markdown Widget with Date Picker",
+        "description": "A markdown widget with a date picker parameter",
+        "endpoint": "markdown_widget_with_date_picker",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "date_picker",
+                "description": "Choose a date to display",
+                "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+                "label": "Select Date",
+                "type": "date",
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_date_picker")
 def markdown_widget_with_date_picker(
-    date_picker: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    date_picker: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
 ):
     """Returns a markdown widget with date picker parameter"""
     return f"""# Date Picker
 Selected date: {date_picker}
 """
 
+
 # This is a simple markdown widget with a text input parameter
 # The text input parameter is a text input that allows users to enter a specific text
 # and we pass this parameter to the widget as the textBox1 parameter
-@register_widget({
-    "name": "Markdown Widget with Text Input",
-    "description": "A markdown widget with a text input parameter",
-    "endpoint": "markdown_widget_with_text_input",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "text_box",
-            "value": "hello",
-            "label": "Enter Text",
-            "description": "Type something to display",
-            "type": "text"
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Text Input",
+        "description": "A markdown widget with a text input parameter",
+        "endpoint": "markdown_widget_with_text_input",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "text_box",
+                "value": "hello",
+                "label": "Enter Text",
+                "description": "Type something to display",
+                "type": "text",
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_text_input")
 def markdown_widget_with_text_input(text_box: str):
     """Returns a markdown widget with text input parameter"""
     return f"""# Text Input
 Entered text: {text_box}
-""" 
+"""
 
 
 # This is a simple markdown widget with an editable text input parameter
 # The editable text input parameter is a text input that allows users to enter a specific text
 # and we pass all of them as a list to the widget as the text_box parameter
 # The user is able to add more by just typing a new variable and pressing enter
-@register_widget({
-    "name": "Markdown Widget with Editable Text Input",
-    "description": "A markdown widget with an editable text input parameter",
-    "endpoint": "markdown_widget_with_editable_text_input",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "text_box",
-            "value": "var1,var2,var3",
-            "label": "Variables",
-            "description": "Type the variables to display, separated by commas",
-            "multiple": True,
-            "type": "text"
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Editable Text Input",
+        "description": "A markdown widget with an editable text input parameter",
+        "endpoint": "markdown_widget_with_editable_text_input",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "text_box",
+                "value": "var1,var2,var3",
+                "label": "Variables",
+                "description": "Type the variables to display, separated by commas",
+                "multiple": True,
+                "type": "text",
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_editable_text_input")
 def markdown_widget_with_editable_text_input(text_box: str):
     """Returns a markdown widget with text input parameter"""
     return f"""# Text Input
 Entered text: {text_box}
-""" 
+"""
+
 
 # This is a simple markdown widget with a boolean parameter
 # The boolean parameter is a boolean parameter that allows users to enable or disable a feature
 # and we pass this parameter to the widget as the condition parameter
-@register_widget({
-    "name": "Markdown Widget with Boolean Toggle",
-    "description": "A markdown widget with a boolean parameter",
-    "endpoint": "markdown_widget_with_boolean",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "condition",
-            "description": "Enable or disable this feature",
-            "label": "Toggle Option",
-            "type": "boolean",
-            "value": True,
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Boolean Toggle",
+        "description": "A markdown widget with a boolean parameter",
+        "endpoint": "markdown_widget_with_boolean",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "condition",
+                "description": "Enable or disable this feature",
+                "label": "Toggle Option",
+                "type": "boolean",
+                "value": True,
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_boolean")
 def markdown_widget_with_boolean(condition: bool):
     """Returns a markdown widget with boolean parameter"""
@@ -1574,25 +1545,28 @@ def markdown_widget_with_boolean(condition: bool):
 Current state: {'Enabled' if condition else 'Disabled'}
 """
 
+
 # This is a simple markdown widget with a text input parameter
 # The text input parameter is a text input that allows users to enter a specific text
 # and we pass this parameter to the widget as the textBox1 parameter
-@register_widget({
-    "name": "Markdown Widget with Number Input",
-    "description": "A markdown widget with a number input parameter",
-    "endpoint": "markdown_widget_with_number_input",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "number_box",
-            "description": "Enter a number",
-            "value": 20,
-            "label": "Enter Number",
-            "type": "number"
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Number Input",
+        "description": "A markdown widget with a number input parameter",
+        "endpoint": "markdown_widget_with_number_input",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "number_box",
+                "description": "Enter a number",
+                "value": 20,
+                "label": "Enter Number",
+                "type": "number",
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_number_input")
 def markdown_widget_with_number_input(number_box: int):
     """Returns a markdown widget with number input parameter"""
@@ -1600,49 +1574,37 @@ def markdown_widget_with_number_input(number_box: int):
 Entered number: {number_box}
 """
 
+
 # This is a simple markdown widget with a dropdown parameter
 # The dropdown parameter is a dropdown parameter that allows users to select a specific option
 # and we pass this parameter to the widget as the days_picker parameter
 # Note that the multiSelect parameter is set to True, so the user can select multiple options
-@register_widget({
-    "name": "Markdown Widget with Dropdown",
-    "description": "A markdown widget with a dropdown parameter",
-    "endpoint": "markdown_widget_with_dropdown",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "days_picker",
-            "description": "Number of days to look back",
-            "value": "1",
-            "label": "Select Days",
-            "type": "text",
-            "multiSelect": True,
-            "options": [
-                {
-                    "value": "1",
-                    "label": "1"
-                },
-                {
-                    "value": "5",
-                    "label": "5"
-                },
-                {
-                    "value": "10",
-                    "label": "10"
-                },
-                {
-                    "value": "20",
-                    "label": "20"
-                },
-                {
-                    "value": "30",
-                    "label": "30"
-                }
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Markdown Widget with Dropdown",
+        "description": "A markdown widget with a dropdown parameter",
+        "endpoint": "markdown_widget_with_dropdown",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "days_picker",
+                "description": "Number of days to look back",
+                "value": "1",
+                "label": "Select Days",
+                "type": "text",
+                "multiSelect": True,
+                "options": [
+                    {"value": "1", "label": "1"},
+                    {"value": "5", "label": "5"},
+                    {"value": "10", "label": "10"},
+                    {"value": "20", "label": "20"},
+                    {"value": "30", "label": "30"},
+                ],
+            }
+        ],
+    }
+)
 @app.get("/markdown_widget_with_dropdown")
 def markdown_widget_with_dropdown(days_picker: str):
     """Returns a markdown widget with dropdown parameter"""
@@ -1661,55 +1623,55 @@ def advanced_dropdown_options():
     return [
         {
             "label": "Apple Inc.",
-            "value": "AAPL", 
+            "value": "AAPL",
             "extraInfo": {
                 "description": "Technology Company",
-                "rightOfDescription": "NASDAQ"
-            }
+                "rightOfDescription": "NASDAQ",
+            },
         },
         {
             "label": "Microsoft Corporation",
             "value": "MSFT",
             "extraInfo": {
-                "description": "Software Company", 
-                "rightOfDescription": "NASDAQ"
-            }
+                "description": "Software Company",
+                "rightOfDescription": "NASDAQ",
+            },
         },
         {
             "label": "Google",
             "value": "GOOGL",
             "extraInfo": {
                 "description": "Search Engine",
-                "rightOfDescription": "NASDAQ"
-            }
-        }
+                "rightOfDescription": "NASDAQ",
+            },
+        },
     ]
 
 
 # This is a simple markdown widget with an advanced drodpown with more information and allowed to select multiple options
 # It uses the optionsEndpoint to get the list of possible options as opposed to having them hardcoded in the widget
 # The style parameter is used to customize the dropdown widget, in this case we are setting the popupWidth to 450px
-@register_widget({
-    "name": "Markdown Widget with Multi Select Advanced Dropdown",
-    "description": "A markdown widget with a multi select advanced dropdown parameter",
-    "endpoint": "markdown_widget_with_multi_select_advanced_dropdown",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "stock_picker",
-            "description": "Select a stock to analyze",
-            "value": "AAPL",
-            "label": "Select Stock",
-            "type": "endpoint",
-            "multiSelect": True,
-            "optionsEndpoint": "/advanced_dropdown_options",
-            "style": {
-                "popupWidth": 450
+@register_widget(
+    {
+        "name": "Markdown Widget with Multi Select Advanced Dropdown",
+        "description": "A markdown widget with a multi select advanced dropdown parameter",
+        "endpoint": "markdown_widget_with_multi_select_advanced_dropdown",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            {
+                "paramName": "stock_picker",
+                "description": "Select a stock to analyze",
+                "value": "AAPL",
+                "label": "Select Stock",
+                "type": "endpoint",
+                "multiSelect": True,
+                "optionsEndpoint": "/advanced_dropdown_options",
+                "style": {"popupWidth": 450},
             }
-        }
-    ]
-})
+        ],
+    }
+)
 @app.get("/markdown_widget_with_multi_select_advanced_dropdown")
 def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
     """Returns a markdown widget with multi select advanced dropdown parameter"""
@@ -1717,30 +1679,36 @@ def markdown_widget_with_multi_select_advanced_dropdown(stock_picker: str):
 Selected stocks: {stock_picker}
 """
 
+
 # Define more than one widget with the same endpoint
 # Note that the id is used to identify the widget in the OpenBB Workspace
 # and when more than one is defined we are utilizing it to differentiate between them
 # since the endpoint cannot be used for the id for both anymore
-@register_widget({
-    # If we don't specify the widgetId, it will be the same as the endpoint
-    "name": "Same Markdown Widget",
-    "description": "Same markdown widget",
-    "type": "markdown",
-    "endpoint": "same_markdown_widget",
-    "gridData": {"w": 12, "h": 4},
-})
-@register_widget({
-    "widgetId": "same_markdown_widget_2",
-    "name": "Same Markdown Widget 2",
-    "description": "Same markdown widget 2",
-    "type": "markdown",
-    "endpoint": "same_markdown_widget",
-    "gridData": {"w": 12, "h": 4},
-})
+@register_widget(
+    {
+        # If we don't specify the widgetId, it will be the same as the endpoint
+        "name": "Same Markdown Widget",
+        "description": "Same markdown widget",
+        "type": "markdown",
+        "endpoint": "same_markdown_widget",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
+@register_widget(
+    {
+        "widgetId": "same_markdown_widget_2",
+        "name": "Same Markdown Widget 2",
+        "description": "Same markdown widget 2",
+        "type": "markdown",
+        "endpoint": "same_markdown_widget",
+        "gridData": {"w": 12, "h": 4},
+    }
+)
 @app.get("/same_markdown_widget")
 def same_markdown_widget():
     """Returns a markdown widget"""
     return "# The very same widget"
+
 
 # This endpoint provides the list of available documents
 # It takes a category parameter to filter the documents
@@ -1751,79 +1719,65 @@ def get_document_options(category: str = "all"):
     # Sample documents data - This is our mock database of documents
     # Each document has a name and belongs to a category
     SAMPLE_DOCUMENTS = [
-        {
-            "name": "Q1 Report",
-            "category": "reports"
-        },
-        {
-            "name": "Q2 Report",
-            "category": "reports"
-        },
-        {
-            "name": "Investor Presentation",
-            "category": "presentations"
-        },
-        {
-            "name": "Product Roadmap",
-            "category": "presentations"
-        }
+        {"name": "Q1 Report", "category": "reports"},
+        {"name": "Q2 Report", "category": "reports"},
+        {"name": "Investor Presentation", "category": "presentations"},
+        {"name": "Product Roadmap", "category": "presentations"},
     ]
 
     # Filter documents based on category
     filtered_docs = (
-        SAMPLE_DOCUMENTS if category == "all"
+        SAMPLE_DOCUMENTS
+        if category == "all"
         else [doc for doc in SAMPLE_DOCUMENTS if doc["category"] == category]
     )
-    
+
     # Return the filtered documents in the format expected by the dropdown
     # Each document needs a label (what the user sees) and a value (what's passed to the backend)
-    return [
-        {
-            "label": doc["name"],
-            "value": doc["name"]
-        }
-        for doc in filtered_docs
-    ]
+    return [{"label": doc["name"], "value": doc["name"]} for doc in filtered_docs]
+
 
 # This widget demonstrates how to create dependent dropdowns
 # The first dropdown (category) controls what options are available in the second dropdown (document)
-@register_widget({
-    "name": "Dropdown Dependent Widget",
-    "description": "A simple widget with a dropdown depending on another dropdown",
-    "endpoint": "dropdown_dependent_widget",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        # First dropdown - Category selection
-        # This is a simple text dropdown with predefined options
-        {
-            "paramName": "category",
-            "description": "Category of documents to fetch",
-            "value": "all",  # Default value
-            "label": "Category",
-            "type": "text",
-            "options": [
-                {"label": "All", "value": "all"},
-                {"label": "Reports", "value": "reports"},
-                {"label": "Presentations", "value": "presentations"}
-            ]
-        },
-        # Second dropdown - Document selection
-        # This is an endpoint-based dropdown that gets its options from /document_options
-        # The optionsParams property tells the endpoint to use the value from the category dropdown
-        # The $category syntax means "use the value of the parameter named 'category'"
-        {
-            "paramName": "document_type",
-            "description": "Document to display",
-            "label": "Select Document",
-            "type": "endpoint",
-            "optionsEndpoint": "/document_options",
-            "optionsParams": {
-                "category": "$category"  # This passes the selected category to the endpoint
-            }
-        },
-    ]
-})
+@register_widget(
+    {
+        "name": "Dropdown Dependent Widget",
+        "description": "A simple widget with a dropdown depending on another dropdown",
+        "endpoint": "dropdown_dependent_widget",
+        "gridData": {"w": 16, "h": 6},
+        "type": "markdown",
+        "params": [
+            # First dropdown - Category selection
+            # This is a simple text dropdown with predefined options
+            {
+                "paramName": "category",
+                "description": "Category of documents to fetch",
+                "value": "all",  # Default value
+                "label": "Category",
+                "type": "text",
+                "options": [
+                    {"label": "All", "value": "all"},
+                    {"label": "Reports", "value": "reports"},
+                    {"label": "Presentations", "value": "presentations"},
+                ],
+            },
+            # Second dropdown - Document selection
+            # This is an endpoint-based dropdown that gets its options from /document_options
+            # The optionsParams property tells the endpoint to use the value from the category dropdown
+            # The $category syntax means "use the value of the parameter named 'category'"
+            {
+                "paramName": "document_type",
+                "description": "Document to display",
+                "label": "Select Document",
+                "type": "endpoint",
+                "optionsEndpoint": "/document_options",
+                "optionsParams": {
+                    "category": "$category"  # This passes the selected category to the endpoint
+                },
+            },
+        ],
+    }
+)
 @app.get("/dropdown_dependent_widget")
 def dropdown_dependent_widget(category: str = "all", document_type: str = "all"):
     """Returns a dropdown dependent widget"""
@@ -1845,7 +1799,7 @@ def get_company_options():
         {"label": "Volkswagen Group", "value": "VWAGY"},
         {"label": "General Motors", "value": "GM"},
         {"label": "Ford Motor Company", "value": "F"},
-        {"label": "Tesla Inc.", "value": "TSLA"}
+        {"label": "Tesla Inc.", "value": "TSLA"},
     ]
 
 
@@ -1858,62 +1812,64 @@ def get_company_options():
 # When grouped, changing a parameter in one widget will automatically update the other
 # Note that both widgets also share the same optionsEndpoint ("/company_options")
 # which ensures they have identical options in their dropdowns
-@register_widget({
-    "name": "Car Manufacturer Performance",
-    "description": "Displays performance metrics for the selected car manufacturer",
-    "type": "table",
-    "endpoint": "company_performance",
-    "gridData": {"w": 16, "h": 8},
-    "params": [
-        {
-            "paramName": "company",  # Shared paramName with company_details widget
-            "description": "Select a car manufacturer to view performance",
-            "value": "TM",
-            "label": "Manufacturer",
-            "type": "endpoint",
-            "optionsEndpoint": "/company_options"  # Shared endpoint with company_details widget
+@register_widget(
+    {
+        "name": "Car Manufacturer Performance",
+        "description": "Displays performance metrics for the selected car manufacturer",
+        "type": "table",
+        "endpoint": "company_performance",
+        "gridData": {"w": 16, "h": 8},
+        "params": [
+            {
+                "paramName": "company",  # Shared paramName with company_details widget
+                "description": "Select a car manufacturer to view performance",
+                "value": "TM",
+                "label": "Manufacturer",
+                "type": "endpoint",
+                "optionsEndpoint": "/company_options",  # Shared endpoint with company_details widget
+            },
+            {
+                "paramName": "year",  # Shared paramName with company_details widget
+                "description": "Select model year to view performance",
+                "value": "2024",
+                "label": "Model Year",
+                "type": "text",
+                "options": [
+                    {"label": "2024", "value": "2024"},
+                    {"label": "2023", "value": "2023"},
+                    {"label": "2022", "value": "2022"},
+                ],
+            },
+        ],
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "field": "metric",
+                        "headerName": "Metric",
+                        "cellDataType": "text",
+                        "width": 150,
+                    },
+                    {
+                        "field": "value",
+                        "headerName": "Value",
+                        "cellDataType": "text",
+                        "width": 150,
+                    },
+                    {
+                        "field": "change",
+                        "headerName": "Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",
+                        "width": 150,
+                    },
+                ],
+            }
         },
-        {
-            "paramName": "year",  # Shared paramName with company_details widget
-            "description": "Select model year to view performance",
-            "value": "2024",
-            "label": "Model Year",
-            "type": "text",
-            "options": [
-                {"label": "2024", "value": "2024"},
-                {"label": "2023", "value": "2023"},
-                {"label": "2022", "value": "2022"}
-            ]
-        }
-    ],
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "field": "metric",
-                    "headerName": "Metric",
-                    "cellDataType": "text",
-                    "width": 150
-                },
-                {
-                    "field": "value",
-                    "headerName": "Value",
-                    "cellDataType": "text",
-                    "width": 150
-                },
-                {
-                    "field": "change",
-                    "headerName": "Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",
-                    "width": 150
-                }
-            ]
-        }
     }
-})
+)
 @app.get("/company_performance")
 def get_company_performance(company: str, year: str = "2024"):
     """Returns car manufacturer performance metrics"""
@@ -1923,106 +1879,107 @@ def get_company_performance(company: str, year: str = "2024"):
                 {"metric": "Global Sales", "value": "10.5M", "change": 5.2},
                 {"metric": "EV Sales", "value": "1.2M", "change": 45.8},
                 {"metric": "Operating Margin", "value": "8.5%", "change": 1.2},
-                {"metric": "R&D Investment", "value": "$12.5B", "change": 15.3}
+                {"metric": "R&D Investment", "value": "$12.5B", "change": 15.3},
             ],
             "2023": [
                 {"metric": "Global Sales", "value": "9.98M", "change": 3.1},
                 {"metric": "EV Sales", "value": "0.82M", "change": 35.2},
                 {"metric": "Operating Margin", "value": "7.3%", "change": 0.8},
-                {"metric": "R&D Investment", "value": "$10.8B", "change": 12.5}
+                {"metric": "R&D Investment", "value": "$10.8B", "change": 12.5},
             ],
             "2022": [
                 {"metric": "Global Sales", "value": "9.67M", "change": 1.2},
                 {"metric": "EV Sales", "value": "0.61M", "change": 25.4},
                 {"metric": "Operating Margin", "value": "6.5%", "change": -0.5},
-                {"metric": "R&D Investment", "value": "$9.6B", "change": 8.7}
-            ]
+                {"metric": "R&D Investment", "value": "$9.6B", "change": 8.7},
+            ],
         },
         "VWAGY": {
             "2024": [
                 {"metric": "Global Sales", "value": "9.2M", "change": 4.8},
                 {"metric": "EV Sales", "value": "1.5M", "change": 52.3},
                 {"metric": "Operating Margin", "value": "7.8%", "change": 1.5},
-                {"metric": "R&D Investment", "value": "$15.2B", "change": 18.5}
+                {"metric": "R&D Investment", "value": "$15.2B", "change": 18.5},
             ],
             "2023": [
                 {"metric": "Global Sales", "value": "8.78M", "change": 3.2},
                 {"metric": "EV Sales", "value": "0.98M", "change": 42.1},
                 {"metric": "Operating Margin", "value": "6.3%", "change": 0.9},
-                {"metric": "R&D Investment", "value": "$12.8B", "change": 15.2}
+                {"metric": "R&D Investment", "value": "$12.8B", "change": 15.2},
             ],
             "2022": [
                 {"metric": "Global Sales", "value": "8.5M", "change": 1.8},
                 {"metric": "EV Sales", "value": "0.69M", "change": 32.5},
                 {"metric": "Operating Margin", "value": "5.4%", "change": -0.7},
-                {"metric": "R&D Investment", "value": "$11.1B", "change": 10.8}
-            ]
+                {"metric": "R&D Investment", "value": "$11.1B", "change": 10.8},
+            ],
         },
         "GM": {
             "2024": [
                 {"metric": "Global Sales", "value": "6.8M", "change": 3.5},
                 {"metric": "EV Sales", "value": "0.8M", "change": 48.2},
                 {"metric": "Operating Margin", "value": "8.2%", "change": 1.8},
-                {"metric": "R&D Investment", "value": "$9.5B", "change": 16.5}
+                {"metric": "R&D Investment", "value": "$9.5B", "change": 16.5},
             ],
             "2023": [
                 {"metric": "Global Sales", "value": "6.57M", "change": 2.1},
                 {"metric": "EV Sales", "value": "0.54M", "change": 38.5},
                 {"metric": "Operating Margin", "value": "6.4%", "change": 1.2},
-                {"metric": "R&D Investment", "value": "$8.15B", "change": 14.2}
+                {"metric": "R&D Investment", "value": "$8.15B", "change": 14.2},
             ],
             "2022": [
                 {"metric": "Global Sales", "value": "6.43M", "change": 0.8},
                 {"metric": "EV Sales", "value": "0.39M", "change": 28.7},
                 {"metric": "Operating Margin", "value": "5.2%", "change": -0.5},
-                {"metric": "R&D Investment", "value": "$7.13B", "change": 9.8}
-            ]
+                {"metric": "R&D Investment", "value": "$7.13B", "change": 9.8},
+            ],
         },
         "F": {
             "2024": [
                 {"metric": "Global Sales", "value": "4.2M", "change": 2.8},
                 {"metric": "EV Sales", "value": "0.6M", "change": 42.5},
                 {"metric": "Operating Margin", "value": "7.5%", "change": 1.5},
-                {"metric": "R&D Investment", "value": "$8.2B", "change": 15.8}
+                {"metric": "R&D Investment", "value": "$8.2B", "change": 15.8},
             ],
             "2023": [
                 {"metric": "Global Sales", "value": "4.08M", "change": 1.5},
                 {"metric": "EV Sales", "value": "0.42M", "change": 35.2},
                 {"metric": "Operating Margin", "value": "6.0%", "change": 1.0},
-                {"metric": "R&D Investment", "value": "$7.08B", "change": 13.5}
+                {"metric": "R&D Investment", "value": "$7.08B", "change": 13.5},
             ],
             "2022": [
                 {"metric": "Global Sales", "value": "4.02M", "change": 0.5},
                 {"metric": "EV Sales", "value": "0.31M", "change": 25.8},
                 {"metric": "Operating Margin", "value": "5.0%", "change": -0.8},
-                {"metric": "R&D Investment", "value": "$6.24B", "change": 8.9}
-            ]
+                {"metric": "R&D Investment", "value": "$6.24B", "change": 8.9},
+            ],
         },
         "TSLA": {
             "2024": [
                 {"metric": "Global Sales", "value": "2.1M", "change": 35.2},
                 {"metric": "EV Sales", "value": "2.1M", "change": 35.2},
                 {"metric": "Operating Margin", "value": "15.5%", "change": 3.7},
-                {"metric": "R&D Investment", "value": "$4.5B", "change": 25.8}
+                {"metric": "R&D Investment", "value": "$4.5B", "change": 25.8},
             ],
             "2023": [
                 {"metric": "Global Sales", "value": "1.55M", "change": 28.5},
                 {"metric": "EV Sales", "value": "1.55M", "change": 28.5},
                 {"metric": "Operating Margin", "value": "11.8%", "change": 2.5},
-                {"metric": "R&D Investment", "value": "$3.58B", "change": 22.3}
+                {"metric": "R&D Investment", "value": "$3.58B", "change": 22.3},
             ],
             "2022": [
                 {"metric": "Global Sales", "value": "1.21M", "change": 21.8},
                 {"metric": "EV Sales", "value": "1.21M", "change": 21.8},
                 {"metric": "Operating Margin", "value": "9.3%", "change": 1.8},
-                {"metric": "R&D Investment", "value": "$2.93B", "change": 18.5}
-            ]
-        }
+                {"metric": "R&D Investment", "value": "$2.93B", "change": 18.5},
+            ],
+        },
     }
-    
-    return performance_data.get(company, {}).get(year, [
-        {"metric": "No Data", "value": "N/A", "change": 0}
-    ])
+
+    return performance_data.get(company, {}).get(
+        year, [{"metric": "No Data", "value": "N/A", "change": 0}]
+    )
+
 
 # This widget is grouped with the company_performance widget above
 # They share the same paramNames ("company" and "year")
@@ -2034,35 +1991,37 @@ def get_company_performance(company: str, year: str = "2024"):
 # 1. Using identical paramNames in both widgets
 # 2. Using the same optionsEndpoint for shared parameters
 # 3. Configuring the grouping in apps.json or through the UI
-@register_widget({
-    "name": "Car Manufacturer Details",
-    "description": "Displays detailed information about the selected car manufacturer",
-    "type": "markdown",
-    "endpoint": "company_details",
-    "gridData": {"w": 16, "h": 8},
-    "params": [
-        {
-            "paramName": "company",  # Shared paramName with company_performance widget
-            "description": "Select a car manufacturer to view details",
-            "value": "TM",
-            "label": "Manufacturer",
-            "type": "endpoint",
-            "optionsEndpoint": "/company_options"  # Shared endpoint with company_performance widget
-        },
-        {
-            "paramName": "year",  # Shared paramName with company_performance widget
-            "description": "Select model year to view details",
-            "value": "2024",
-            "label": "Model Year",
-            "type": "text",
-            "options": [
-                {"label": "2024", "value": "2024"},
-                {"label": "2023", "value": "2023"},
-                {"label": "2022", "value": "2022"}
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Car Manufacturer Details",
+        "description": "Displays detailed information about the selected car manufacturer",
+        "type": "markdown",
+        "endpoint": "company_details",
+        "gridData": {"w": 16, "h": 8},
+        "params": [
+            {
+                "paramName": "company",  # Shared paramName with company_performance widget
+                "description": "Select a car manufacturer to view details",
+                "value": "TM",
+                "label": "Manufacturer",
+                "type": "endpoint",
+                "optionsEndpoint": "/company_options",  # Shared endpoint with company_performance widget
+            },
+            {
+                "paramName": "year",  # Shared paramName with company_performance widget
+                "description": "Select model year to view details",
+                "value": "2024",
+                "label": "Model Year",
+                "type": "text",
+                "options": [
+                    {"label": "2024", "value": "2024"},
+                    {"label": "2023", "value": "2023"},
+                    {"label": "2022", "value": "2022"},
+                ],
+            },
+        ],
+    }
+)
 @app.get("/company_details")
 def get_company_details(company: str, year: str = "2024"):
     """Returns car manufacturer details in markdown format"""
@@ -2077,8 +2036,8 @@ def get_company_details(company: str, year: str = "2024"):
             "models": {
                 "2024": ["Camry", "Corolla", "RAV4", "Highlander"],
                 "2023": ["Camry", "Corolla", "RAV4", "Highlander"],
-                "2022": ["Camry", "Corolla", "RAV4", "Highlander"]
-            }
+                "2022": ["Camry", "Corolla", "RAV4", "Highlander"],
+            },
         },
         "VWAGY": {
             "name": "Volkswagen Group",
@@ -2090,8 +2049,8 @@ def get_company_details(company: str, year: str = "2024"):
             "models": {
                 "2024": ["Golf", "Passat", "Tiguan", "ID.4"],
                 "2023": ["Golf", "Passat", "Tiguan", "ID.4"],
-                "2022": ["Golf", "Passat", "Tiguan", "ID.4"]
-            }
+                "2022": ["Golf", "Passat", "Tiguan", "ID.4"],
+            },
         },
         "GM": {
             "name": "General Motors",
@@ -2103,8 +2062,8 @@ def get_company_details(company: str, year: str = "2024"):
             "models": {
                 "2024": ["Silverado", "Equinox", "Malibu", "Corvette"],
                 "2023": ["Silverado", "Equinox", "Malibu", "Corvette"],
-                "2022": ["Silverado", "Equinox", "Malibu", "Corvette"]
-            }
+                "2022": ["Silverado", "Equinox", "Malibu", "Corvette"],
+            },
         },
         "F": {
             "name": "Ford Motor Company",
@@ -2116,8 +2075,8 @@ def get_company_details(company: str, year: str = "2024"):
             "models": {
                 "2024": ["F-150", "Mustang", "Explorer", "Mach-E"],
                 "2023": ["F-150", "Mustang", "Explorer", "Mach-E"],
-                "2022": ["F-150", "Mustang", "Explorer", "Mach-E"]
-            }
+                "2022": ["F-150", "Mustang", "Explorer", "Mach-E"],
+            },
         },
         "TSLA": {
             "name": "Tesla Inc.",
@@ -2129,23 +2088,26 @@ def get_company_details(company: str, year: str = "2024"):
             "models": {
                 "2024": ["Model 3", "Model Y", "Model S", "Model X"],
                 "2023": ["Model 3", "Model Y", "Model S", "Model X"],
-                "2022": ["Model 3", "Model Y", "Model S", "Model X"]
-            }
-        }
+                "2022": ["Model 3", "Model Y", "Model S", "Model X"],
+            },
+        },
     }
-    
-    details = company_info.get(company, {
-        "name": "Unknown",
-        "sector": "Unknown",
-        "market_cap": "N/A",
-        "pe_ratio": 0,
-        "dividend_yield": 0,
-        "description": "No information available for this manufacturer.",
-        "models": {"2024": [], "2023": [], "2022": []}
-    })
-    
-    models = details['models'].get(year, [])
-    
+
+    details = company_info.get(
+        company,
+        {
+            "name": "Unknown",
+            "sector": "Unknown",
+            "market_cap": "N/A",
+            "pe_ratio": 0,
+            "dividend_yield": 0,
+            "description": "No information available for this manufacturer.",
+            "models": {"2024": [], "2023": [], "2022": []},
+        },
+    )
+
+    models = details["models"].get(year, [])
+
     return f"""# {details['name']} ({company}) - {year} Models
 **Sector:** {details['sector']}
 **Market Cap:** ${details['market_cap']}
@@ -2158,6 +2120,7 @@ def get_company_details(company: str, year: str = "2024"):
 {', '.join(models)}
 """
 
+
 # This endpoint provides a list of available stock symbols
 # This is used by both widgets to populate their dropdown menus
 @app.get("/get_tickers_list")
@@ -2168,144 +2131,119 @@ def get_tickers_list():
         {"label": "Microsoft Corporation", "value": "MSFT"},
         {"label": "Google", "value": "GOOGL"},
         {"label": "Amazon", "value": "AMZN"},
-        {"label": "Tesla", "value": "TSLA"}
+        {"label": "Tesla", "value": "TSLA"},
     ]
+
 
 # This widget demonstrates how to use cellOnClick with grouping functionality
 # The key feature here is the cellOnClick renderFn in the symbol column
 # When a user clicks on a symbol cell, it triggers the groupBy action
 # This action updates all widgets that use the same parameter name (symbol)
-@register_widget({
-    "name": "Table widget with grouping by cell click",
-    "description": "A table widget that groups data when clicking on symbols. Click on a symbol to update all related widgets.",
-    "type": "table",
-    "endpoint": "table_widget_with_grouping_by_cell_click",
-    "params": [
-        {
-            "paramName": "symbol",  # This parameter name is crucial - it's used for grouping
-            "description": "Select stocks to display",
-            "value": "AAPL",
-            "label": "Symbol",
-            "type": "endpoint",
-            "optionsEndpoint": "/get_tickers_list",
-            "multiSelect": False,
-            "show": True
-        }
-    ],
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "field": "symbol",
-                    "headerName": "Symbol",
-                    "cellDataType": "text",
-                    "width": 120,
-                    "pinned": "left",
-                    # The cellOnClick renderFn makes cells clickable
-                    "renderFn": "cellOnClick",
-                    "renderFnParams": {
-                        # groupBy action type means clicking will update all widgets using this parameter
-                        "actionType": "groupBy",
-                        # This must match the paramName in both widgets for grouping to work
-                        "groupByParamName": "symbol"
-                    }
-                },
-                {
-                    "field": "price",
-                    "headerName": "Price",
-                    "cellDataType": "number",
-                    "formatterFn": "none",
-                    "width": 120
-                },
-                {
-                    "field": "change",
-                    "headerName": "Change",
-                    "cellDataType": "number",
-                    "formatterFn": "percent",
-                    "renderFn": "greenRed",  # Shows positive/negative changes in green/red
-                    "width": 120
-                },
-                {
-                    "field": "volume",
-                    "headerName": "Volume",
-                    "cellDataType": "number",
-                    "formatterFn": "int",
-                    "width": 150
-                }
-            ]
-        }
-    },
-    "gridData": {
-        "w": 20,
-        "h": 9
+@register_widget(
+    {
+        "name": "Table widget with grouping by cell click",
+        "description": "A table widget that groups data when clicking on symbols. Click on a symbol to update all related widgets.",
+        "type": "table",
+        "endpoint": "table_widget_with_grouping_by_cell_click",
+        "params": [
+            {
+                "paramName": "symbol",  # This parameter name is crucial - it's used for grouping
+                "description": "Select stocks to display",
+                "value": "AAPL",
+                "label": "Symbol",
+                "type": "endpoint",
+                "optionsEndpoint": "/get_tickers_list",
+                "multiSelect": False,
+                "show": True,
+            }
+        ],
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "field": "symbol",
+                        "headerName": "Symbol",
+                        "cellDataType": "text",
+                        "width": 120,
+                        "pinned": "left",
+                        # The cellOnClick renderFn makes cells clickable
+                        "renderFn": "cellOnClick",
+                        "renderFnParams": {
+                            # groupBy action type means clicking will update all widgets using this parameter
+                            "actionType": "groupBy",
+                            # This must match the paramName in both widgets for grouping to work
+                            "groupByParamName": "symbol",
+                        },
+                    },
+                    {
+                        "field": "price",
+                        "headerName": "Price",
+                        "cellDataType": "number",
+                        "formatterFn": "none",
+                        "width": 120,
+                    },
+                    {
+                        "field": "change",
+                        "headerName": "Change",
+                        "cellDataType": "number",
+                        "formatterFn": "percent",
+                        "renderFn": "greenRed",  # Shows positive/negative changes in green/red
+                        "width": 120,
+                    },
+                    {
+                        "field": "volume",
+                        "headerName": "Volume",
+                        "cellDataType": "number",
+                        "formatterFn": "int",
+                        "width": 150,
+                    },
+                ],
+            }
+        },
+        "gridData": {"w": 20, "h": 9},
     }
-})
+)
 @app.get("/table_widget_with_grouping_by_cell_click")
 def table_widget_with_grouping_by_cell_click(symbol: str = "AAPL"):
     """Returns stock data that can be grouped by symbol"""
     # Mock data - in a real application, this would come from a data source
     mock_data = [
-        {
-            "symbol": "AAPL",
-            "price": 175.50,
-            "change": 0.015,
-            "volume": 50000000
-        },
-        {
-            "symbol": "MSFT",
-            "price": 380.25,
-            "change": -0.008,
-            "volume": 25000000
-        },
-        {
-            "symbol": "GOOGL",
-            "price": 140.75,
-            "change": 0.022,
-            "volume": 15000000
-        },
-        {
-            "symbol": "AMZN",
-            "price": 175.25,
-            "change": 0.005,
-            "volume": 30000000
-        },
-        {
-            "symbol": "TSLA",
-            "price": 175.50,
-            "change": -0.012,
-            "volume": 45000000
-        }
+        {"symbol": "AAPL", "price": 175.50, "change": 0.015, "volume": 50000000},
+        {"symbol": "MSFT", "price": 380.25, "change": -0.008, "volume": 25000000},
+        {"symbol": "GOOGL", "price": 140.75, "change": 0.022, "volume": 15000000},
+        {"symbol": "AMZN", "price": 175.25, "change": 0.005, "volume": 30000000},
+        {"symbol": "TSLA", "price": 175.50, "change": -0.012, "volume": 45000000},
     ]
-    
+
     return mock_data
+
 
 # This widget demonstrates how to use the grouped symbol parameter
 # It will update automatically when a symbol is clicked in the stock table
 # The key to making this work is using the same paramName ("symbol") as the table widget
 # When a user clicks a symbol in the table, this widget will automatically update
 # to show details for the selected symbol
-@register_widget({
-    "name": "Widget managed by parameter from cell click on table widget",
-    "description": "This widget demonstrates how to use the grouped symbol parameter from a table widget. When a symbol is clicked in the table, this widget will automatically update to show details for the selected symbol.",
-    "type": "markdown",
-    "endpoint": "widget_managed_by_parameter_from_cell_click_on_table_widget",
-    "params": [
-        {
-            "paramName": "symbol",  # Must match the groupByParamName in the table widget
-            "description": "The symbol to get details for",
-            "value": "AAPL",
-            "label": "Symbol",
-            "type": "endpoint",
-            "optionsEndpoint": "/get_tickers_list",
-            "show": True
-        }
-    ],
-    "gridData": {
-        "w": 20,
-        "h": 6
+@register_widget(
+    {
+        "name": "Widget managed by parameter from cell click on table widget",
+        "description": "This widget demonstrates how to use the grouped symbol parameter from a table widget. When a symbol is clicked in the table, this widget will automatically update to show details for the selected symbol.",
+        "type": "markdown",
+        "endpoint": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+        "params": [
+            {
+                "paramName": "symbol",  # Must match the groupByParamName in the table widget
+                "description": "The symbol to get details for",
+                "value": "AAPL",
+                "label": "Symbol",
+                "type": "endpoint",
+                "optionsEndpoint": "/get_tickers_list",
+                "show": True,
+            }
+        ],
+        "gridData": {"w": 20, "h": 6},
     }
-})
+)
 @app.get("/widget_managed_by_parameter_from_cell_click_on_table_widget")
 def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "AAPL"):
     """Returns detailed information about the selected stock"""
@@ -2317,7 +2255,7 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
             "market_cap": "2.8T",
             "pe_ratio": 28.5,
             "dividend_yield": 0.5,
-            "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide."
+            "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.",
         },
         "MSFT": {
             "name": "Microsoft Corporation",
@@ -2325,7 +2263,7 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
             "market_cap": "2.5T",
             "pe_ratio": 35.2,
             "dividend_yield": 0.8,
-            "description": "Microsoft Corporation develops and supports software, services, devices, and solutions worldwide."
+            "description": "Microsoft Corporation develops and supports software, services, devices, and solutions worldwide.",
         },
         "GOOGL": {
             "name": "Alphabet Inc.",
@@ -2333,7 +2271,7 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
             "market_cap": "1.8T",
             "pe_ratio": 25.8,
             "dividend_yield": 0.0,
-            "description": "Alphabet Inc. provides various products and platforms in the United States, Europe, the Middle East, Africa, the Asia-Pacific, Canada, and Latin America."
+            "description": "Alphabet Inc. provides various products and platforms in the United States, Europe, the Middle East, Africa, the Asia-Pacific, Canada, and Latin America.",
         },
         "AMZN": {
             "name": "Amazon.com Inc.",
@@ -2341,7 +2279,7 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
             "market_cap": "1.6T",
             "pe_ratio": 45.2,
             "dividend_yield": 0.0,
-            "description": "Amazon.com Inc. engages in the retail sale of consumer products and subscriptions in North America and internationally."
+            "description": "Amazon.com Inc. engages in the retail sale of consumer products and subscriptions in North America and internationally.",
         },
         "TSLA": {
             "name": "Tesla Inc.",
@@ -2349,21 +2287,24 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
             "market_cap": "800B",
             "pe_ratio": 65.3,
             "dividend_yield": 0.0,
-            "description": "Tesla Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally."
-        }
+            "description": "Tesla Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally.",
+        },
     }
-    
+
     # Get details for the selected symbol
     # If no symbol is selected or symbol doesn't exist, return default values
-    details = stock_details.get(symbol, {
-        "name": "Unknown",
-        "sector": "Unknown",
-        "market_cap": "N/A",
-        "pe_ratio": 0,
-        "dividend_yield": 0,
-        "description": "No information available for this symbol."
-    })
-    
+    details = stock_details.get(
+        symbol,
+        {
+            "name": "Unknown",
+            "sector": "Unknown",
+            "market_cap": "N/A",
+            "pe_ratio": 0,
+            "dividend_yield": 0,
+            "description": "No information available for this symbol.",
+        },
+    )
+
     return f"""# {details['name']} ({symbol})
 **Sector:** {details['sector']}\n
 **Market Cap:** ${details['market_cap']}\n
@@ -2373,16 +2314,19 @@ def widget_managed_by_parameter_from_cell_click_on_table_widget(symbol: str = "A
 {details['description']}
 """
 
+
 # Plotly chart
 # This widget demonstrates how to use the Plotly library to create a chart
 # this gives you the ability to create any interactive type of charts with unlimited flexibility
-@register_widget({
-    "name": "Plotly Chart",
-    "description": "Plotly chart",
-    "type": "chart",
-    "endpoint": "plotly_chart",
-    "gridData": {"w": 40, "h": 15}
-})
+@register_widget(
+    {
+        "name": "Plotly Chart",
+        "description": "Plotly chart",
+        "type": "chart",
+        "endpoint": "plotly_chart",
+        "gridData": {"w": 40, "h": 15},
+    }
+)
 @app.get("/plotly_chart")
 def get_plotly_chart():
     # Generate mock time series data
@@ -2396,7 +2340,7 @@ def get_plotly_chart():
         {"date": "2023-01-07", "return": 2.8, "transactions": 1780},
         {"date": "2023-01-08", "return": -0.9, "transactions": 1620},
         {"date": "2023-01-09", "return": 1.2, "transactions": 1480},
-        {"date": "2023-01-10", "return": 3.5, "transactions": 1920}
+        {"date": "2023-01-10", "return": 3.5, "transactions": 1920},
     ]
 
     dates = [datetime.strptime(d["date"], "%Y-%m-%d") for d in mock_data]
@@ -2407,38 +2351,19 @@ def get_plotly_chart():
     fig = go.Figure()
 
     # Add the line trace for returns
-    fig.add_trace(go.Scatter(
-        x=dates,
-        y=returns,
-        mode='lines',
-        name='Returns',
-        line=dict(width=2)
-    ))
+    fig.add_trace(
+        go.Scatter(x=dates, y=returns, mode="lines", name="Returns", line=dict(width=2))
+    )
 
     # Add the bar trace for transactions
-    fig.add_trace(go.Bar(
-        x=dates,
-        y=transactions,
-        name='Transactions',
-        opacity=0.5
-    ))
+    fig.add_trace(go.Bar(x=dates, y=transactions, name="Transactions", opacity=0.5))
 
     # Update layout with axis titles and secondary y-axis
     fig.update_layout(
-        xaxis_title='Date',
-        yaxis_title='Returns (%)',
-        yaxis2=dict(
-            title="Transactions",
-            overlaying="y",
-            side="right"
-        ),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
+        xaxis_title="Date",
+        yaxis_title="Returns (%)",
+        yaxis2=dict(title="Transactions", overlaying="y", side="right"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
     # Update the bar trace to use secondary y-axis
@@ -2451,14 +2376,16 @@ def get_plotly_chart():
 # This endpoint extends the basic Plotly chart by adding the ability to return raw data
 # This is useful for widgets that have a more differentiated interface where it's not
 # as easy to analyze raw data. But also for this data to be the one sent to the AI.
-@register_widget({
-    "name": "Plotly Chart with Raw Data",
-    "description": "Plotly chart with raw data",
-    "type": "chart",
-    "endpoint": "plotly_chart_with_raw_data",
-    "gridData": {"w": 40, "h": 15},
-    "raw": True
-})
+@register_widget(
+    {
+        "name": "Plotly Chart with Raw Data",
+        "description": "Plotly chart with raw data",
+        "type": "chart",
+        "endpoint": "plotly_chart_with_raw_data",
+        "gridData": {"w": 40, "h": 15},
+        "raw": True,
+    }
+)
 @app.get("/plotly_chart_with_raw_data")
 def get_plotly_chart_with_raw_data(raw: bool = False):
     # Generate mock time series data
@@ -2472,7 +2399,7 @@ def get_plotly_chart_with_raw_data(raw: bool = False):
         {"date": "2023-01-07", "return": 2.8, "transactions": 1780},
         {"date": "2023-01-08", "return": -0.9, "transactions": 1620},
         {"date": "2023-01-09", "return": 1.2, "transactions": 1480},
-        {"date": "2023-01-10", "return": 3.5, "transactions": 1920}
+        {"date": "2023-01-10", "return": 3.5, "transactions": 1920},
     ]
 
     if raw:
@@ -2486,44 +2413,26 @@ def get_plotly_chart_with_raw_data(raw: bool = False):
     fig = go.Figure()
 
     # Add the line trace for returns
-    fig.add_trace(go.Scatter(
-        x=dates,
-        y=returns,
-        mode='lines',
-        name='Returns',
-        line=dict(width=2)
-    ))
+    fig.add_trace(
+        go.Scatter(x=dates, y=returns, mode="lines", name="Returns", line=dict(width=2))
+    )
 
     # Add the bar trace for transactions
-    fig.add_trace(go.Bar(
-        x=dates,
-        y=transactions,
-        name='Transactions',
-        opacity=0.5
-    ))
+    fig.add_trace(go.Bar(x=dates, y=transactions, name="Transactions", opacity=0.5))
 
     # Update layout with axis titles and secondary y-axis
     fig.update_layout(
-        xaxis_title='Date',
-        yaxis_title='Returns (%)',
-        yaxis2=dict(
-            title="Transactions",
-            overlaying="y",
-            side="right"
-        ),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
+        xaxis_title="Date",
+        yaxis_title="Returns (%)",
+        yaxis2=dict(title="Transactions", overlaying="y", side="right"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
     # Update the bar trace to use secondary y-axis
     fig.data[1].update(yaxis="y2")
 
     return json.loads(fig.to_json())
+
 
 # Plotly chart with theme
 # This endpoint extends the basic Plotly chart by adding theme support.
@@ -2533,14 +2442,15 @@ def get_plotly_chart_with_raw_data(raw: bool = False):
 # pass it but the endpoint will ignore it.
 # Note: OpenBB widget UI dark mode is #151518 and light mode is #FFFFFF, using these
 # background colors make the chart look consistent with the widgets in the OpenBB Workspace.
-@register_widget({
-    "name": "Plotly Chart with Theme",
-    "description": "Plotly chart with theme",
-    "type": "chart",
-    "endpoint": "plotly_chart_with_theme",
-    "gridData": {"w": 40, "h": 15}
-})
-
+@register_widget(
+    {
+        "name": "Plotly Chart with Theme",
+        "description": "Plotly chart with theme",
+        "type": "chart",
+        "endpoint": "plotly_chart_with_theme",
+        "gridData": {"w": 40, "h": 15},
+    }
+)
 @app.get("/plotly_chart_with_theme")
 def get_plotly_chart_with_theme(theme: str = "dark"):
     # Generate mock time series data
@@ -2554,59 +2464,63 @@ def get_plotly_chart_with_theme(theme: str = "dark"):
         {"date": "2023-01-07", "return": 2.8, "transactions": 1780},
         {"date": "2023-01-08", "return": -0.9, "transactions": 1620},
         {"date": "2023-01-09", "return": 1.2, "transactions": 1480},
-        {"date": "2023-01-10", "return": 3.5, "transactions": 1920}
+        {"date": "2023-01-10", "return": 3.5, "transactions": 1920},
     ]
-    
+
     dates = [datetime.strptime(d["date"], "%Y-%m-%d") for d in mock_data]
     returns = [d["return"] for d in mock_data]
     transactions = [d["transactions"] for d in mock_data]
-    
+
     # Create the figure with secondary y-axis
     fig = go.Figure()
-    
+
     if theme == "dark":
         # Dark theme colors and styling
         line_color = "#FF8000"  # Orange
-        bar_color = "#2D9BF0"   # Blue
+        bar_color = "#2D9BF0"  # Blue
         text_color = "#FFFFFF"  # White
         grid_color = "rgba(51, 51, 51, 0.3)"
-        bg_color = "#151518"    # Dark background
+        bg_color = "#151518"  # Dark background
     else:
         # Light theme colors and styling
         line_color = "#2E5090"  # Navy blue
-        bar_color = "#00AA44"   # Forest green
+        bar_color = "#00AA44"  # Forest green
         text_color = "#333333"  # Dark gray
         grid_color = "rgba(221, 221, 221, 0.3)"
-        bg_color = "#FFFFFF"    # White background
-    
+        bg_color = "#FFFFFF"  # White background
+
     # Add the line trace for returns with theme-specific color
-    fig.add_trace(go.Scatter(
-        x=dates,
-        y=returns,
-        mode='lines',
-        name='Returns',
-        line=dict(width=2, color=line_color)
-    ))
-    
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=returns,
+            mode="lines",
+            name="Returns",
+            line=dict(width=2, color=line_color),
+        )
+    )
+
     # Add the bar trace for transactions with theme-specific color
-    fig.add_trace(go.Bar(
-        x=dates,
-        y=transactions,
-        name='Transactions',
-        opacity=0.5,
-        marker_color=bar_color
-    ))
-    
+    fig.add_trace(
+        go.Bar(
+            x=dates,
+            y=transactions,
+            name="Transactions",
+            opacity=0.5,
+            marker_color=bar_color,
+        )
+    )
+
     # Update layout with theme-specific styling
     fig.update_layout(
-        xaxis_title='Date',
-        yaxis_title='Returns (%)',
+        xaxis_title="Date",
+        yaxis_title="Returns (%)",
         yaxis2=dict(
             title="Transactions",
             overlaying="y",
             side="right",
             gridcolor=grid_color,
-            tickfont=dict(color=text_color)
+            tickfont=dict(color=text_color),
         ),
         legend=dict(
             orientation="h",
@@ -2614,26 +2528,19 @@ def get_plotly_chart_with_theme(theme: str = "dark"):
             y=1.02,
             xanchor="right",
             x=1,
-            font=dict(color=text_color)
+            font=dict(color=text_color),
         ),
         paper_bgcolor=bg_color,
         plot_bgcolor=bg_color,
         font=dict(color=text_color),
-        xaxis=dict(
-            gridcolor=grid_color,
-            tickfont=dict(color=text_color)
-        ),
-        yaxis=dict(
-            gridcolor=grid_color,
-            tickfont=dict(color=text_color)
-        )
+        xaxis=dict(gridcolor=grid_color, tickfont=dict(color=text_color)),
+        yaxis=dict(gridcolor=grid_color, tickfont=dict(color=text_color)),
     )
-    
+
     # Update the bar trace to use secondary y-axis
     fig.data[1].update(yaxis="y2")
-    
-    return json.loads(fig.to_json())
 
+    return json.loads(fig.to_json())
 
 
 # Plotly chart with theme and toolbar
@@ -2642,14 +2549,15 @@ def get_plotly_chart_with_theme(theme: str = "dark"):
 # Note: As you can see, all the settings and styling utilized by plotly can be too
 # much boilerplate code, so it is recommended to create a plotly_config.py file
 # and use the functions defined in that file to create the chart.
-@register_widget({
-    "name": "Plotly Chart with Theme and Toolbar",
-    "description": "Plotly chart with Theme and toolbar",
-    "type": "chart",
-    "endpoint": "plotly_chart_with_theme_and_toolbar",
-    "gridData": {"w": 40, "h": 15}
-})
-
+@register_widget(
+    {
+        "name": "Plotly Chart with Theme and Toolbar",
+        "description": "Plotly chart with Theme and toolbar",
+        "type": "chart",
+        "endpoint": "plotly_chart_with_theme_and_toolbar",
+        "gridData": {"w": 40, "h": 15},
+    }
+)
 @app.get("/plotly_chart_with_theme_and_toolbar")
 def get_plotly_chart_with_theme_and_toolbar(theme: str = "dark"):
     # Generate mock time series data
@@ -2663,59 +2571,63 @@ def get_plotly_chart_with_theme_and_toolbar(theme: str = "dark"):
         {"date": "2023-01-07", "return": 2.8, "transactions": 1780},
         {"date": "2023-01-08", "return": -0.9, "transactions": 1620},
         {"date": "2023-01-09", "return": 1.2, "transactions": 1480},
-        {"date": "2023-01-10", "return": 3.5, "transactions": 1920}
+        {"date": "2023-01-10", "return": 3.5, "transactions": 1920},
     ]
-    
+
     dates = [datetime.strptime(d["date"], "%Y-%m-%d") for d in mock_data]
     returns = [d["return"] for d in mock_data]
     transactions = [d["transactions"] for d in mock_data]
-    
+
     # Create the figure with secondary y-axis
     fig = go.Figure()
-    
+
     if theme == "dark":
         # Dark theme colors and styling
         line_color = "#FF8000"  # Orange
-        bar_color = "#2D9BF0"   # Blue
+        bar_color = "#2D9BF0"  # Blue
         text_color = "#FFFFFF"  # White
         grid_color = "rgba(51, 51, 51, 0.3)"
-        bg_color = "#151518"    # Dark background
+        bg_color = "#151518"  # Dark background
     else:
         # Light theme colors and styling
         line_color = "#2E5090"  # Navy blue
-        bar_color = "#00AA44"   # Forest green
+        bar_color = "#00AA44"  # Forest green
         text_color = "#333333"  # Dark gray
         grid_color = "rgba(221, 221, 221, 0.3)"
-        bg_color = "#FFFFFF"    # White background
-    
+        bg_color = "#FFFFFF"  # White background
+
     # Add the line trace for returns with theme-specific color
-    fig.add_trace(go.Scatter(
-        x=dates,
-        y=returns,
-        mode='lines',
-        name='Returns',
-        line=dict(width=2, color=line_color)
-    ))
-    
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=returns,
+            mode="lines",
+            name="Returns",
+            line=dict(width=2, color=line_color),
+        )
+    )
+
     # Add the bar trace for transactions with theme-specific color
-    fig.add_trace(go.Bar(
-        x=dates,
-        y=transactions,
-        name='Transactions',
-        opacity=0.5,
-        marker_color=bar_color
-    ))
-    
+    fig.add_trace(
+        go.Bar(
+            x=dates,
+            y=transactions,
+            name="Transactions",
+            opacity=0.5,
+            marker_color=bar_color,
+        )
+    )
+
     # Update layout with theme-specific styling
     fig.update_layout(
-        xaxis_title='Date',
-        yaxis_title='Returns (%)',
+        xaxis_title="Date",
+        yaxis_title="Returns (%)",
         yaxis2=dict(
             title="Transactions",
             overlaying="y",
             side="right",
             gridcolor=grid_color,
-            tickfont=dict(color=text_color)
+            tickfont=dict(color=text_color),
         ),
         legend=dict(
             orientation="h",
@@ -2723,85 +2635,77 @@ def get_plotly_chart_with_theme_and_toolbar(theme: str = "dark"):
             y=1.02,
             xanchor="right",
             x=1,
-            font=dict(color=text_color)
+            font=dict(color=text_color),
         ),
         paper_bgcolor=bg_color,
         plot_bgcolor=bg_color,
         font=dict(color=text_color),
-        xaxis=dict(
-            gridcolor=grid_color,
-            tickfont=dict(color=text_color)
-        ),
-        yaxis=dict(
-            gridcolor=grid_color,
-            tickfont=dict(color=text_color)
-        )
+        xaxis=dict(gridcolor=grid_color, tickfont=dict(color=text_color)),
+        yaxis=dict(gridcolor=grid_color, tickfont=dict(color=text_color)),
     )
-    
+
     # Update the bar trace to use secondary y-axis
     fig.data[1].update(yaxis="y2")
-    
+
     # Configure the toolbar and other display settings
     toolbar_config = {
-        'displayModeBar': True,
-        'responsive': True,
-        'scrollZoom': True,
-        'modeBarButtonsToRemove': [
-            'lasso2d',
-            'select2d',
-            'autoScale2d',
-            'toggleSpikelines',
-            'hoverClosestCartesian',
-            'hoverCompareCartesian'
+        "displayModeBar": True,
+        "responsive": True,
+        "scrollZoom": True,
+        "modeBarButtonsToRemove": [
+            "lasso2d",
+            "select2d",
+            "autoScale2d",
+            "toggleSpikelines",
+            "hoverClosestCartesian",
+            "hoverCompareCartesian",
         ],
-        'modeBarButtonsToAdd': [
-            'drawline',
-            'drawcircle',
-            'drawrect',
-            'eraseshape'
-        ],
-        'doubleClick': 'reset+autosize',
-        'showTips': True,
-        'watermark': False,
-        'staticPlot': False,
-        'locale': 'en',
-        'showAxisDragHandles': True,
-        'showAxisRangeEntryBoxes': True,
-        'displaylogo': False,
-        'modeBar': {
-            'bgcolor': 'rgba(0, 0, 0, 0.1)' if theme == 'light' else 'rgba(255, 255, 255, 0.1)',
-            'color': text_color,
-            'activecolor': line_color,
-            'orientation': 'v',
-            'yanchor': 'top',
-            'xanchor': 'right',
-            'x': 1.05,  # Increased spacing from chart
-            'y': 1,
-            'opacity': 0,  # Start hidden
-            'hovermode': True,  # Show on hover
-            'hoverdelay': 0,  # No delay on hover
-            'hoverduration': 0  # No delay on hover out
-        }
+        "modeBarButtonsToAdd": ["drawline", "drawcircle", "drawrect", "eraseshape"],
+        "doubleClick": "reset+autosize",
+        "showTips": True,
+        "watermark": False,
+        "staticPlot": False,
+        "locale": "en",
+        "showAxisDragHandles": True,
+        "showAxisRangeEntryBoxes": True,
+        "displaylogo": False,
+        "modeBar": {
+            "bgcolor": (
+                "rgba(0, 0, 0, 0.1)" if theme == "light" else "rgba(255, 255, 255, 0.1)"
+            ),
+            "color": text_color,
+            "activecolor": line_color,
+            "orientation": "v",
+            "yanchor": "top",
+            "xanchor": "right",
+            "x": 1.05,  # Increased spacing from chart
+            "y": 1,
+            "opacity": 0,  # Start hidden
+            "hovermode": True,  # Show on hover
+            "hoverdelay": 0,  # No delay on hover
+            "hoverduration": 0,  # No delay on hover out
+        },
     }
-    
+
     # Convert figure to JSON and add config
     figure_json = json.loads(fig.to_json())
-    figure_json['config'] = toolbar_config
-    
+    figure_json["config"] = toolbar_config
+
     return figure_json
 
 
 # Plotly chart with theme and config file
 # This widget demonstrates how to create a chart using the Plotly library
 # and use the config file to minimize the amount of code needed to create the chart.
-@register_widget({
-    "name": "Plotly Chart with Theme and Toolbar using Config File",
-    "description": "Plotly chart with theme and toolbar using config file",
-    "type": "chart",
-    "endpoint": "plotly_chart_with_theme_and_toolbar_using_config_file",
-    "gridData": {"w": 40, "h": 15}
-})
-
+@register_widget(
+    {
+        "name": "Plotly Chart with Theme and Toolbar using Config File",
+        "description": "Plotly chart with theme and toolbar using config file",
+        "type": "chart",
+        "endpoint": "plotly_chart_with_theme_and_toolbar_using_config_file",
+        "gridData": {"w": 40, "h": 15},
+    }
+)
 @app.get("/plotly_chart_with_theme_and_toolbar_using_config_file")
 def get_plotly_chart_with_theme_and_toolbar_using_config_file(theme: str = "dark"):
     # Generate mock time series data
@@ -2815,39 +2719,43 @@ def get_plotly_chart_with_theme_and_toolbar_using_config_file(theme: str = "dark
         {"date": "2023-01-07", "return": 2.8, "transactions": 1780},
         {"date": "2023-01-08", "return": -0.9, "transactions": 1620},
         {"date": "2023-01-09", "return": 1.2, "transactions": 1480},
-        {"date": "2023-01-10", "return": 3.5, "transactions": 1920}
+        {"date": "2023-01-10", "return": 3.5, "transactions": 1920},
     ]
-    
+
     dates = [datetime.strptime(d["date"], "%Y-%m-%d") for d in mock_data]
     returns = [d["return"] for d in mock_data]
     transactions = [d["transactions"] for d in mock_data]
-    
+
     # Get theme colors
     colors = get_theme_colors(theme)
-    
+
     # Create the figure
     fig = go.Figure()
-    
+
     # Add the line trace for returns
-    fig.add_trace(go.Scatter(
-        x=dates,
-        y=returns,
-        mode='lines',
-        name='Returns',
-        line=dict(width=2, color=colors["main_line"])
-    ))
-    
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=returns,
+            mode="lines",
+            name="Returns",
+            line=dict(width=2, color=colors["main_line"]),
+        )
+    )
+
     # Add the bar trace for transactions
-    fig.add_trace(go.Bar(
-        x=dates,
-        y=transactions,
-        name='Transactions',
-        opacity=0.5,
-        marker_color=colors["neutral"]
-    ))
-    
+    fig.add_trace(
+        go.Bar(
+            x=dates,
+            y=transactions,
+            name="Transactions",
+            opacity=0.5,
+            marker_color=colors["neutral"],
+        )
+    )
+
     fig.update_layout(**base_layout(theme=theme))
-    
+
     # Add secondary y-axis for transactions
     fig.update_layout(
         yaxis2=dict(
@@ -2855,16 +2763,16 @@ def get_plotly_chart_with_theme_and_toolbar_using_config_file(theme: str = "dark
             overlaying="y",
             side="right",
             gridcolor=colors["grid"],
-            tickfont=dict(color=colors["text"])
+            tickfont=dict(color=colors["text"]),
         )
     )
-    
+
     # Update the bar trace to use secondary y-axis
     fig.data[1].update(yaxis="y2")
 
     figure_json = json.loads(fig.to_json())
-    figure_json['config'] = get_toolbar_config()
-    
+    figure_json["config"] = get_toolbar_config()
+
     return figure_json
 
 
@@ -2873,37 +2781,39 @@ def get_plotly_chart_with_theme_and_toolbar_using_config_file(theme: str = "dark
 # including heatmaps, scatter plots, line charts, 3d charts, etc.
 # and also demonstrates how parameters can influence the a plotly chart.
 # Note that the theme parameter always comes at the end of the function.
-@register_widget({
-    "name": "Plotly Heatmap",
-    "description": "Plotly heatmap",
-    "type": "chart",
-    "endpoint": "plotly_heatmap",
-    "gridData": {"w": 40, "h": 15},
-    "params": [
-        {
-            "paramName": "color_scale",
-            "description": "Select the color scale for the heatmap",
-            "value": "RdBu_r",
-            "label": "Color Scale",
-            "type": "text",
-            "show": True,
-            "options": [
-                {"label": "Red-Blue (RdBu_r)", "value": "RdBu_r"},
-                {"label": "Viridis", "value": "Viridis"},
-                {"label": "Plasma", "value": "Plasma"},
-                {"label": "Inferno", "value": "Inferno"},
-                {"label": "Magma", "value": "Magma"},
-                {"label": "Greens", "value": "Greens"},
-                {"label": "Blues", "value": "Blues"},
-                {"label": "Reds", "value": "Reds"}
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Plotly Heatmap",
+        "description": "Plotly heatmap",
+        "type": "chart",
+        "endpoint": "plotly_heatmap",
+        "gridData": {"w": 40, "h": 15},
+        "params": [
+            {
+                "paramName": "color_scale",
+                "description": "Select the color scale for the heatmap",
+                "value": "RdBu_r",
+                "label": "Color Scale",
+                "type": "text",
+                "show": True,
+                "options": [
+                    {"label": "Red-Blue (RdBu_r)", "value": "RdBu_r"},
+                    {"label": "Viridis", "value": "Viridis"},
+                    {"label": "Plasma", "value": "Plasma"},
+                    {"label": "Inferno", "value": "Inferno"},
+                    {"label": "Magma", "value": "Magma"},
+                    {"label": "Greens", "value": "Greens"},
+                    {"label": "Blues", "value": "Blues"},
+                    {"label": "Reds", "value": "Reds"},
+                ],
+            }
+        ],
+    }
+)
 @app.get("/plotly_heatmap")
 def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
     # Create mock stock symbols
-    symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+    symbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
 
     # Create mock correlation matrix directly
     corr_matrix = [
@@ -2911,7 +2821,7 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
         [0.65, 1.00, 0.55, 0.40, 0.25],  # MSFT correlations
         [0.45, 0.55, 1.00, 0.35, 0.15],  # GOOGL correlations
         [0.30, 0.40, 0.35, 1.00, 0.10],  # AMZN correlations
-        [0.20, 0.25, 0.15, 0.10, 1.00]   # TSLA correlations
+        [0.20, 0.25, 0.15, 0.10, 1.00],  # TSLA correlations
     ]
 
     # Get theme colors
@@ -2924,38 +2834,40 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
 
     # This allows users to modify the layout configuration further
     # in case they want to steer from the default settings.
-    layout_config['title'] = {
-        'text': "Correlation Matrix",
-        'x': 0.5,
-        'y': 0.95,
-        'xanchor': 'center',
-        'yanchor': 'top',
-        'font': {'size': 20}
+    layout_config["title"] = {
+        "text": "Correlation Matrix",
+        "x": 0.5,
+        "y": 0.95,
+        "xanchor": "center",
+        "yanchor": "top",
+        "font": {"size": 20},
     }
-    layout_config['margin'] = {'t': 50, 'b': 50, 'l': 50, 'r': 50}
-    
+    layout_config["margin"] = {"t": 50, "b": 50, "l": 50, "r": 50}
+
     # Update figure with complete layout
     fig.update_layout(layout_config)
 
     # Add the heatmap trace
-    fig.add_trace(go.Heatmap(
-        z=corr_matrix,
-        x=symbols,
-        y=symbols,
-        colorscale=color_scale,
-        zmid=colors["heatmap"]["zmid"],
-        text=[[f'{val:.2f}' for val in row] for row in corr_matrix],
-        texttemplate='%{text}',
-        textfont={"color": colors["heatmap"]["text_color"]},
-        hoverongaps=False,
-        hovertemplate='%{x} - %{y}<br>Correlation: %{z:.2f}<extra></extra>'
-    ))
-    
+    fig.add_trace(
+        go.Heatmap(
+            z=corr_matrix,
+            x=symbols,
+            y=symbols,
+            colorscale=color_scale,
+            zmid=colors["heatmap"]["zmid"],
+            text=[[f"{val:.2f}" for val in row] for row in corr_matrix],
+            texttemplate="%{text}",
+            textfont={"color": colors["heatmap"]["text_color"]},
+            hoverongaps=False,
+            hovertemplate="%{x} - %{y}<br>Correlation: %{z:.2f}<extra></extra>",
+        )
+    )
+
     # Convert figure to JSON and apply config
     figure_json = json.loads(fig.to_json())
-    figure_json['config'] = {
+    figure_json["config"] = {
         **get_toolbar_config(),
-        'scrollZoom': False  # Disable scroll zoom
+        "scrollZoom": False,  # Disable scroll zoom
     }
 
     return figure_json
@@ -2965,38 +2877,42 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
 # This widget demonstrates that you can also provide raw data alongside
 # a plotly chart, where the raw data is rendered via AgGrid and the
 # AI copilot can query it for better results.
-@register_widget({
-    "name": "Plotly Heatmap with Raw Data",
-    "description": "Plotly heatmap with raw data",
-    "type": "chart",
-    "endpoint": "plotly_heatmap_with_raw_data",
-    "gridData": {"w": 40, "h": 15},
-    "raw": True,
-    "params": [
-        {
-            "paramName": "color_scale",
-            "description": "Select the color scale for the heatmap",
-            "value": "RdBu_r",
-            "label": "Color Scale",
-            "type": "text",
-            "show": True,
-            "options": [
-                {"label": "Red-Blue (RdBu_r)", "value": "RdBu_r"},
-                {"label": "Viridis", "value": "Viridis"},
-                {"label": "Plasma", "value": "Plasma"},
-                {"label": "Inferno", "value": "Inferno"},
-                {"label": "Magma", "value": "Magma"},
-                {"label": "Greens", "value": "Greens"},
-                {"label": "Blues", "value": "Blues"},
-                {"label": "Reds", "value": "Reds"}
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Plotly Heatmap with Raw Data",
+        "description": "Plotly heatmap with raw data",
+        "type": "chart",
+        "endpoint": "plotly_heatmap_with_raw_data",
+        "gridData": {"w": 40, "h": 15},
+        "raw": True,
+        "params": [
+            {
+                "paramName": "color_scale",
+                "description": "Select the color scale for the heatmap",
+                "value": "RdBu_r",
+                "label": "Color Scale",
+                "type": "text",
+                "show": True,
+                "options": [
+                    {"label": "Red-Blue (RdBu_r)", "value": "RdBu_r"},
+                    {"label": "Viridis", "value": "Viridis"},
+                    {"label": "Plasma", "value": "Plasma"},
+                    {"label": "Inferno", "value": "Inferno"},
+                    {"label": "Magma", "value": "Magma"},
+                    {"label": "Greens", "value": "Greens"},
+                    {"label": "Blues", "value": "Blues"},
+                    {"label": "Reds", "value": "Reds"},
+                ],
+            }
+        ],
+    }
+)
 @app.get("/plotly_heatmap_with_raw_data")
-def get_plotly_heatmap(color_scale: str = "RdBu_r", raw: bool = False, theme: str = "dark"):
+def get_plotly_heatmap(
+    color_scale: str = "RdBu_r", raw: bool = False, theme: str = "dark"
+):
     # Create mock stock symbols
-    symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+    symbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
 
     # Create mock correlation matrix directly
     corr_matrix = [
@@ -3004,7 +2920,7 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", raw: bool = False, theme: st
         [0.65, 1.00, 0.55, 0.40, 0.25],  # MSFT correlations
         [0.45, 0.55, 1.00, 0.35, 0.15],  # GOOGL correlations
         [0.30, 0.40, 0.35, 1.00, 0.10],  # AMZN correlations
-        [0.20, 0.25, 0.15, 0.10, 1.00]   # TSLA correlations
+        [0.20, 0.25, 0.15, 0.10, 1.00],  # TSLA correlations
     ]
 
     # If raw is True, return the data as a list of dictionaries
@@ -3013,11 +2929,13 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", raw: bool = False, theme: st
         data = []
         for i, symbol1 in enumerate(symbols):
             for j, symbol2 in enumerate(symbols):
-                data.append({
-                    "symbol1": symbol1,
-                    "symbol2": symbol2,
-                    "correlation": corr_matrix[i][j]
-                })
+                data.append(
+                    {
+                        "symbol1": symbol1,
+                        "symbol2": symbol2,
+                        "correlation": corr_matrix[i][j],
+                    }
+                )
         return data
 
     # Get theme colors
@@ -3030,45 +2948,49 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", raw: bool = False, theme: st
 
     # This allows users to modify the layout configuration further
     # in case they want to steer from the default settings.
-    layout_config['title'] = {
-        'text': "Correlation Matrix",
-        'x': 0.5,
-        'y': 0.95,
-        'xanchor': 'center',
-        'yanchor': 'top',
-        'font': {'size': 20}
+    layout_config["title"] = {
+        "text": "Correlation Matrix",
+        "x": 0.5,
+        "y": 0.95,
+        "xanchor": "center",
+        "yanchor": "top",
+        "font": {"size": 20},
     }
-    layout_config['margin'] = {'t': 50, 'b': 50, 'l': 50, 'r': 50}
-    
+    layout_config["margin"] = {"t": 50, "b": 50, "l": 50, "r": 50}
+
     # Update figure with complete layout
     fig.update_layout(layout_config)
 
     # Add the heatmap trace
-    fig.add_trace(go.Heatmap(
-        z=corr_matrix,
-        x=symbols,
-        y=symbols,
-        colorscale=color_scale,
-        zmid=colors["heatmap"]["zmid"],
-        text=[[f'{val:.2f}' for val in row] for row in corr_matrix],
-        texttemplate='%{text}',
-        textfont={"color": colors["heatmap"]["text_color"]},
-        hoverongaps=False,
-        hovertemplate='%{x} - %{y}<br>Correlation: %{z:.2f}<extra></extra>'
-    ))
-    
+    fig.add_trace(
+        go.Heatmap(
+            z=corr_matrix,
+            x=symbols,
+            y=symbols,
+            colorscale=color_scale,
+            zmid=colors["heatmap"]["zmid"],
+            text=[[f"{val:.2f}" for val in row] for row in corr_matrix],
+            texttemplate="%{text}",
+            textfont={"color": colors["heatmap"]["text_color"]},
+            hoverongaps=False,
+            hovertemplate="%{x} - %{y}<br>Correlation: %{z:.2f}<extra></extra>",
+        )
+    )
+
     # Convert figure to JSON and apply config
     figure_json = json.loads(fig.to_json())
-    figure_json['config'] = {
+    figure_json["config"] = {
         **get_toolbar_config(),
-        'scrollZoom': False  # Disable scroll zoom
+        "scrollZoom": False,  # Disable scroll zoom
     }
 
     return figure_json
 
+
 # Global variable to store form submissions
 # This acts as a simple in-memory database for our form entries
 ALL_FORMS = []
+
 
 # Form submission endpoint
 # This endpoint handles both adding new records and updating existing ones
@@ -3076,7 +2998,7 @@ ALL_FORMS = []
 @app.post("/form_submit")
 async def form_submit(params: dict) -> JSONResponse:
     global ALL_FORMS
-    
+
     # Validate required fields
     # The form requires first name and last name to be provided
     if not params.get("client_first_name") or not params.get("client_last_name"):
@@ -3084,15 +3006,15 @@ async def form_submit(params: dict) -> JSONResponse:
         # and can be displayed to the user in the OpenBB widget
         return JSONResponse(
             status_code=400,
-            content={"error": "Client first name and last name are required"}
+            content={"error": "Client first name and last name are required"},
         )
-    
+
     # Validate investment types and risk profile
     # These fields are also required for a complete form submission
     if not params.get("investment_types") or not params.get("risk_profile"):
         return JSONResponse(
             status_code=400,
-            content={"error": "Investment types and risk profile are required"}
+            content={"error": "Investment types and risk profile are required"},
         )
 
     # Handle form submission based on the action (add or update)
@@ -3105,17 +3027,17 @@ async def form_submit(params: dict) -> JSONResponse:
         ALL_FORMS.append(
             {k: ",".join(v) if isinstance(v, list) else v for k, v in params.items()}
         )
-    
+
     update_record = params.pop("update_record", None)
     if update_record:
         # For updates, find the matching record by first and last name
         # and update its fields with the new values
         for record in ALL_FORMS:
-            if record["client_first_name"] == params.get("client_first_name") and record[
-                "client_last_name"
-            ] == params.get("client_last_name"):
+            if record["client_first_name"] == params.get(
+                "client_first_name"
+            ) and record["client_last_name"] == params.get("client_last_name"):
                 record.update(params)
-    
+
     # Return success response
     # The OpenBB Workspace only checks for a 200 status code from this endpoint
     # The actual content returned doesn't matter for the widget refresh mechanism
@@ -3127,83 +3049,85 @@ async def form_submit(params: dict) -> JSONResponse:
 # Form Widget Registration
 # This decorator registers the form widget with the OpenBB Workspace
 # The widget configuration defines how the form will be displayed and behave
-@register_widget({
-    "name": "Entry Form",
-    "description": "Example of a more complex entry form",
-    "category": "forms",
-    "subcategory": "form",
-    "endpoint": "all_forms",  # The GET endpoint that provides the form data
-    "type": "table",  # The form data is displayed in a table format
-    "gridData": {
-        "w": 20,  # Width of the widget in the grid
-        "h": 9    # Height of the widget in the grid
-    },
-    "params": [
-        {
-            "paramName": "form",
-            "description": "Form example",
-            "type": "form",  # This indicates this is a form widget
-            "endpoint": "form_submit",  # The POST endpoint that handles form submissions
-            "inputParams": [
-                # Text input for client's first name
-                {
-                    "paramName": "client_first_name",
-                    "type": "text",
-                    "value": "",
-                    "label": "First Name",
-                    "description": "Client's first name"
-                },
-                # Text input for client's last name
-                {
-                    "paramName": "client_last_name",
-                    "type": "text",
-                    "value": "",
-                    "label": "Last Name",
-                    "description": "Client's last name"
-                },
-                # Multi-select dropdown for investment types
-                {
-                    "paramName": "investment_types",
-                    "type": "text",
-                    "value": None,
-                    "label": "Investment Types",
-                    "description": "Selected investment vehicles",
-                    "multiSelect": True,  # Allows selecting multiple options
-                    "options": [
-                        {"label": "Stocks", "value": "stocks"},
-                        {"label": "Bonds", "value": "bonds"},
-                        {"label": "Mutual Funds", "value": "mutual_funds"},
-                        {"label": "ETFs", "value": "etfs"},
-                    ]
-                },
-                # Text input for risk profile
-                {
-                    "paramName": "risk_profile",
-                    "type": "text",
-                    "value": "",
-                    "label": "Risk Profile",
-                    "description": "Client risk tolerance assessment"
-                },
-                # Button to add a new record
-                {
-                    "paramName": "add_record",
-                    "type": "button",
-                    "value": True,
-                    "label": "Add Client",
-                    "description": "Add client record"
-                },
-                # Button to update an existing record
-                {
-                    "paramName": "update_record",
-                    "type": "button",
-                    "value": True,
-                    "label": "Update Client",
-                    "description": "Update client record"
-                }
-            ]
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Entry Form",
+        "description": "Example of a more complex entry form",
+        "category": "forms",
+        "subcategory": "form",
+        "endpoint": "all_forms",  # The GET endpoint that provides the form data
+        "type": "table",  # The form data is displayed in a table format
+        "gridData": {
+            "w": 20,  # Width of the widget in the grid
+            "h": 9,  # Height of the widget in the grid
+        },
+        "params": [
+            {
+                "paramName": "form",
+                "description": "Form example",
+                "type": "form",  # This indicates this is a form widget
+                "endpoint": "form_submit",  # The POST endpoint that handles form submissions
+                "inputParams": [
+                    # Text input for client's first name
+                    {
+                        "paramName": "client_first_name",
+                        "type": "text",
+                        "value": "",
+                        "label": "First Name",
+                        "description": "Client's first name",
+                    },
+                    # Text input for client's last name
+                    {
+                        "paramName": "client_last_name",
+                        "type": "text",
+                        "value": "",
+                        "label": "Last Name",
+                        "description": "Client's last name",
+                    },
+                    # Multi-select dropdown for investment types
+                    {
+                        "paramName": "investment_types",
+                        "type": "text",
+                        "value": None,
+                        "label": "Investment Types",
+                        "description": "Selected investment vehicles",
+                        "multiSelect": True,  # Allows selecting multiple options
+                        "options": [
+                            {"label": "Stocks", "value": "stocks"},
+                            {"label": "Bonds", "value": "bonds"},
+                            {"label": "Mutual Funds", "value": "mutual_funds"},
+                            {"label": "ETFs", "value": "etfs"},
+                        ],
+                    },
+                    # Text input for risk profile
+                    {
+                        "paramName": "risk_profile",
+                        "type": "text",
+                        "value": "",
+                        "label": "Risk Profile",
+                        "description": "Client risk tolerance assessment",
+                    },
+                    # Button to add a new record
+                    {
+                        "paramName": "add_record",
+                        "type": "button",
+                        "value": True,
+                        "label": "Add Client",
+                        "description": "Add client record",
+                    },
+                    # Button to update an existing record
+                    {
+                        "paramName": "update_record",
+                        "type": "button",
+                        "value": True,
+                        "label": "Update Client",
+                        "description": "Update client record",
+                    },
+                ],
+            }
+        ],
+    }
+)
 @app.get("/all_forms")
 async def all_forms() -> list:
     """Returns all form submissions"""
@@ -3213,7 +3137,7 @@ async def all_forms() -> list:
     # 2. If POST returns 200, widget automatically refreshes
     # 3. Widget refresh calls this GET endpoint to fetch updated data
     # 4. This function must return ALL data needed to display the updated widget
-    
+
     # Return either the list of form submissions or a default empty record
     # The default record ensures the table has the correct structure even when empty
     return (
@@ -3224,10 +3148,11 @@ async def all_forms() -> list:
                 "client_first_name": None,
                 "client_last_name": None,
                 "investment_types": None,
-                "risk_profile": None
+                "risk_profile": None,
             }
         ]
     )
+
 
 # Mock data for our symbols
 MOCK_SYMBOLS = {
@@ -3238,7 +3163,7 @@ MOCK_SYMBOLS = {
         "exchange": "NASDAQ",
         "pricescale": 100,
         "minmov": 1,
-        "volume_precision": 0
+        "volume_precision": 0,
     },
     "MSFT": {
         "name": "Microsoft Corporation",
@@ -3247,7 +3172,7 @@ MOCK_SYMBOLS = {
         "exchange": "NASDAQ",
         "pricescale": 100,
         "minmov": 1,
-        "volume_precision": 0
+        "volume_precision": 0,
     },
     "GOOGL": {
         "name": "Alphabet Inc.",
@@ -3256,11 +3181,14 @@ MOCK_SYMBOLS = {
         "exchange": "NASDAQ",
         "pricescale": 100,
         "minmov": 1,
-        "volume_precision": 0
-    }
+        "volume_precision": 0,
+    },
 }
 
-def generate_mock_price_data(symbol: str, from_time: int, to_time: int, resolution: str) -> dict:
+
+def generate_mock_price_data(
+    symbol: str, from_time: int, to_time: int, resolution: str
+) -> dict:
     """Generate mock OHLCV (Open, High, Low, Close, Volume) data for a symbol
 
     This function creates realistic-looking price data for the TradingView chart.
@@ -3279,8 +3207,14 @@ def generate_mock_price_data(symbol: str, from_time: int, to_time: int, resoluti
     # Convert resolution to minutes for timestamp generation
     # TradingView uses specific resolution codes that we map to minutes
     resolution_minutes = {
-        "1": 1, "5": 5, "15": 15, "30": 30, "60": 60,
-        "D": 1440, "W": 10080, "M": 43200
+        "1": 1,
+        "5": 5,
+        "15": 15,
+        "30": 30,
+        "60": 60,
+        "D": 1440,
+        "W": 10080,
+        "M": 43200,
     }.get(resolution, 60)
 
     # Generate timestamps for each candle based on the resolution
@@ -3337,8 +3271,12 @@ def generate_mock_price_data(symbol: str, from_time: int, to_time: int, resoluti
         # Higher volume on larger price movements
         price_change = abs(close_price - open_price)
         base_volume = 1000000  # Base volume of 1M shares
-        volume_multiplier = 1 + (price_change / open_price) * 10  # Scale volume with price change
-        volume = int(base_volume * volume_multiplier * random.uniform(0.8, 1.2))  # Add some randomness
+        volume_multiplier = (
+            1 + (price_change / open_price) * 10
+        )  # Scale volume with price change
+        volume = int(
+            base_volume * volume_multiplier * random.uniform(0.8, 1.2)
+        )  # Add some randomness
         volumes.append(volume)
 
     # Return data in TradingView's expected format
@@ -3349,8 +3287,9 @@ def generate_mock_price_data(symbol: str, from_time: int, to_time: int, resoluti
         "h": highs,  # High prices array
         "l": lows,  # Low prices array
         "c": closes,  # Close prices array
-        "v": volumes  # Volume array
+        "v": volumes,  # Volume array
     }
+
 
 @app.get("/udf/config")
 async def get_config():
@@ -3363,7 +3302,16 @@ async def get_config():
         Dictionary containing configuration options for the TradingView chart
     """
     return {
-        "supported_resolutions": ["1", "5", "15", "30", "60", "D", "W", "M"],  # Timeframes we support
+        "supported_resolutions": [
+            "1",
+            "5",
+            "15",
+            "30",
+            "60",
+            "D",
+            "W",
+            "M",
+        ],  # Timeframes we support
         "supports_group_request": False,  # We don't support requesting multiple symbols at once
         "supports_marks": False,  # We don't support custom marks on the chart
         "supports_search": True,  # We support symbol search
@@ -3371,18 +3319,19 @@ async def get_config():
         "supports_time": True,  # We support server time requests
         "exchanges": [  # Available exchanges
             {"value": "", "name": "All Exchanges", "desc": ""},
-            {"value": "NASDAQ", "name": "NASDAQ", "desc": "NASDAQ Stock Exchange"}
+            {"value": "NASDAQ", "name": "NASDAQ", "desc": "NASDAQ Stock Exchange"},
         ],
         "symbols_types": [  # Available symbol types
             {"name": "All types", "value": ""},
-            {"name": "Stocks", "value": "stock"}
-        ]
+            {"name": "Stocks", "value": "stock"},
+        ],
     }
+
 
 @app.get("/udf/search")
 async def search_symbols(
     query: str = Query("", description="Search query"),
-    limit: int = Query(30, description="Limit of results")
+    limit: int = Query(30, description="Limit of results"),
 ):
     """UDF symbol search endpoint
 
@@ -3399,20 +3348,25 @@ async def search_symbols(
     results = []
     for symbol, info in MOCK_SYMBOLS.items():
         if query.lower() in symbol.lower() or query.lower() in info["name"].lower():
-            results.append({
-                "symbol": symbol,
-                "full_name": f"NASDAQ:{symbol}",
-                "description": info["description"],
-                "exchange": "NASDAQ",
-                "ticker": symbol,
-                "type": "stock"
-            })
+            results.append(
+                {
+                    "symbol": symbol,
+                    "full_name": f"NASDAQ:{symbol}",
+                    "description": info["description"],
+                    "exchange": "NASDAQ",
+                    "ticker": symbol,
+                    "type": "stock",
+                }
+            )
             if len(results) >= limit:
                 break
     return results
 
+
 @app.get("/udf/symbols")
-async def get_symbol_info(symbol: str = Query(..., description="Symbol to get info for")):
+async def get_symbol_info(
+    symbol: str = Query(..., description="Symbol to get info for")
+):
     """UDF symbol info endpoint
 
     This endpoint provides TradingView with detailed information about a specific symbol.
@@ -3449,15 +3403,16 @@ async def get_symbol_info(symbol: str = Query(..., description="Symbol to get in
         "has_weekly_and_monthly": True,  # We support weekly and monthly data
         "supported_resolutions": ["1", "5", "15", "30", "60", "D", "W", "M"],
         "session-regular": "0930-1600",  # Regular trading hours
-        "timezone": "America/New_York"  # Timezone for the exchange
+        "timezone": "America/New_York",  # Timezone for the exchange
     }
+
 
 @app.get("/udf/history")
 async def get_history(
     symbol: str = Query(..., description="Symbol"),
     resolution: str = Query(..., description="Resolution"),
     from_time: int = Query(..., alias="from", description="From timestamp"),
-    to_time: int = Query(..., alias="to", description="To timestamp")
+    to_time: int = Query(..., alias="to", description="To timestamp"),
 ):
     """UDF historical data endpoint
 
@@ -3480,6 +3435,7 @@ async def get_history(
 
     return generate_mock_price_data(clean_symbol, from_time, to_time, resolution)
 
+
 @app.get("/udf/time")
 async def get_server_time():
     """UDF server time endpoint
@@ -3492,35 +3448,35 @@ async def get_server_time():
     """
     return int(datetime.now().timestamp())
 
+
 # Register the TradingView UDF widget
 # This widget provides advanced charting capabilities using TradingView's charting library
 # The widget is configured to use our UDF endpoints for data
-@register_widget({
-    "name": "TradingView Chart",
-    "description": "Advanced charting with TradingView using mock data",
-    "category": "Finance",
-    "type": "advanced_charting",
-    "endpoint": "/udf",  # Base endpoint for all UDF requests
-    "gridData": {
-        "w": 20,
-        "h": 20
-    },
-    "data": {
-        "defaultSymbol": "AAPL",  # Default symbol to display
-        "updateFrequency": 60000,  # Update every minute
-        "chartConfig": {  # Chart appearance configuration
-            "upColor": "#26a69a",  # Color for bullish candles
-            "downColor": "#ef5350",  # Color for bearish candles
-            "borderUpColor": "#26a69a",  # Border color for bullish candles
-            "borderDownColor": "#ef5350",  # Border color for bearish candles
-            "wickUpColor": "#26a69a",  # Wick color for bullish candles
-            "wickDownColor": "#ef5350",  # Wick color for bearish candles
-            "volumeUpColor": "#26a69a",  # Color for volume bars on up days
-            "volumeDownColor": "#ef5350",  # Color for volume bars on down days
-            "showVolume": True  # Enable volume display
-        }
+@register_widget(
+    {
+        "name": "TradingView Chart",
+        "description": "Advanced charting with TradingView using mock data",
+        "category": "Finance",
+        "type": "advanced_charting",
+        "endpoint": "/udf",  # Base endpoint for all UDF requests
+        "gridData": {"w": 20, "h": 20},
+        "data": {
+            "defaultSymbol": "AAPL",  # Default symbol to display
+            "updateFrequency": 60000,  # Update every minute
+            "chartConfig": {  # Chart appearance configuration
+                "upColor": "#26a69a",  # Color for bullish candles
+                "downColor": "#ef5350",  # Color for bearish candles
+                "borderUpColor": "#26a69a",  # Border color for bullish candles
+                "borderDownColor": "#ef5350",  # Border color for bearish candles
+                "wickUpColor": "#26a69a",  # Wick color for bullish candles
+                "wickDownColor": "#ef5350",  # Wick color for bearish candles
+                "volumeUpColor": "#26a69a",  # Color for volume bars on up days
+                "volumeDownColor": "#ef5350",  # Color for volume bars on down days
+                "showVolume": True,  # Enable volume display
+            },
+        },
     }
-})
+)
 def tradingview_chart():
     """Dummy function for TradingView chart widget registration"""
     pass
@@ -3528,12 +3484,14 @@ def tradingview_chart():
 
 class DataFormat(BaseModel):
     """Data format for the widget"""
+
     data_type: str
     parse_as: Literal["text", "table", "chart"]
 
 
 class SourceInfo(BaseModel):
     """Source information for the widget"""
+
     type: Literal["widget"]
     uuid: UUID | None = Field(default=None)
     origin: str | None = Field(default=None)
@@ -3548,12 +3506,14 @@ class SourceInfo(BaseModel):
 
 class ExtraCitation(BaseModel):
     """Extra citation for the widget"""
+
     source_info: SourceInfo | None = Field(default=None)
     details: List[dict] | None = Field(default=None)
 
 
 class OmniWidgetResponse(BaseModel):
     """Omni widget response for the widget"""
+
     content: Any
     data_format: DataFormat
     extra_citations: list[ExtraCitation] | None = Field(default_factory=list)
@@ -3563,98 +3523,103 @@ class OmniWidgetResponse(BaseModel):
     )
 
 
-@register_widget({
-    "name": "Basic Omni Widget",
-    "description": "A versatile omni widget that can display multiple types of content",
-    "category": "General",
-    "type": "omni",
-    "endpoint": "omni-widget",
-    "params": [
-        {
-            "paramName": "prompt",
-            "type": "text",
-            "description": "The prompt to send to the widget to make queries, ask questions or simply interact with it. This is required in order to get a response.",
-            "label": "Prompt",
-            "show": False
-        },
-        {
-            "paramName": "type",
-            "type": "text",
-            "description": "Type of content to return",
-            "label": "Content Type",
-            "show": True,
-            "options": [
-                {"value": "markdown", "label": "Markdown"},
-                {"value": "chart", "label": "Chart"},
-                {"value": "table", "label": "Table"}
-            ]
-        }
-    ],
-    "gridData": {"w": 30, "h": 12}
-})
+@register_widget(
+    {
+        "name": "Basic Omni Widget",
+        "description": "A versatile omni widget that can display multiple types of content",
+        "category": "General",
+        "type": "omni",
+        "endpoint": "omni-widget",
+        "params": [
+            {
+                "paramName": "prompt",
+                "type": "text",
+                "description": "The prompt to send to the widget to make queries, ask questions or simply interact with it. This is required in order to get a response.",
+                "label": "Prompt",
+                "show": False,
+            },
+            {
+                "paramName": "type",
+                "type": "text",
+                "description": "Type of content to return",
+                "label": "Content Type",
+                "show": True,
+                "options": [
+                    {"value": "markdown", "label": "Markdown"},
+                    {"value": "chart", "label": "Chart"},
+                    {"value": "table", "label": "Table"},
+                ],
+            },
+        ],
+        "gridData": {"w": 30, "h": 12},
+    }
+)
 @app.post("/omni-widget")
-async def get_omni_widget_post(
-    data: str | dict = Body(...)
-):
+async def get_omni_widget_post(data: str | dict = Body(...)):
     """Basic Omni Widget example showing different return types without citations"""
     if isinstance(data, str):
         data = json.loads(data)
 
     if data.get("type") == "table":
         content = [
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-                {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
-            ]
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+            {"col1": "value1", "col2": "value2", "col3": "value3", "col4": "value4"},
+        ]
 
         return OmniWidgetResponse(
-                content=content,
-                data_format=DataFormat(data_type="object", parse_as="table"),
-                citable=False
-            )
+            content=content,
+            data_format=DataFormat(data_type="object", parse_as="table"),
+            citable=False,
+        )
 
     if data.get("type") == "chart":
 
         # Create figure with base layout
         fig = go.Figure()
-        
+
         # Add traces with themed colors
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[4, 1, 2],
-            name="Series 1",
-            marker_color="#26a69a"
-        ))
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[2, 4, 5],
-            name="Series 2",
-            marker_color="#ef5350"
-        ))
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[2, 3, 6],
-            name="Series 3",
-            marker_color="#f0a500"
-        ))
-        
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"], y=[4, 1, 2], name="Series 1", marker_color="#26a69a"
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"], y=[2, 4, 5], name="Series 2", marker_color="#ef5350"
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"], y=[2, 3, 6], name="Series 3", marker_color="#f0a500"
+            )
+        )
+
         # Apply base layout with theme
         base_layout_config = base_layout(theme="dark")
         # Override text colors with #216df1
-        base_layout_config.update({
-            'font': {'color': '#216df1'},
-            'title': {'font': {'color': '#216df1'}},
-            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
-            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
-        })
+        base_layout_config.update(
+            {
+                "font": {"color": "#216df1"},
+                "title": {"font": {"color": "#216df1"}},
+                "xaxis": {
+                    "tickfont": {"color": "#216df1"},
+                    "title": {"font": {"color": "#216df1"}},
+                },
+                "yaxis": {
+                    "tickfont": {"color": "#216df1"},
+                    "title": {"font": {"color": "#216df1"}},
+                },
+            }
+        )
         fig.update_layout(**base_layout_config)
-        
+
         # Add specific layout updates for this chart
         fig.update_layout(
             title="Plotly Chart example",
@@ -3667,11 +3632,11 @@ async def get_omni_widget_post(
                 y=-0.2,  # Position below the chart
                 xanchor="center",
                 x=0.5,  # Center horizontally
-                font=dict(color='#216df1'),  # Update legend text color
-                bgcolor='rgba(0,0,0,0)'  # Transparent background
-            )
+                font=dict(color="#216df1"),  # Update legend text color
+                bgcolor="rgba(0,0,0,0)",  # Transparent background
+            ),
         )
-        
+
         # Convert to JSON and add toolbar config
         content = json.loads(fig.to_json())
         content["config"] = get_toolbar_config()
@@ -3679,7 +3644,7 @@ async def get_omni_widget_post(
         return OmniWidgetResponse(
             content=content,
             data_format=DataFormat(data_type="object", parse_as="chart"),
-            citable=False
+            citable=False,
         )
 
     # Default to markdown without citations
@@ -3699,53 +3664,53 @@ This is a basic omni widget response without citation tracking.
     return OmniWidgetResponse(
         content=content,
         data_format=DataFormat(data_type="object", parse_as="text"),
-        citable=False
+        citable=False,
     )
 
 
 # This is an example of an omni widget that includes citation information for data tracking
 # This is useful when you are interacting with an AI Agent and want to pass citations in the chat.
-@register_widget({
-    "name": "Omni Widget with Citations",
-    "description": "An omni widget that includes citation information for data tracking",
-    "category": "General",
-    "type": "omni",
-    "endpoint": "omni-widget-with-citations",
-    "params": [
-        {
-            "paramName": "prompt",
-            "type": "text",
-            "description": "The prompt to send to the widget to make queries, ask questions or simply interact with it. This is required in order to get a response.",
-            "label": "Prompt",
-            "show": False
-        },
-        {
-            "paramName": "type",
-            "type": "text",
-            "description": "Type of content to return",
-            "label": "Content Type",
-            "show": True,
-            "options": [
-                {"value": "markdown", "label": "Markdown"},
-                {"value": "chart", "label": "Chart"},
-                {"value": "table", "label": "Table"}
-            ]
-        },
-        {
-            "paramName": "include_metadata",
-            "type": "boolean",
-            "description": "Include metadata in response",
-            "label": "Include Metadata",
-            "show": True,
-            "value": True
-        }
-    ],
-    "gridData": {"w": 30, "h": 15}
-})
+@register_widget(
+    {
+        "name": "Omni Widget with Citations",
+        "description": "An omni widget that includes citation information for data tracking",
+        "category": "General",
+        "type": "omni",
+        "endpoint": "omni-widget-with-citations",
+        "params": [
+            {
+                "paramName": "prompt",
+                "type": "text",
+                "description": "The prompt to send to the widget to make queries, ask questions or simply interact with it. This is required in order to get a response.",
+                "label": "Prompt",
+                "show": False,
+            },
+            {
+                "paramName": "type",
+                "type": "text",
+                "description": "Type of content to return",
+                "label": "Content Type",
+                "show": True,
+                "options": [
+                    {"value": "markdown", "label": "Markdown"},
+                    {"value": "chart", "label": "Chart"},
+                    {"value": "table", "label": "Table"},
+                ],
+            },
+            {
+                "paramName": "include_metadata",
+                "type": "boolean",
+                "description": "Include metadata in response",
+                "label": "Include Metadata",
+                "show": True,
+                "value": True,
+            },
+        ],
+        "gridData": {"w": 30, "h": 15},
+    }
+)
 @app.post("/omni-widget-with-citations")
-async def get_omni_widget_with_citations(
-    data: str | dict = Body(...)
-):
+async def get_omni_widget_with_citations(data: str | dict = Body(...)):
     """Omni Widget example with citation support"""
     if isinstance(data, str):
         data = json.loads(data)
@@ -3761,8 +3726,8 @@ async def get_omni_widget_with_citations(
             "filename": "omni_widget_response.md",
             "extension": "md",
             "input_args": data,
-            "timestamp": data.get("timestamp", "")
-        }
+            "timestamp": data.get("timestamp", ""),
+        },
     )
 
     extra_citation = ExtraCitation(
@@ -3773,60 +3738,86 @@ async def get_omni_widget_with_citations(
                 "Query": data.get("prompt"),
                 "Type": data.get("type"),
                 "Timestamp": data.get("timestamp", ""),
-                "Data": json.dumps(data, indent=2)
+                "Data": json.dumps(data, indent=2),
             }
-        ]
+        ],
     )
 
     if data.get("type") == "table":
         content = [
-            {"source": "Citation Example", "value": "123", "description": "Sample data with citation"},
-            {"source": "Citation Example", "value": "456", "description": "More sample data"},
-            {"source": "Citation Example", "value": "789", "description": "Additional sample data"},
+            {
+                "source": "Citation Example",
+                "value": "123",
+                "description": "Sample data with citation",
+            },
+            {
+                "source": "Citation Example",
+                "value": "456",
+                "description": "More sample data",
+            },
+            {
+                "source": "Citation Example",
+                "value": "789",
+                "description": "Additional sample data",
+            },
         ]
 
         return OmniWidgetResponse(
             content=content,
             data_format=DataFormat(data_type="object", parse_as="table"),
             extra_citations=[extra_citation],
-            citable=True
+            citable=True,
         )
 
     if data.get("type") == "chart":
         # Create figure with base layout
         fig = go.Figure()
-        
+
         # Add traces with themed colors
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[4, 1, 2],
-            name="Cited Data Series 1",
-            marker_color="#26a69a"
-        ))
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[2, 4, 5],
-            name="Cited Data Series 2",
-            marker_color="#ef5350"
-        ))
-        fig.add_trace(go.Bar(
-            x=["A", "B", "C"],
-            y=[2, 3, 6],
-            name="Cited Data Series 3",
-            marker_color="#f0a500"
-        ))
-        
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"],
+                y=[4, 1, 2],
+                name="Cited Data Series 1",
+                marker_color="#26a69a",
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"],
+                y=[2, 4, 5],
+                name="Cited Data Series 2",
+                marker_color="#ef5350",
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                x=["A", "B", "C"],
+                y=[2, 3, 6],
+                name="Cited Data Series 3",
+                marker_color="#f0a500",
+            )
+        )
+
         # Apply base layout with theme
         base_layout_config = base_layout(theme="dark")
         # Override text colors with #216df1
-        base_layout_config.update({
-            'font': {'color': '#216df1'},
-            'title': {'font': {'color': '#216df1'}},
-            'xaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}},
-            'yaxis': {'tickfont': {'color': '#216df1'}, 'title': {'font': {'color': '#216df1'}}}
-        })
+        base_layout_config.update(
+            {
+                "font": {"color": "#216df1"},
+                "title": {"font": {"color": "#216df1"}},
+                "xaxis": {
+                    "tickfont": {"color": "#216df1"},
+                    "title": {"font": {"color": "#216df1"}},
+                },
+                "yaxis": {
+                    "tickfont": {"color": "#216df1"},
+                    "title": {"font": {"color": "#216df1"}},
+                },
+            }
+        )
         fig.update_layout(**base_layout_config)
-        
+
         # Add specific layout updates for this chart
         fig.update_layout(
             title="Chart with Citation Support",
@@ -3839,11 +3830,11 @@ async def get_omni_widget_with_citations(
                 y=-0.2,  # Position below the chart
                 xanchor="center",
                 x=0.5,  # Center horizontally
-                font=dict(color='#216df1'),  # Update legend text color
-                bgcolor='rgba(0,0,0,0)'  # Transparent background
-            )
+                font=dict(color="#216df1"),  # Update legend text color
+                bgcolor="rgba(0,0,0,0)",  # Transparent background
+            ),
         )
-        
+
         # Convert to JSON and add toolbar config
         content = json.loads(fig.to_json())
         content["config"] = get_toolbar_config()
@@ -3852,7 +3843,7 @@ async def get_omni_widget_with_citations(
             content=content,
             data_format=DataFormat(data_type="object", parse_as="chart"),
             extra_citations=[extra_citation],
-            citable=True
+            citable=True,
         )
 
     # Default to markdown with citations
@@ -3861,7 +3852,7 @@ async def get_omni_widget_with_citations(
 - **Prompt:** `{data.get('prompt', 'No prompt provided')}`
 - **Type:** `{data.get('type', 'markdown')}`
 
-#### Data with Citation Tracking: 
+#### Data with Citation Tracking:
 This response includes citation information that will be automatically tracked and made available to agents and users.
 
 **Citation Details:**
@@ -3885,90 +3876,97 @@ This response includes citation information that will be automatically tracked a
         content=content,
         data_format=DataFormat(data_type="object", parse_as="text"),
         extra_citations=[extra_citation],
-        citable=True
+        citable=True,
     )
 
-@register_widget({
-    "name": "Markdown Widget with Organized Parameters",
-    "description": "A markdown widget demonstrating various parameter types organized in a clean way",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_organized_params",
-    "gridData": {"w": 20, "h": 12},
-    "params": [
-        [
-            {
-                "paramName": "enable_feature",
-                "description": "Enable or disable the main feature",
-                "label": "Enable Feature",
-                "type": "boolean",
-                "value": True
-            }
+
+@register_widget(
+    {
+        "name": "Markdown Widget with Organized Parameters",
+        "description": "A markdown widget demonstrating various parameter types organized in a clean way",
+        "type": "markdown",
+        "endpoint": "markdown_widget_with_organized_params",
+        "gridData": {"w": 20, "h": 12},
+        "params": [
+            [
+                {
+                    "paramName": "enable_feature",
+                    "description": "Enable or disable the main feature",
+                    "label": "Enable Feature",
+                    "type": "boolean",
+                    "value": True,
+                }
+            ],
+            [
+                {
+                    "paramName": "selected_date",
+                    "description": "Select a date for analysis",
+                    "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+                    "label": "Analysis Date",
+                    "type": "date",
+                },
+                {
+                    "paramName": "analysis_type",
+                    "description": "Select the type of analysis to perform",
+                    "value": "technical",
+                    "label": "Analysis Type",
+                    "type": "text",
+                    "options": [
+                        {"label": "Technical Analysis", "value": "technical"},
+                        {"label": "Fundamental Analysis", "value": "fundamental"},
+                        {"label": "Sentiment Analysis", "value": "sentiment"},
+                        {"label": "Risk Analysis", "value": "risk"},
+                    ],
+                },
+                {
+                    "paramName": "lookback_period",
+                    "description": "Number of days to look back",
+                    "value": 30,
+                    "label": "Lookback Period (days)",
+                    "type": "number",
+                    "min": 1,
+                    "max": 365,
+                },
+            ],
+            [
+                {
+                    "paramName": "analysis_notes",
+                    "description": "Additional notes for the analysis",
+                    "value": "",
+                    "label": "Analysis Notes",
+                    "type": "text",
+                }
+            ],
         ],
-        [
-            {
-                "paramName": "selected_date",
-                "description": "Select a date for analysis",
-                "value": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
-                "label": "Analysis Date",
-                "type": "date"
-            },
-            {
-                "paramName": "analysis_type",
-                "description": "Select the type of analysis to perform",
-                "value": "technical",
-                "label": "Analysis Type",
-                "type": "text",
-                "options": [
-                    {"label": "Technical Analysis", "value": "technical"},
-                    {"label": "Fundamental Analysis", "value": "fundamental"},
-                    {"label": "Sentiment Analysis", "value": "sentiment"},
-                    {"label": "Risk Analysis", "value": "risk"}
-                ]
-            },
-            {
-                "paramName": "lookback_period",
-                "description": "Number of days to look back",
-                "value": 30,
-                "label": "Lookback Period (days)",
-                "type": "number",
-                "min": 1,
-                "max": 365
-            }
-        ],
-        [
-            {
-                "paramName": "analysis_notes",
-                "description": "Additional notes for the analysis",
-                "value": "",
-                "label": "Analysis Notes",
-                "type": "text"
-            }
-        ]
-    ]
-})
+    }
+)
 @app.get("/markdown_widget_with_organized_params")
 def markdown_widget_with_organized_params(
     enable_feature: bool = True,
     selected_date: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
     analysis_type: str = "technical",
     lookback_period: int = 30,
-    analysis_notes: str = ""
+    analysis_notes: str = "",
 ):
     """Returns a markdown widget with organized parameters"""
     # Format the date for display
     formatted_date = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%B %d, %Y")
-    
+
     # Get the label for the selected analysis type
     analysis_type_label = next(
-        (opt["label"] for opt in [
-            {"label": "Technical Analysis", "value": "technical"},
-            {"label": "Fundamental Analysis", "value": "fundamental"},
-            {"label": "Sentiment Analysis", "value": "sentiment"},
-            {"label": "Risk Analysis", "value": "risk"}
-        ] if opt["value"] == analysis_type),
-        analysis_type
+        (
+            opt["label"]
+            for opt in [
+                {"label": "Technical Analysis", "value": "technical"},
+                {"label": "Fundamental Analysis", "value": "fundamental"},
+                {"label": "Sentiment Analysis", "value": "sentiment"},
+                {"label": "Risk Analysis", "value": "risk"},
+            ]
+            if opt["value"] == analysis_type
+        ),
+        analysis_type,
     )
-    
+
     return f"""# Analysis Configuration
 *This widget demonstrates various parameter types including boolean toggles, date pickers, dropdowns, number inputs, and text fields.*
 
@@ -3985,973 +3983,1448 @@ def markdown_widget_with_organized_params(
 """
 
 
-@register_widget({
-    "name": "Stock Sparkline Data - With Min/Max Points",
-    "description": "Display stock data with sparkline charts highlighting minimum and maximum values",
-    "category": "Widgets",
-    "subcategory": "sparkline",
-    "defaultViz": "table",
-    "endpoint": "sparkline",
-    "gridData": {
-        "w": 18,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Last Price",
-                    "field": "lastPrice",
-                    "cellDataType": "text",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "Market Cap",
-                    "field": "marketCap",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "Volume",
-                    "field": "volume",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "Sector",
-                    "field": "sector",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Rate of Change Trend",
-                    "field": "rateOfChange",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "area",
-                        "options": {
-                            "fill": "rgba(34, 197, 94, 0.2)",
-                            "stroke": "#22c55e",
-                            "strokeWidth": 2,
-                            "tooltip": {
-                                "enabled": True
-                            },
-                            "markers": {
-                                "enabled": True,
-                                "shape": "circle",
-                                "size": 2,
-                                "fill": "#22c55e"
-                            },
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
-                            },
-                            "pointsOfInterest": {
-                                "maximum": {
-                                    "fill": "#ffd700",
-                                    "stroke": "#ffb000",
-                                    "strokeWidth": 2,
-                                    "size": 6
+@register_widget(
+    {
+        "name": "Stock Sparkline Data - With Min/Max Points",
+        "description": "Display stock data with sparkline charts highlighting minimum and maximum values",
+        "category": "Widgets",
+        "subcategory": "sparkline",
+        "defaultViz": "table",
+        "endpoint": "sparkline",
+        "gridData": {"w": 18, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Last Price",
+                        "field": "lastPrice",
+                        "cellDataType": "text",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "Market Cap",
+                        "field": "marketCap",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "Volume",
+                        "field": "volume",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "Sector",
+                        "field": "sector",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Rate of Change Trend",
+                        "field": "rateOfChange",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "area",
+                            "options": {
+                                "fill": "rgba(34, 197, 94, 0.2)",
+                                "stroke": "#22c55e",
+                                "strokeWidth": 2,
+                                "tooltip": {"enabled": True},
+                                "markers": {
+                                    "enabled": True,
+                                    "shape": "circle",
+                                    "size": 2,
+                                    "fill": "#22c55e",
                                 },
-                                "minimum": {
-                                    "fill": "#ef4444",
-                                    "stroke": "#dc2626",
-                                    "strokeWidth": 2,
-                                    "size": 6
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        }
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "pointsOfInterest": {
+                                    "maximum": {
+                                        "fill": "#ffd700",
+                                        "stroke": "#ffb000",
+                                        "strokeWidth": 2,
+                                        "size": 6,
+                                    },
+                                    "minimum": {
+                                        "fill": "#ef4444",
+                                        "stroke": "#dc2626",
+                                        "strokeWidth": 2,
+                                        "size": 6,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            }
+        },
     }
-})
+)
 @app.get("/sparkline")
 async def get_sparkline_data():
     """Get sparkline data for stock symbols - demonstrating min/max points of interest"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'lastPrice': '173.50',
-            'marketCap': 2675150000000,
-            'volume': 57807909,
-            'sector': 'Technology',
-            'rateOfChange': [2.1, 5.3, -3.2, 8.7, 1.4, -5.1, 12.3, -2.8, 4.6, -1.9],  # Max: 12.3, Min: -5.1
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "lastPrice": "173.50",
+            "marketCap": 2675150000000,
+            "volume": 57807909,
+            "sector": "Technology",
+            "rateOfChange": [
+                2.1,
+                5.3,
+                -3.2,
+                8.7,
+                1.4,
+                -5.1,
+                12.3,
+                -2.8,
+                4.6,
+                -1.9,
+            ],  # Max: 12.3, Min: -5.1
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'lastPrice': '2891.70',
-            'marketCap': 1834250000000,
-            'volume': 28967543,
-            'sector': 'Technology',
-            'rateOfChange': [3.8, -2.1, 6.4, 2.5, -4.3, 9.2, -1.7, 5.1, -6.8, 3.3],  # Max: 9.2, Min: -6.8
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "lastPrice": "2891.70",
+            "marketCap": 1834250000000,
+            "volume": 28967543,
+            "sector": "Technology",
+            "rateOfChange": [
+                3.8,
+                -2.1,
+                6.4,
+                2.5,
+                -4.3,
+                9.2,
+                -1.7,
+                5.1,
+                -6.8,
+                3.3,
+            ],  # Max: 9.2, Min: -6.8
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'lastPrice': '414.67',
-            'marketCap': 3086420000000,
-            'volume': 32145678,
-            'sector': 'Technology',
-            'rateOfChange': [1.8, 4.2, -2.9, 3.5, 7.1, -3.4, 2.7, -1.2, 6.8, 0.9],  # Max: 7.1, Min: -3.4
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "lastPrice": "414.67",
+            "marketCap": 3086420000000,
+            "volume": 32145678,
+            "sector": "Technology",
+            "rateOfChange": [
+                1.8,
+                4.2,
+                -2.9,
+                3.5,
+                7.1,
+                -3.4,
+                2.7,
+                -1.2,
+                6.8,
+                0.9,
+            ],  # Max: 7.1, Min: -3.4
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'lastPrice': '3307.04',
-            'marketCap': 1702830000000,
-            'volume': 45678901,
-            'sector': 'Consumer Services',
-            'rateOfChange': [5.2, -3.8, 8.1, 1.9, -7.3, 4.6, -2.1, 9.4, -1.5, 3.2],  # Max: 9.4, Min: -7.3
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "lastPrice": "3307.04",
+            "marketCap": 1702830000000,
+            "volume": 45678901,
+            "sector": "Consumer Services",
+            "rateOfChange": [
+                5.2,
+                -3.8,
+                8.1,
+                1.9,
+                -7.3,
+                4.6,
+                -2.1,
+                9.4,
+                -1.5,
+                3.2,
+            ],  # Max: 9.4, Min: -7.3
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'lastPrice': '248.42',
-            'marketCap': 788960000000,
-            'volume': 89123456,
-            'sector': 'Consumer Durables',
-            'rateOfChange': [8.5, -12.3, 15.7, -4.2, 6.8, -8.9, 11.2, -2.6, 4.1, -6.7],  # Max: 15.7, Min: -12.3
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "lastPrice": "248.42",
+            "marketCap": 788960000000,
+            "volume": 89123456,
+            "sector": "Consumer Durables",
+            "rateOfChange": [
+                8.5,
+                -12.3,
+                15.7,
+                -4.2,
+                6.8,
+                -8.9,
+                11.2,
+                -2.6,
+                4.1,
+                -6.7,
+            ],  # Max: 15.7, Min: -12.3
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'lastPrice': '485.34',
-            'marketCap': 1247650000000,
-            'volume': 34567890,
-            'sector': 'Technology',
-            'rateOfChange': [6.3, 2.8, -9.1, 4.7, 8.2, -3.5, 1.9, -5.4, 10.6, -2.3],  # Max: 10.6, Min: -9.1
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "lastPrice": "485.34",
+            "marketCap": 1247650000000,
+            "volume": 34567890,
+            "sector": "Technology",
+            "rateOfChange": [
+                6.3,
+                2.8,
+                -9.1,
+                4.7,
+                8.2,
+                -3.5,
+                1.9,
+                -5.4,
+                10.6,
+                -2.3,
+            ],  # Max: 10.6, Min: -9.1
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'lastPrice': '421.73',
-            'marketCap': 187450000000,
-            'volume': 23456789,
-            'sector': 'Consumer Services',
-            'rateOfChange': [4.1, -6.8, 9.3, 2.7, -4.9, 7.5, -1.8, 5.6, -8.2, 3.4],  # Max: 9.3, Min: -8.2
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "lastPrice": "421.73",
+            "marketCap": 187450000000,
+            "volume": 23456789,
+            "sector": "Consumer Services",
+            "rateOfChange": [
+                4.1,
+                -6.8,
+                9.3,
+                2.7,
+                -4.9,
+                7.5,
+                -1.8,
+                5.6,
+                -8.2,
+                3.4,
+            ],  # Max: 9.3, Min: -8.2
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'lastPrice': '875.28',
-            'marketCap': 2158730000000,
-            'volume': 67890123,
-            'sector': 'Technology',
-            'rateOfChange': [12.8, -5.4, 18.2, 7.3, -11.6, 9.1, -3.7, 16.9, -8.2, 5.8],  # Max: 18.2, Min: -11.6
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "lastPrice": "875.28",
+            "marketCap": 2158730000000,
+            "volume": 67890123,
+            "sector": "Technology",
+            "rateOfChange": [
+                12.8,
+                -5.4,
+                18.2,
+                7.3,
+                -11.6,
+                9.1,
+                -3.7,
+                16.9,
+                -8.2,
+                5.8,
+            ],  # Max: 18.2, Min: -11.6
         },
         {
-            'symbol': 'CRM',
-            'name': 'Salesforce Inc.',
-            'lastPrice': '287.45',
-            'marketCap': 284560000000,
-            'volume': 15432189,
-            'sector': 'Technology',
-            'rateOfChange': [3.7, 6.9, -8.4, 2.1, 11.5, -4.6, 5.3, -2.8, 7.2, -9.7],  # Max: 11.5, Min: -9.7
+            "symbol": "CRM",
+            "name": "Salesforce Inc.",
+            "lastPrice": "287.45",
+            "marketCap": 284560000000,
+            "volume": 15432189,
+            "sector": "Technology",
+            "rateOfChange": [
+                3.7,
+                6.9,
+                -8.4,
+                2.1,
+                11.5,
+                -4.6,
+                5.3,
+                -2.8,
+                7.2,
+                -9.7,
+            ],  # Max: 11.5, Min: -9.7
         },
         {
-            'symbol': 'PYPL',
-            'name': 'PayPal Holdings Inc.',
-            'lastPrice': '65.82',
-            'marketCap': 74892000000,
-            'volume': 28765432,
-            'sector': 'Miscellaneous',
-            'rateOfChange': [2.4, -7.8, 5.9, 8.3, -10.2, 3.6, -4.1, 6.7, -1.9, 4.8],  # Max: 8.3, Min: -10.2
+            "symbol": "PYPL",
+            "name": "PayPal Holdings Inc.",
+            "lastPrice": "65.82",
+            "marketCap": 74892000000,
+            "volume": 28765432,
+            "sector": "Miscellaneous",
+            "rateOfChange": [
+                2.4,
+                -7.8,
+                5.9,
+                8.3,
+                -10.2,
+                3.6,
+                -4.1,
+                6.7,
+                -1.9,
+                4.8,
+            ],  # Max: 8.3, Min: -10.2
         },
     ]
 
-@register_widget({
-    "name": "Stock Price Trends - Line Sparklines with First/Last Points",
-    "description": "Display stock price trends using line sparklines highlighting first and last points",
-    "category": "Widgets",
-    "subcategory": "sparkline-line",
-    "defaultViz": "table",
-    "endpoint": "sparkline-line",
-    "gridData": {
-        "w": 16,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Current Price",
-                    "field": "currentPrice",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "90-Day Price Trend",
-                    "field": "priceTrend",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "line",
-                        "options": {
-                            "stroke": "#3b82f6",
-                            "strokeWidth": 2,
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
+
+@register_widget(
+    {
+        "name": "Stock Price Trends - Line Sparklines with First/Last Points",
+        "description": "Display stock price trends using line sparklines highlighting first and last points",
+        "category": "Widgets",
+        "subcategory": "sparkline-line",
+        "defaultViz": "table",
+        "endpoint": "sparkline-line",
+        "gridData": {"w": 16, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Current Price",
+                        "field": "currentPrice",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "90-Day Price Trend",
+                        "field": "priceTrend",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "line",
+                            "options": {
+                                "stroke": "#3b82f6",
+                                "strokeWidth": 2,
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "markers": {
+                                    "enabled": True,
+                                    "size": 2,
+                                    "fill": "#3b82f6",
+                                },
+                                "pointsOfInterest": {
+                                    "firstLast": {
+                                        "fill": "#8b5cf6",
+                                        "stroke": "#7c3aed",
+                                        "strokeWidth": 2,
+                                        "size": 6,
+                                    }
+                                },
                             },
-                            "markers": {
-                                "enabled": True,
-                                "size": 2,
-                                "fill": "#3b82f6"
-                            },
-                            "pointsOfInterest": {
-                                "firstLast": {
-                                    "fill": "#8b5cf6",
-                                    "stroke": "#7c3aed",
-                                    "strokeWidth": 2,
-                                    "size": 6
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "headerName": "Change %",
-                    "field": "changePercent",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                }
-            ]
-        }
+                        },
+                    },
+                    {
+                        "headerName": "Change %",
+                        "field": "changePercent",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
     }
-})
+)
 @app.get("/sparkline-line")
 async def get_line_sparkline_data():
     """Get line sparkline data for stock price trends - using Array of Numbers format"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'currentPrice': 173.50,
-            'priceTrend': [165.2, 167.1, 169.3, 171.2, 168.9, 170.4, 172.1, 173.5, 175.2, 174.8, 173.1, 173.5],
-            'changePercent': 5.04
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "currentPrice": 173.50,
+            "priceTrend": [
+                165.2,
+                167.1,
+                169.3,
+                171.2,
+                168.9,
+                170.4,
+                172.1,
+                173.5,
+                175.2,
+                174.8,
+                173.1,
+                173.5,
+            ],
+            "changePercent": 5.04,
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'currentPrice': 2891.70,
-            'priceTrend': [2750.3, 2780.1, 2820.4, 2865.2, 2840.7, 2890.1, 2910.3, 2885.6, 2901.4, 2889.2, 2891.7],
-            'changePercent': 5.14
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "currentPrice": 2891.70,
+            "priceTrend": [
+                2750.3,
+                2780.1,
+                2820.4,
+                2865.2,
+                2840.7,
+                2890.1,
+                2910.3,
+                2885.6,
+                2901.4,
+                2889.2,
+                2891.7,
+            ],
+            "changePercent": 5.14,
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'currentPrice': 414.67,
-            'priceTrend': [398.2, 405.3, 411.8, 406.9, 409.7, 412.5, 408.3, 415.1, 418.4, 416.2, 414.7],
-            'changePercent': 4.13
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "currentPrice": 414.67,
+            "priceTrend": [
+                398.2,
+                405.3,
+                411.8,
+                406.9,
+                409.7,
+                412.5,
+                408.3,
+                415.1,
+                418.4,
+                416.2,
+                414.7,
+            ],
+            "changePercent": 4.13,
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'currentPrice': 3307.04,
-            'priceTrend': [3180.5, 3210.2, 3245.8, 3201.3, 3230.7, 3275.4, 3290.1, 3315.6, 3298.3, 3307.0],
-            'changePercent': 3.98
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "currentPrice": 3307.04,
+            "priceTrend": [
+                3180.5,
+                3210.2,
+                3245.8,
+                3201.3,
+                3230.7,
+                3275.4,
+                3290.1,
+                3315.6,
+                3298.3,
+                3307.0,
+            ],
+            "changePercent": 3.98,
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'currentPrice': 248.42,
-            'priceTrend': [220.1, 235.6, 242.8, 238.2, 245.9, 251.3, 246.7, 248.4, 252.1, 249.8, 248.4],
-            'changePercent': 12.86
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "currentPrice": 248.42,
+            "priceTrend": [
+                220.1,
+                235.6,
+                242.8,
+                238.2,
+                245.9,
+                251.3,
+                246.7,
+                248.4,
+                252.1,
+                249.8,
+                248.4,
+            ],
+            "changePercent": 12.86,
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'currentPrice': 485.34,
-            'priceTrend': [461.2, 468.9, 475.3, 472.6, 479.1, 483.7, 481.2, 485.3, 488.9, 486.1, 485.3],
-            'changePercent': 5.24
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "currentPrice": 485.34,
+            "priceTrend": [
+                461.2,
+                468.9,
+                475.3,
+                472.6,
+                479.1,
+                483.7,
+                481.2,
+                485.3,
+                488.9,
+                486.1,
+                485.3,
+            ],
+            "changePercent": 5.24,
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'currentPrice': 421.73,
-            'priceTrend': [395.8, 402.3, 408.7, 405.2, 412.6, 418.9, 415.3, 421.7, 424.2, 422.8, 421.7],
-            'changePercent': 6.54
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "currentPrice": 421.73,
+            "priceTrend": [
+                395.8,
+                402.3,
+                408.7,
+                405.2,
+                412.6,
+                418.9,
+                415.3,
+                421.7,
+                424.2,
+                422.8,
+                421.7,
+            ],
+            "changePercent": 6.54,
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'currentPrice': 875.28,
-            'priceTrend': [789.5, 812.3, 845.6, 863.2, 851.7, 869.4, 872.8, 875.3, 881.2, 878.5, 875.3],
-            'changePercent': 10.86
-        }
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "currentPrice": 875.28,
+            "priceTrend": [
+                789.5,
+                812.3,
+                845.6,
+                863.2,
+                851.7,
+                869.4,
+                872.8,
+                875.3,
+                881.2,
+                878.5,
+                875.3,
+            ],
+            "changePercent": 10.86,
+        },
     ]
 
-@register_widget({
-    "name": "Trading Volume - Area Sparklines",
-    "description": "Display trading volume data using area sparklines with maximum point highlighting",
-    "category": "Widgets",
-    "subcategory": "sparkline-area",
-    "defaultViz": "table",
-    "endpoint": "sparkline-area",
-    "gridData": {
-        "w": 16,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Avg Volume (M)",
-                    "field": "avgVolume",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "30-Day Volume Trend",
-                    "field": "volumeTrend",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "area",
-                        "options": {
-                            "fill": "rgba(34, 197, 94, 0.3)",
-                            "stroke": "#22c55e",
-                            "strokeWidth": 2,
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
-                            },
-                            "markers": {
-                                "enabled": True,
-                                "size": 2,
-                                "fill": "#22c55e"
-                            },
-                            "pointsOfInterest": {
-                                "maximum": {
-                                    "fill": "#fbbf24",
-                                    "stroke": "#f59e0b",
-                                    "strokeWidth": 2,
-                                    "size": 6
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "headerName": "Volume Change %",
-                    "field": "volumeChangePercent",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                }
-            ]
-        }
-    }
-})
 
-@register_widget({
-    "name": "P&L Analysis - Bar Sparklines with Custom Formatter",
-    "description": "Display profit/loss data using bar sparklines with custom positive/negative coloring",
-    "category": "Widgets",
-    "subcategory": "sparkline-custom",
-    "defaultViz": "table",
-    "endpoint": "sparkline-custom",
-    "gridData": {
-        "w": 16,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Net P&L ($M)",
-                    "field": "netPL",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "Monthly P&L Trend",
-                    "field": "monthlyPL",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "direction": "vertical",
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
+@register_widget(
+    {
+        "name": "Trading Volume - Area Sparklines",
+        "description": "Display trading volume data using area sparklines with maximum point highlighting",
+        "category": "Widgets",
+        "subcategory": "sparkline-area",
+        "defaultViz": "table",
+        "endpoint": "sparkline-area",
+        "gridData": {"w": 16, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Avg Volume (M)",
+                        "field": "avgVolume",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "30-Day Volume Trend",
+                        "field": "volumeTrend",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "area",
+                            "options": {
+                                "fill": "rgba(34, 197, 94, 0.3)",
+                                "stroke": "#22c55e",
+                                "strokeWidth": 2,
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "markers": {
+                                    "enabled": True,
+                                    "size": 2,
+                                    "fill": "#22c55e",
+                                },
+                                "pointsOfInterest": {
+                                    "maximum": {
+                                        "fill": "#fbbf24",
+                                        "stroke": "#f59e0b",
+                                        "strokeWidth": 2,
+                                        "size": 6,
+                                    }
+                                },
                             },
-                            "customFormatter": "(params) => ({ fill: params.yValue >= 0 ? '#22c55e' : '#ef4444', stroke: params.yValue >= 0 ? '#16a34a' : '#dc2626', strokeWidth: 1 })"
-                        }
-                    }
-                },
-                {
-                    "headerName": "Best Month ($M)",
-                    "field": "bestMonth",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                }
-            ]
-        }
+                        },
+                    },
+                    {
+                        "headerName": "Volume Change %",
+                        "field": "volumeChangePercent",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
     }
-})
+)
+@register_widget(
+    {
+        "name": "P&L Analysis - Bar Sparklines with Custom Formatter",
+        "description": "Display profit/loss data using bar sparklines with custom positive/negative coloring",
+        "category": "Widgets",
+        "subcategory": "sparkline-custom",
+        "defaultViz": "table",
+        "endpoint": "sparkline-custom",
+        "gridData": {"w": 16, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Net P&L ($M)",
+                        "field": "netPL",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "Monthly P&L Trend",
+                        "field": "monthlyPL",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "direction": "vertical",
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "customFormatter": "(params) => ({ fill: params.yValue >= 0 ? '#22c55e' : '#ef4444', stroke: params.yValue >= 0 ? '#16a34a' : '#dc2626', strokeWidth: 1 })",
+                            },
+                        },
+                    },
+                    {
+                        "headerName": "Best Month ($M)",
+                        "field": "bestMonth",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
+    }
+)
 @app.get("/sparkline-area")
 async def get_area_sparkline_data():
     """Get area sparkline data for trading volume trends - demonstrating maximum point highlighting"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'avgVolume': 50.2,
-            'volumeTrend': [48.5, 52.1, 49.8, 51.3, 50.9, 48.7, 53.2, 50.2, 49.6, 51.8, 55.3, 52.4],  # Max: 55.3
-            'volumeChangePercent': 3.45
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "avgVolume": 50.2,
+            "volumeTrend": [
+                48.5,
+                52.1,
+                49.8,
+                51.3,
+                50.9,
+                48.7,
+                53.2,
+                50.2,
+                49.6,
+                51.8,
+                55.3,
+                52.4,
+            ],  # Max: 55.3
+            "volumeChangePercent": 3.45,
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'avgVolume': 29.0,
-            'volumeTrend': [27.8, 29.5, 28.2, 30.1, 29.0, 27.6, 31.2, 29.8, 28.5, 29.3, 32.1, 30.4],  # Max: 32.1
-            'volumeChangePercent': 4.21
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "avgVolume": 29.0,
+            "volumeTrend": [
+                27.8,
+                29.5,
+                28.2,
+                30.1,
+                29.0,
+                27.6,
+                31.2,
+                29.8,
+                28.5,
+                29.3,
+                32.1,
+                30.4,
+            ],  # Max: 32.1
+            "volumeChangePercent": 4.21,
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'avgVolume': 32.1,
-            'volumeTrend': [31.2, 33.1, 32.8, 30.9, 32.1, 33.5, 31.7, 32.4, 33.2, 32.8, 35.2, 33.9],  # Max: 35.2
-            'volumeChangePercent': 2.98
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "avgVolume": 32.1,
+            "volumeTrend": [
+                31.2,
+                33.1,
+                32.8,
+                30.9,
+                32.1,
+                33.5,
+                31.7,
+                32.4,
+                33.2,
+                32.8,
+                35.2,
+                33.9,
+            ],  # Max: 35.2
+            "volumeChangePercent": 2.98,
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'avgVolume': 45.7,
-            'volumeTrend': [44.2, 47.3, 45.1, 46.8, 45.7, 44.9, 48.2, 46.5, 45.3, 47.1, 49.8, 47.6],  # Max: 49.8
-            'volumeChangePercent': 3.15
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "avgVolume": 45.7,
+            "volumeTrend": [
+                44.2,
+                47.3,
+                45.1,
+                46.8,
+                45.7,
+                44.9,
+                48.2,
+                46.5,
+                45.3,
+                47.1,
+                49.8,
+                47.6,
+            ],  # Max: 49.8
+            "volumeChangePercent": 3.15,
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'avgVolume': 89.1,
-            'volumeTrend': [85.6, 92.8, 87.9, 91.2, 89.1, 86.4, 93.5, 88.7, 90.8, 89.5, 96.2, 91.8],  # Max: 96.2
-            'volumeChangePercent': 4.32
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "avgVolume": 89.1,
+            "volumeTrend": [
+                85.6,
+                92.8,
+                87.9,
+                91.2,
+                89.1,
+                86.4,
+                93.5,
+                88.7,
+                90.8,
+                89.5,
+                96.2,
+                91.8,
+            ],  # Max: 96.2
+            "volumeChangePercent": 4.32,
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'avgVolume': 34.6,
-            'volumeTrend': [33.8, 35.6, 34.2, 35.9, 34.6, 33.5, 36.8, 35.1, 34.8, 35.3, 38.1, 36.2],  # Max: 38.1
-            'volumeChangePercent': 2.87
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "avgVolume": 34.6,
+            "volumeTrend": [
+                33.8,
+                35.6,
+                34.2,
+                35.9,
+                34.6,
+                33.5,
+                36.8,
+                35.1,
+                34.8,
+                35.3,
+                38.1,
+                36.2,
+            ],  # Max: 38.1
+            "volumeChangePercent": 2.87,
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'avgVolume': 23.5,
-            'volumeTrend': [22.8, 24.2, 23.1, 24.8, 23.5, 22.9, 25.1, 24.3, 23.7, 24.0, 26.3, 24.9],  # Max: 26.3
-            'volumeChangePercent': 5.12
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "avgVolume": 23.5,
+            "volumeTrend": [
+                22.8,
+                24.2,
+                23.1,
+                24.8,
+                23.5,
+                22.9,
+                25.1,
+                24.3,
+                23.7,
+                24.0,
+                26.3,
+                24.9,
+            ],  # Max: 26.3
+            "volumeChangePercent": 5.12,
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'avgVolume': 67.9,
-            'volumeTrend': [64.2, 71.5, 66.8, 69.3, 67.9, 65.7, 72.8, 68.9, 66.4, 70.2, 74.6, 71.1],  # Max: 74.6
-            'volumeChangePercent': 5.87
-        }
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "avgVolume": 67.9,
+            "volumeTrend": [
+                64.2,
+                71.5,
+                66.8,
+                69.3,
+                67.9,
+                65.7,
+                72.8,
+                68.9,
+                66.4,
+                70.2,
+                74.6,
+                71.1,
+            ],  # Max: 74.6
+            "volumeChangePercent": 5.87,
+        },
     ]
+
 
 @app.get("/sparkline-custom")
 async def get_custom_sparkline_data():
     """Get P&L sparkline data demonstrating custom formatter for positive/negative values"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'netPL': 145.2,
-            'monthlyPL': [12.5, -8.2, 15.7, -3.4, 22.1, -11.8, 18.9, -5.6, 24.3, -1.2, 19.8, 7.4],
-            'bestMonth': 24.3
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "netPL": 145.2,
+            "monthlyPL": [
+                12.5,
+                -8.2,
+                15.7,
+                -3.4,
+                22.1,
+                -11.8,
+                18.9,
+                -5.6,
+                24.3,
+                -1.2,
+                19.8,
+                7.4,
+            ],
+            "bestMonth": 24.3,
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'netPL': 89.6,
-            'monthlyPL': [18.3, -12.1, 8.7, 14.5, -6.9, 21.2, -9.4, 16.8, -4.2, 25.1, -7.8, 13.4],
-            'bestMonth': 25.1
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "netPL": 89.6,
+            "monthlyPL": [
+                18.3,
+                -12.1,
+                8.7,
+                14.5,
+                -6.9,
+                21.2,
+                -9.4,
+                16.8,
+                -4.2,
+                25.1,
+                -7.8,
+                13.4,
+            ],
+            "bestMonth": 25.1,
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'netPL': 167.8,
-            'monthlyPL': [14.2, 18.5, -7.3, 12.9, 20.1, -4.8, 15.6, -9.2, 23.4, 11.7, -6.1, 19.3],
-            'bestMonth': 23.4
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "netPL": 167.8,
+            "monthlyPL": [
+                14.2,
+                18.5,
+                -7.3,
+                12.9,
+                20.1,
+                -4.8,
+                15.6,
+                -9.2,
+                23.4,
+                11.7,
+                -6.1,
+                19.3,
+            ],
+            "bestMonth": 23.4,
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'netPL': -23.4,
-            'monthlyPL': [8.9, -15.3, 6.2, -18.7, 11.4, -22.1, 4.8, -13.9, 9.7, -20.5, 3.2, -16.8],
-            'bestMonth': 11.4
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "netPL": -23.4,
+            "monthlyPL": [
+                8.9,
+                -15.3,
+                6.2,
+                -18.7,
+                11.4,
+                -22.1,
+                4.8,
+                -13.9,
+                9.7,
+                -20.5,
+                3.2,
+                -16.8,
+            ],
+            "bestMonth": 11.4,
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'netPL': 67.9,
-            'monthlyPL': [25.8, -18.4, 12.3, 19.7, -14.2, 8.9, -21.6, 15.1, 22.4, -11.8, 6.5, 18.2],
-            'bestMonth': 25.8
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "netPL": 67.9,
+            "monthlyPL": [
+                25.8,
+                -18.4,
+                12.3,
+                19.7,
+                -14.2,
+                8.9,
+                -21.6,
+                15.1,
+                22.4,
+                -11.8,
+                6.5,
+                18.2,
+            ],
+            "bestMonth": 25.8,
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'netPL': 98.3,
-            'monthlyPL': [16.7, 21.3, -8.9, 14.1, 18.5, -5.2, 22.8, -12.4, 17.9, 9.6, -7.1, 20.4],
-            'bestMonth': 22.8
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "netPL": 98.3,
+            "monthlyPL": [
+                16.7,
+                21.3,
+                -8.9,
+                14.1,
+                18.5,
+                -5.2,
+                22.8,
+                -12.4,
+                17.9,
+                9.6,
+                -7.1,
+                20.4,
+            ],
+            "bestMonth": 22.8,
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'netPL': 34.7,
-            'monthlyPL': [9.4, -13.2, 7.8, 12.6, -8.1, 15.3, -4.9, 11.7, -16.5, 8.2, 14.9, -2.6],
-            'bestMonth': 15.3
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "netPL": 34.7,
+            "monthlyPL": [
+                9.4,
+                -13.2,
+                7.8,
+                12.6,
+                -8.1,
+                15.3,
+                -4.9,
+                11.7,
+                -16.5,
+                8.2,
+                14.9,
+                -2.6,
+            ],
+            "bestMonth": 15.3,
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'netPL': 234.5,
-            'monthlyPL': [32.1, -15.8, 28.7, 35.4, -21.3, 26.9, -18.2, 31.6, 38.2, -24.7, 29.3, 33.8],
-            'bestMonth': 38.2
-        }
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "netPL": 234.5,
+            "monthlyPL": [
+                32.1,
+                -15.8,
+                28.7,
+                35.4,
+                -21.3,
+                26.9,
+                -18.2,
+                31.6,
+                38.2,
+                -24.7,
+                29.3,
+                33.8,
+            ],
+            "bestMonth": 38.2,
+        },
     ]
 
-@register_widget({
-    "name": "Monthly Performance - Bar Sparklines with Positive/Negative",
-    "description": "Display monthly performance data using bar sparklines with positive/negative styling",
-    "category": "Widgets",
-    "subcategory": "sparkline-bar",
-    "defaultViz": "table",
-    "endpoint": "sparkline-bar",
-    "gridData": {
-        "w": 16,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "YTD Return %",
-                    "field": "ytdReturn",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "Monthly Returns",
-                    "field": "monthlyReturns",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "direction": "vertical",
-                            "xKey": "x",
-                            "yKey": "y",
-                            "fill": "#8b5cf6",
-                            "stroke": "#7c3aed",
-                            "strokeWidth": 1,
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
-                            },
-                            "pointsOfInterest": {
-                                "positiveNegative": {
-                                    "positive": {
-                                        "fill": "#22c55e",
-                                        "stroke": "#16a34a"
-                                    },
-                                    "negative": {
-                                        "fill": "#ef4444",
-                                        "stroke": "#dc2626"
+
+@register_widget(
+    {
+        "name": "Monthly Performance - Bar Sparklines with Positive/Negative",
+        "description": "Display monthly performance data using bar sparklines with positive/negative styling",
+        "category": "Widgets",
+        "subcategory": "sparkline-bar",
+        "defaultViz": "table",
+        "endpoint": "sparkline-bar",
+        "gridData": {"w": 16, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "YTD Return %",
+                        "field": "ytdReturn",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "Monthly Returns",
+                        "field": "monthlyReturns",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "direction": "vertical",
+                                "xKey": "x",
+                                "yKey": "y",
+                                "fill": "#8b5cf6",
+                                "stroke": "#7c3aed",
+                                "strokeWidth": 1,
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "pointsOfInterest": {
+                                    "positiveNegative": {
+                                        "positive": {
+                                            "fill": "#22c55e",
+                                            "stroke": "#16a34a",
+                                        },
+                                        "negative": {
+                                            "fill": "#ef4444",
+                                            "stroke": "#dc2626",
+                                        },
                                     }
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "headerName": "Best Month %",
-                    "field": "bestMonth",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                }
-            ]
-        }
+                                },
+                            },
+                        },
+                    },
+                    {
+                        "headerName": "Best Month %",
+                        "field": "bestMonth",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
     }
-})
+)
 @app.get("/sparkline-bar")
 async def get_bar_sparkline_data():
     """Get bar sparkline data for monthly performance returns - demonstrating positive/negative styling"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'ytdReturn': 15.23,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 2.1}, {"x": "Feb", "y": -1.5}, {"x": "Mar", "y": 3.2}, {"x": "Apr", "y": 1.8}, 
-                {"x": "May", "y": -0.7}, {"x": "Jun", "y": 2.8}, {"x": "Jul", "y": 1.2}, {"x": "Aug", "y": -2.1}, 
-                {"x": "Sep", "y": 3.5}, {"x": "Oct", "y": 1.7}, {"x": "Nov", "y": 2.3}, {"x": "Dec", "y": 0.9}
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "ytdReturn": 15.23,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 2.1},
+                {"x": "Feb", "y": -1.5},
+                {"x": "Mar", "y": 3.2},
+                {"x": "Apr", "y": 1.8},
+                {"x": "May", "y": -0.7},
+                {"x": "Jun", "y": 2.8},
+                {"x": "Jul", "y": 1.2},
+                {"x": "Aug", "y": -2.1},
+                {"x": "Sep", "y": 3.5},
+                {"x": "Oct", "y": 1.7},
+                {"x": "Nov", "y": 2.3},
+                {"x": "Dec", "y": 0.9},
             ],
-            'bestMonth': 3.5
+            "bestMonth": 3.5,
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'ytdReturn': 18.67,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 3.2}, {"x": "Feb", "y": 1.8}, {"x": "Mar", "y": -1.2}, {"x": "Apr", "y": 4.1}, 
-                {"x": "May", "y": 2.3}, {"x": "Jun", "y": -0.9}, {"x": "Jul", "y": 3.7}, {"x": "Aug", "y": 1.5}, 
-                {"x": "Sep", "y": -2.3}, {"x": "Oct", "y": 2.9}, {"x": "Nov", "y": 1.6}, {"x": "Dec", "y": 2.1}
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "ytdReturn": 18.67,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 3.2},
+                {"x": "Feb", "y": 1.8},
+                {"x": "Mar", "y": -1.2},
+                {"x": "Apr", "y": 4.1},
+                {"x": "May", "y": 2.3},
+                {"x": "Jun", "y": -0.9},
+                {"x": "Jul", "y": 3.7},
+                {"x": "Aug", "y": 1.5},
+                {"x": "Sep", "y": -2.3},
+                {"x": "Oct", "y": 2.9},
+                {"x": "Nov", "y": 1.6},
+                {"x": "Dec", "y": 2.1},
             ],
-            'bestMonth': 4.1
+            "bestMonth": 4.1,
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'ytdReturn': 12.45,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 1.8}, {"x": "Feb", "y": 2.3}, {"x": "Mar", "y": -0.5}, {"x": "Apr", "y": 2.1}, 
-                {"x": "May", "y": 1.2}, {"x": "Jun", "y": -1.8}, {"x": "Jul", "y": 2.7}, {"x": "Aug", "y": 0.9}, 
-                {"x": "Sep", "y": -1.2}, {"x": "Oct", "y": 2.4}, {"x": "Nov", "y": 1.3}, {"x": "Dec", "y": 1.2}
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "ytdReturn": 12.45,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 1.8},
+                {"x": "Feb", "y": 2.3},
+                {"x": "Mar", "y": -0.5},
+                {"x": "Apr", "y": 2.1},
+                {"x": "May", "y": 1.2},
+                {"x": "Jun", "y": -1.8},
+                {"x": "Jul", "y": 2.7},
+                {"x": "Aug", "y": 0.9},
+                {"x": "Sep", "y": -1.2},
+                {"x": "Oct", "y": 2.4},
+                {"x": "Nov", "y": 1.3},
+                {"x": "Dec", "y": 1.2},
             ],
-            'bestMonth': 2.7
+            "bestMonth": 2.7,
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'ytdReturn': -8.42,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 4.2}, {"x": "Feb", "y": -2.1}, {"x": "Mar", "y": 3.8}, {"x": "Apr", "y": -5.5}, 
-                {"x": "May", "y": -1.3}, {"x": "Jun", "y": 4.6}, {"x": "Jul", "y": -3.8}, {"x": "Aug", "y": -7.2}, 
-                {"x": "Sep", "y": 5.1}, {"x": "Oct", "y": -2.8}, {"x": "Nov", "y": 3.4}, {"x": "Dec", "y": -4.6}
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "ytdReturn": -8.42,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 4.2},
+                {"x": "Feb", "y": -2.1},
+                {"x": "Mar", "y": 3.8},
+                {"x": "Apr", "y": -5.5},
+                {"x": "May", "y": -1.3},
+                {"x": "Jun", "y": 4.6},
+                {"x": "Jul", "y": -3.8},
+                {"x": "Aug", "y": -7.2},
+                {"x": "Sep", "y": 5.1},
+                {"x": "Oct", "y": -2.8},
+                {"x": "Nov", "y": 3.4},
+                {"x": "Dec", "y": -4.6},
             ],
-            'bestMonth': 5.1
+            "bestMonth": 5.1,
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'ytdReturn': 45.67,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 8.5}, {"x": "Feb", "y": -5.2}, {"x": "Mar", "y": 6.3}, {"x": "Apr", "y": 3.7}, 
-                {"x": "May", "y": -2.8}, {"x": "Jun", "y": 7.9}, {"x": "Jul", "y": 4.2}, {"x": "Aug", "y": -6.1}, 
-                {"x": "Sep", "y": 9.2}, {"x": "Oct", "y": 5.3}, {"x": "Nov", "y": 6.7}, {"x": "Dec", "y": 3.2}
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "ytdReturn": 45.67,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 8.5},
+                {"x": "Feb", "y": -5.2},
+                {"x": "Mar", "y": 6.3},
+                {"x": "Apr", "y": 3.7},
+                {"x": "May", "y": -2.8},
+                {"x": "Jun", "y": 7.9},
+                {"x": "Jul", "y": 4.2},
+                {"x": "Aug", "y": -6.1},
+                {"x": "Sep", "y": 9.2},
+                {"x": "Oct", "y": 5.3},
+                {"x": "Nov", "y": 6.7},
+                {"x": "Dec", "y": 3.2},
             ],
-            'bestMonth': 9.2
+            "bestMonth": 9.2,
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'ytdReturn': 28.34,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 5.1}, {"x": "Feb", "y": 2.8}, {"x": "Mar", "y": -3.4}, {"x": "Apr", "y": 4.6}, 
-                {"x": "May", "y": 3.2}, {"x": "Jun", "y": -1.7}, {"x": "Jul", "y": 5.8}, {"x": "Aug", "y": 2.3}, 
-                {"x": "Sep", "y": -2.9}, {"x": "Oct", "y": 4.1}, {"x": "Nov", "y": 3.7}, {"x": "Dec", "y": 2.8}
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "ytdReturn": 28.34,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 5.1},
+                {"x": "Feb", "y": 2.8},
+                {"x": "Mar", "y": -3.4},
+                {"x": "Apr", "y": 4.6},
+                {"x": "May", "y": 3.2},
+                {"x": "Jun", "y": -1.7},
+                {"x": "Jul", "y": 5.8},
+                {"x": "Aug", "y": 2.3},
+                {"x": "Sep", "y": -2.9},
+                {"x": "Oct", "y": 4.1},
+                {"x": "Nov", "y": 3.7},
+                {"x": "Dec", "y": 2.8},
             ],
-            'bestMonth': 5.8
+            "bestMonth": 5.8,
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'ytdReturn': 35.12,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 6.2}, {"x": "Feb", "y": -3.1}, {"x": "Mar", "y": 4.7}, {"x": "Apr", "y": 3.9}, 
-                {"x": "May", "y": -2.4}, {"x": "Jun", "y": 6.8}, {"x": "Jul", "y": 3.5}, {"x": "Aug", "y": -4.2}, 
-                {"x": "Sep", "y": 7.3}, {"x": "Oct", "y": 4.1}, {"x": "Nov", "y": 5.2}, {"x": "Dec", "y": 3.1}
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "ytdReturn": 35.12,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 6.2},
+                {"x": "Feb", "y": -3.1},
+                {"x": "Mar", "y": 4.7},
+                {"x": "Apr", "y": 3.9},
+                {"x": "May", "y": -2.4},
+                {"x": "Jun", "y": 6.8},
+                {"x": "Jul", "y": 3.5},
+                {"x": "Aug", "y": -4.2},
+                {"x": "Sep", "y": 7.3},
+                {"x": "Oct", "y": 4.1},
+                {"x": "Nov", "y": 5.2},
+                {"x": "Dec", "y": 3.1},
             ],
-            'bestMonth': 7.3
+            "bestMonth": 7.3,
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'ytdReturn': 87.23,
-            'monthlyReturns': [
-                {"x": "Jan", "y": 12.3}, {"x": "Feb", "y": -6.8}, {"x": "Mar", "y": 9.4}, {"x": "Apr", "y": 7.2}, 
-                {"x": "May", "y": -3.9}, {"x": "Jun", "y": 11.6}, {"x": "Jul", "y": 8.1}, {"x": "Aug", "y": -9.2}, 
-                {"x": "Sep", "y": 13.7}, {"x": "Oct", "y": 9.8}, {"x": "Nov", "y": 11.2}, {"x": "Dec", "y": 7.9}
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "ytdReturn": 87.23,
+            "monthlyReturns": [
+                {"x": "Jan", "y": 12.3},
+                {"x": "Feb", "y": -6.8},
+                {"x": "Mar", "y": 9.4},
+                {"x": "Apr", "y": 7.2},
+                {"x": "May", "y": -3.9},
+                {"x": "Jun", "y": 11.6},
+                {"x": "Jul", "y": 8.1},
+                {"x": "Aug", "y": -9.2},
+                {"x": "Sep", "y": 13.7},
+                {"x": "Oct", "y": 9.8},
+                {"x": "Nov", "y": 11.2},
+                {"x": "Dec", "y": 7.9},
             ],
-            'bestMonth': 13.7
-        }
+            "bestMonth": 13.7,
+        },
     ]
 
-@register_widget({
-    "name": "Quarterly Earnings - Column Sparklines",
-    "description": "Display quarterly earnings data using column sparklines",
-    "category": "Widgets",
-    "subcategory": "sparkline-column",
-    "defaultViz": "table",
-    "endpoint": "sparkline-column",
-    "gridData": {
-        "w": 16,
-        "h": 10
-    },
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {
-                    "headerName": "Symbol",
-                    "field": "symbol",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Company Name",
-                    "field": "name",
-                    "cellDataType": "text",
-                    "chartDataType": "category"
-                },
-                {
-                    "headerName": "Market Cap",
-                    "field": "marketCap",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                },
-                {
-                    "headerName": "8-Quarter EPS",
-                    "field": "quarterlyEps",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "direction": "horizontal",
-                            "fill": "#f59e0b",
-                            "stroke": "#d97706",
-                            "strokeWidth": 1,
-                            "padding": {
-                                "top": 5,
-                                "right": 5,
-                                "bottom": 5,
-                                "left": 5
+
+@register_widget(
+    {
+        "name": "Quarterly Earnings - Column Sparklines",
+        "description": "Display quarterly earnings data using column sparklines",
+        "category": "Widgets",
+        "subcategory": "sparkline-column",
+        "defaultViz": "table",
+        "endpoint": "sparkline-column",
+        "gridData": {"w": 16, "h": 10},
+        "data": {
+            "table": {
+                "showAll": True,
+                "columnsDefs": [
+                    {
+                        "headerName": "Symbol",
+                        "field": "symbol",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Company Name",
+                        "field": "name",
+                        "cellDataType": "text",
+                        "chartDataType": "category",
+                    },
+                    {
+                        "headerName": "Market Cap",
+                        "field": "marketCap",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                    {
+                        "headerName": "8-Quarter EPS",
+                        "field": "quarterlyEps",
+                        "cellDataType": "object",
+                        "chartDataType": "excluded",
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "direction": "horizontal",
+                                "fill": "#f59e0b",
+                                "stroke": "#d97706",
+                                "strokeWidth": 1,
+                                "padding": {
+                                    "top": 5,
+                                    "right": 5,
+                                    "bottom": 5,
+                                    "left": 5,
+                                },
+                                "highlightStyle": {
+                                    "fill": "#fbbf24",
+                                    "stroke": "#f59e0b",
+                                },
                             },
-                            "highlightStyle": {
-                                "fill": "#fbbf24",
-                                "stroke": "#f59e0b"
-                            }
-                        }
-                    }
-                },
-                {
-                    "headerName": "EPS Growth %",
-                    "field": "epsGrowth",
-                    "cellDataType": "number",
-                    "chartDataType": "series"
-                }
-            ]
-        }
+                        },
+                    },
+                    {
+                        "headerName": "EPS Growth %",
+                        "field": "epsGrowth",
+                        "cellDataType": "number",
+                        "chartDataType": "series",
+                    },
+                ],
+            }
+        },
     }
-})
+)
 @app.get("/sparkline-column")
 async def get_column_sparkline_data():
     """Get column sparkline data for quarterly earnings per share - using Array of Numbers format"""
     return [
         {
-            'symbol': 'AAPL',
-            'name': 'Apple Inc.',
-            'marketCap': 2675150000000,
-            'quarterlyEps': [1.46, 1.52, 1.29, 1.88, 1.56, 1.64, 1.39, 1.97],
-            'epsGrowth': 6.85
+            "symbol": "AAPL",
+            "name": "Apple Inc.",
+            "marketCap": 2675150000000,
+            "quarterlyEps": [1.46, 1.52, 1.29, 1.88, 1.56, 1.64, 1.39, 1.97],
+            "epsGrowth": 6.85,
         },
         {
-            'symbol': 'GOOGL',
-            'name': 'Alphabet Inc. Class A',
-            'marketCap': 1834250000000,
-            'quarterlyEps': [1.05, 1.21, 1.06, 1.33, 1.17, 1.32, 1.15, 1.44],
-            'epsGrowth': 8.57
+            "symbol": "GOOGL",
+            "name": "Alphabet Inc. Class A",
+            "marketCap": 1834250000000,
+            "quarterlyEps": [1.05, 1.21, 1.06, 1.33, 1.17, 1.32, 1.15, 1.44],
+            "epsGrowth": 8.57,
         },
         {
-            'symbol': 'MSFT',
-            'name': 'Microsoft Corporation',
-            'marketCap': 3086420000000,
-            'quarterlyEps': [2.32, 2.45, 2.51, 2.72, 2.48, 2.62, 2.69, 2.93],
-            'epsGrowth': 6.90
+            "symbol": "MSFT",
+            "name": "Microsoft Corporation",
+            "marketCap": 3086420000000,
+            "quarterlyEps": [2.32, 2.45, 2.51, 2.72, 2.48, 2.62, 2.69, 2.93],
+            "epsGrowth": 6.90,
         },
         {
-            'symbol': 'AMZN',
-            'name': 'Amazon.com Inc.',
-            'marketCap': 1702830000000,
-            'quarterlyEps': [0.31, 0.42, 0.52, 0.68, 0.45, 0.58, 0.71, 0.85],
-            'epsGrowth': 25.0
+            "symbol": "AMZN",
+            "name": "Amazon.com Inc.",
+            "marketCap": 1702830000000,
+            "quarterlyEps": [0.31, 0.42, 0.52, 0.68, 0.45, 0.58, 0.71, 0.85],
+            "epsGrowth": 25.0,
         },
         {
-            'symbol': 'TSLA',
-            'name': 'Tesla Inc.',
-            'marketCap': 788960000000,
-            'quarterlyEps': [0.73, 0.85, 1.05, 1.19, 0.91, 1.12, 1.29, 1.45],
-            'epsGrowth': 24.66
+            "symbol": "TSLA",
+            "name": "Tesla Inc.",
+            "marketCap": 788960000000,
+            "quarterlyEps": [0.73, 0.85, 1.05, 1.19, 0.91, 1.12, 1.29, 1.45],
+            "epsGrowth": 24.66,
         },
         {
-            'symbol': 'META',
-            'name': 'Meta Platforms Inc.',
-            'marketCap': 1247650000000,
-            'quarterlyEps': [2.72, 2.88, 3.03, 3.67, 2.98, 3.21, 3.35, 4.01],
-            'epsGrowth': 9.27
+            "symbol": "META",
+            "name": "Meta Platforms Inc.",
+            "marketCap": 1247650000000,
+            "quarterlyEps": [2.72, 2.88, 3.03, 3.67, 2.98, 3.21, 3.35, 4.01],
+            "epsGrowth": 9.27,
         },
         {
-            'symbol': 'NFLX',
-            'name': 'Netflix Inc.',
-            'marketCap': 187450000000,
-            'quarterlyEps': [2.80, 3.19, 3.53, 4.28, 3.29, 3.75, 4.13, 4.82],
-            'epsGrowth': 17.50
+            "symbol": "NFLX",
+            "name": "Netflix Inc.",
+            "marketCap": 187450000000,
+            "quarterlyEps": [2.80, 3.19, 3.53, 4.28, 3.29, 3.75, 4.13, 4.82],
+            "epsGrowth": 17.50,
         },
         {
-            'symbol': 'NVDA',
-            'name': 'NVIDIA Corporation',
-            'marketCap': 2158730000000,
-            'quarterlyEps': [1.01, 1.36, 2.48, 5.16, 4.28, 6.12, 8.92, 12.96],
-            'epsGrowth': 324.75
-        }
+            "symbol": "NVDA",
+            "name": "NVIDIA Corporation",
+            "marketCap": 2158730000000,
+            "quarterlyEps": [1.01, 1.36, 2.48, 5.16, 4.28, 6.12, 8.92, 12.96],
+            "epsGrowth": 324.75,
+        },
     ]
 
 
-@register_widget({
-    "name": "Table Widget with Basic Sparklines",
-    "description": "A table widget with basic sparklines showing min/max points",
-    "type": "table",
-    "endpoint": "table_widget_basic_sparklines",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "stock",
-                    "headerName": "Stock",
-                    "cellDataType": "text",
-                    "width": 120,
-                    "pinned": "left"
-                },
-                {
-                    "field": "price_history",
-                    "headerName": "Price History",
-                    "width": 200,
-                    "sparkline": {
-                        "type": "line",
-                        "options": {
-                            "stroke": "#2563eb",
-                            "strokeWidth": 2,
-                            "markers": {
-                                "enabled": True,
-                                "size": 3
+@register_widget(
+    {
+        "name": "Table Widget with Basic Sparklines",
+        "description": "A table widget with basic sparklines showing min/max points",
+        "type": "table",
+        "endpoint": "table_widget_basic_sparklines",
+        "gridData": {"w": 20, "h": 6},
+        "data": {
+            "table": {
+                "columnsDefs": [
+                    {
+                        "field": "stock",
+                        "headerName": "Stock",
+                        "cellDataType": "text",
+                        "width": 120,
+                        "pinned": "left",
+                    },
+                    {
+                        "field": "price_history",
+                        "headerName": "Price History",
+                        "width": 200,
+                        "sparkline": {
+                            "type": "line",
+                            "options": {
+                                "stroke": "#2563eb",
+                                "strokeWidth": 2,
+                                "markers": {"enabled": True, "size": 3},
+                                "pointsOfInterest": {
+                                    "maximum": {
+                                        "fill": "#22c55e",
+                                        "stroke": "#16a34a",
+                                        "size": 6,
+                                    },
+                                    "minimum": {
+                                        "fill": "#ef4444",
+                                        "stroke": "#dc2626",
+                                        "size": 6,
+                                    },
+                                },
                             },
-                            "pointsOfInterest": {
-                                "maximum": {
-                                    "fill": "#22c55e",
-                                    "stroke": "#16a34a",
-                                    "size": 6
+                        },
+                    },
+                    {
+                        "field": "volume",
+                        "headerName": "Volume",
+                        "width": 150,
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "fill": "#6b7280",
+                                "stroke": "#4b5563",
+                                "pointsOfInterest": {
+                                    "maximum": {"fill": "#22c55e", "stroke": "#16a34a"},
+                                    "minimum": {"fill": "#ef4444", "stroke": "#dc2626"},
                                 },
-                                "minimum": {
-                                    "fill": "#ef4444",
-                                    "stroke": "#dc2626",
-                                    "size": 6
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "field": "volume",
-                    "headerName": "Volume",
-                    "width": 150,
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "fill": "#6b7280",
-                            "stroke": "#4b5563",
-                            "pointsOfInterest": {
-                                "maximum": {
-                                    "fill": "#22c55e",
-                                    "stroke": "#16a34a"
-                                },
-                                "minimum": {
-                                    "fill": "#ef4444",
-                                    "stroke": "#dc2626"
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        }
-    },
-})
+                            },
+                        },
+                    },
+                ]
+            }
+        },
+    }
+)
 @app.get("/table_widget_basic_sparklines")
 def table_widget_basic_sparklines():
     """Returns mock data with sparklines"""
@@ -4959,64 +5432,66 @@ def table_widget_basic_sparklines():
         {
             "stock": "AAPL",
             "price_history": [150, 155, 148, 162, 158, 165, 170],
-            "volume": [1000, 1200, 900, 1500, 1100, 1300, 1800]
+            "volume": [1000, 1200, 900, 1500, 1100, 1300, 1800],
         },
         {
             "stock": "GOOGL",
             "price_history": [2800, 2750, 2900, 2850, 2950, 3000, 2980],
-            "volume": [800, 950, 700, 1200, 850, 1100, 1400]
+            "volume": [800, 950, 700, 1200, 850, 1100, 1400],
         },
         {
             "stock": "MSFT",
             "price_history": [340, 335, 350, 345, 360, 355, 365],
-            "volume": [900, 1100, 800, 1300, 950, 1200, 1600]
-        }
+            "volume": [900, 1100, 800, 1300, 950, 1200, 1600],
+        },
     ]
     return mock_data
 
 
-@register_widget({
-    "name": "Table Widget with Custom Formatter",
-    "description": "A table widget with custom sparkline formatter for profit/loss",
-    "type": "table",
-    "endpoint": "table_widget_custom_formatter",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {
-                    "field": "company",
-                    "headerName": "Company",
-                    "cellDataType": "text",
-                    "width": 150,
-                    "pinned": "left"
-                },
-                {
-                    "field": "profit_loss",
-                    "headerName": "P&L Trend",
-                    "width": 200,
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "customFormatter": "(params) => ({ fill: params.yValue >= 0 ? '#22c55e' : '#ef4444', stroke: params.yValue >= 0 ? '#16a34a' : '#dc2626' })"
-                        }
-                    }
-                },
-                {
-                    "field": "revenue_growth",
-                    "headerName": "Revenue Growth",
-                    "width": 200,
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "customFormatter": "(params) => ({ fill: params.yValue > 10 ? '#22c55e' : params.yValue < 0 ? '#ef4444' : '#f59e0b', fillOpacity: 0.3, stroke: params.yValue > 10 ? '#16a34a' : params.yValue < 0 ? '#dc2626' : '#d97706' })"
-                        }
-                    }
-                }
-            ]
-        }
-    },
-})
+@register_widget(
+    {
+        "name": "Table Widget with Custom Formatter",
+        "description": "A table widget with custom sparkline formatter for profit/loss",
+        "type": "table",
+        "endpoint": "table_widget_custom_formatter",
+        "gridData": {"w": 20, "h": 6},
+        "data": {
+            "table": {
+                "columnsDefs": [
+                    {
+                        "field": "company",
+                        "headerName": "Company",
+                        "cellDataType": "text",
+                        "width": 150,
+                        "pinned": "left",
+                    },
+                    {
+                        "field": "profit_loss",
+                        "headerName": "P&L Trend",
+                        "width": 200,
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "customFormatter": "(params) => ({ fill: params.yValue >= 0 ? '#22c55e' : '#ef4444', stroke: params.yValue >= 0 ? '#16a34a' : '#dc2626' })"
+                            },
+                        },
+                    },
+                    {
+                        "field": "revenue_growth",
+                        "headerName": "Revenue Growth",
+                        "width": 200,
+                        "sparkline": {
+                            "type": "bar",
+                            "options": {
+                                "customFormatter": "(params) => ({ fill: params.yValue > 10 ? '#22c55e' : params.yValue < 0 ? '#ef4444' : '#f59e0b', fillOpacity: 0.3, stroke: params.yValue > 10 ? '#16a34a' : params.yValue < 0 ? '#dc2626' : '#d97706' })"
+                            },
+                        },
+                    },
+                ]
+            }
+        },
+    }
+)
 @app.get("/table_widget_custom_formatter")
 def table_widget_custom_formatter():
     """Returns mock data with custom formatter"""
@@ -5024,59 +5499,58 @@ def table_widget_custom_formatter():
         {
             "company": "TechCorp",
             "profit_loss": [5, -2, 8, -3, 12, 7, -1],
-            "revenue_growth": [15, 8, -5, 20, -8, 25, 18]
+            "revenue_growth": [15, 8, -5, 20, -8, 25, 18],
         },
         {
             "company": "DataSoft",
             "profit_loss": [10, -5, 15, -8, 20, 12, -3],
-            "revenue_growth": [12, 5, 8, -2, 15, 10, 22]
+            "revenue_growth": [12, 5, 8, -2, 15, 10, 22],
         },
         {
             "company": "CloudInc",
             "profit_loss": [8, -15, 25, 12, -5, 18, 28],
-            "revenue_growth": [8, -3, 12, 18, 6, 14, 9]
-        }
+            "revenue_growth": [8, -3, 12, 18, 6, 14, 9],
+        },
     ]
     return mock_data
 
 
-@register_widget({
-    "name": "Sample News Feed",
-    "description": "A simple newsfeed widget with example articles",
-    "type": "newsfeed",
-    "endpoint": "sample_newsfeed",
-    "gridData": {
-        "w": 40,
-        "h": 20
-    },
-    "source": "example",
-    "params": [
-        {
-            "paramName": "category",
-            "label": "Category",
-            "description": "Filter news by category",
-            "type": "text",
-            "value": "all",
-            "options": [
-                {"label": "All", "value": "all"},
-                {"label": "Technology", "value": "tech"},
-                {"label": "Business", "value": "business"},
-                {"label": "Science", "value": "science"}
-            ]
-        },
-        {
-            "paramName": "limit",
-            "label": "Number of Articles",
-            "description": "Maximum number of articles to display",
-            "type": "number",
-            "value": "5"
-        }
-    ]
-})
+@register_widget(
+    {
+        "name": "Sample News Feed",
+        "description": "A simple newsfeed widget with example articles",
+        "type": "newsfeed",
+        "endpoint": "sample_newsfeed",
+        "gridData": {"w": 40, "h": 20},
+        "source": "example",
+        "params": [
+            {
+                "paramName": "category",
+                "label": "Category",
+                "description": "Filter news by category",
+                "type": "text",
+                "value": "all",
+                "options": [
+                    {"label": "All", "value": "all"},
+                    {"label": "Technology", "value": "tech"},
+                    {"label": "Business", "value": "business"},
+                    {"label": "Science", "value": "science"},
+                ],
+            },
+            {
+                "paramName": "limit",
+                "label": "Number of Articles",
+                "description": "Maximum number of articles to display",
+                "type": "number",
+                "value": "5",
+            },
+        ],
+    }
+)
 @app.get("/sample_newsfeed")
 def get_sample_newsfeed(category: str = "all", limit: int = 5):
     """Returns sample news articles in the required newsfeed format"""
-    
+
     # Sample news data organized by category
     sample_articles = {
         "tech": [
@@ -5094,7 +5568,7 @@ Researchers at TechLab have unveiled a groundbreaking AI model that demonstrates
 - **Multimodal understanding**: Processes text, images, and audio simultaneously
 - **Energy efficient**: Uses 40% less computational resources than previous models
 
-The implications of this breakthrough extend across multiple industries, from healthcare to education, promising to revolutionize how we interact with AI systems."""
+The implications of this breakthrough extend across multiple industries, from healthcare to education, promising to revolutionize how we interact with AI systems.""",
             },
             {
                 "title": "Quantum Computing Startup Raises $500M in Series C Funding",
@@ -5110,8 +5584,8 @@ The company plans to use the funding to:
 2. Expand research team by 200 engineers
 3. Develop partnerships with major cloud providers
 
-CEO Jane Smith stated, "This investment validates our approach to making quantum computing accessible to enterprises worldwide." """
-            }
+CEO Jane Smith stated, "This investment validates our approach to making quantum computing accessible to enterprises worldwide." """,
+            },
         ],
         "business": [
             {
@@ -5129,7 +5603,7 @@ Stock markets worldwide experienced significant gains today as investors respond
 - FTSE 100: +1.9%
 - Nikkei 225: +2.1%
 
-Analysts attribute the rally to renewed confidence in economic recovery and expectations of stable monetary policy."""
+Analysts attribute the rally to renewed confidence in economic recovery and expectations of stable monetary policy.""",
             },
             {
                 "title": "E-commerce Giant Announces Major Expansion into Southeast Asia",
@@ -5145,8 +5619,8 @@ The expansion includes:
 - Partnership with 10,000 local merchants
 - Same-day delivery in major metropolitan areas
 
-This strategic move positions the company to capture the rapidly growing digital commerce market in the region."""
-            }
+This strategic move positions the company to capture the rapidly growing digital commerce market in the region.""",
+            },
         ],
         "science": [
             {
@@ -5164,7 +5638,7 @@ A team of international astronomers has announced the discovery of an Earth-like
 - **Surface temperature**: Estimated 15°C average
 - **Atmosphere**: Preliminary data suggests presence of water vapor
 
-The discovery opens new possibilities for studying potentially habitable worlds beyond our solar system."""
+The discovery opens new possibilities for studying potentially habitable worlds beyond our solar system.""",
             },
             {
                 "title": "Breakthrough in Cancer Treatment: New Immunotherapy Shows Promise",
@@ -5180,11 +5654,11 @@ Researchers at the National Cancer Institute have reported extraordinary results
 - 65% showed tumor reduction within 3 months
 - Minimal side effects compared to traditional chemotherapy
 
-Dr. Sarah Lee, lead researcher, commented: "These results exceed our most optimistic expectations and could transform cancer treatment protocols." """
-            }
-        ]
+Dr. Sarah Lee, lead researcher, commented: "These results exceed our most optimistic expectations and could transform cancer treatment protocols." """,
+            },
+        ],
     }
-    
+
     # Collect articles based on category
     if category == "all":
         # Combine all categories
@@ -5195,21 +5669,22 @@ Dr. Sarah Lee, lead researcher, commented: "These results exceed our most optimi
     else:
         # Get specific category or empty list if category doesn't exist
         articles = sample_articles.get(category, [])
-    
+
     # Sort by date (newest first) and limit results
     articles.sort(key=lambda x: x["date"], reverse=True)
     articles = articles[:limit]
-    
+
     # Add some variety with random additional recent articles if needed
     if len(articles) < limit and category == "all":
         # Generate some generic filler articles
         for i in range(limit - len(articles)):
-            articles.append({
-                "title": f"Breaking News: Important Update #{i+1}",
-                "date": (datetime.now() - timedelta(hours=8+i)).isoformat(),
-                "author": "News Team",
-                "excerpt": f"This is a sample news article demonstrating the newsfeed widget functionality...",
-                "body": f"""# Breaking News: Important Update #{i+1}
+            articles.append(
+                {
+                    "title": f"Breaking News: Important Update #{i+1}",
+                    "date": (datetime.now() - timedelta(hours=8 + i)).isoformat(),
+                    "author": "News Team",
+                    "excerpt": "This is a sample news article demonstrating the newsfeed widget functionality...",
+                    "body": f"""# Breaking News: Important Update #{i+1}
 
 This is a sample article created to demonstrate the newsfeed widget's ability to display multiple articles.
 
@@ -5220,99 +5695,101 @@ The newsfeed widget can display articles with:
 - Excerpts for quick preview
 - Full article body with detailed content
 
-Stay tuned for more updates!"""
-            })
-    
+Stay tuned for more updates!""",
+                }
+            )
+
     return articles
 
-# Sample YouTube videos data
-SAMPLE_VIDEOS = [
-    {
-        "name": "OpenBB Workspace Demo",
-        "url": "https://www.youtube.com/watch?v=uYyhswnZkSw",
-        "transcript": "# OpenBB Workspace Demo\n\nTranscript handled by the backend..."
-    },
-    {
-        "name": "Open Data Platform Demo",
-        "url": "https://www.youtube.com/watch?v=MSlhOFxEdxg",
-        "transcript": "# Open Data Platform Demo\n\nTranscript handled by the backend..."
-    }
-]
 
-# Sample video options endpoint
-# This endpoint returns the list of available videos for the dropdown selector
-@app.get("/get_video_options")
-async def get_video_options() -> List[FileOption]:
-    """Get list of available videos"""
-    return [
-        FileOption(label=video["name"], value=video["name"])
-        for video in SAMPLE_VIDEOS
-    ]
+# # Sample YouTube videos data
+# SAMPLE_VIDEOS = [
+#     {
+#         "name": "OpenBB Workspace Demo",
+#         "url": "https://www.youtube.com/watch?v=uYyhswnZkSw",
+#         "transcript": "# OpenBB Workspace Demo\n\nTranscript handled by the backend..."
+#     },
+#     {
+#         "name": "Open Data Platform Demo",
+#         "url": "https://www.youtube.com/watch?v=MSlhOFxEdxg",
+#         "transcript": "# Open Data Platform Demo\n\nTranscript handled by the backend..."
+#     }
+# ]
 
-# YouTube widget without transcript support
-# This widget only displays the video player
-@register_widget({
-    "name": "Video Library",
-    "description": "View YouTube videos",
-    "type": "youtube",
-    "endpoint": "/get_video",
-    "gridData": {"w": 20, "h": 12},
-    "params": [
-        {
-            "paramName": "video_name",
-            "description": "Video to display",
-            "type": "endpoint",
-            "label": "Video",
-            "optionsEndpoint": "/get_video_options",
-            "value": "OpenBB Workspace Demo",
-        }
-    ]
-})
-@app.get("/get_video")
-async def get_video(
-    video_name: str = Query("", description="Selected video"),
-):
-    """Get YouTube video URL"""
-    video = next((v for v in SAMPLE_VIDEOS if v["name"] == video_name), None)
+# # Sample video options endpoint
+# # This endpoint returns the list of available videos for the dropdown selector
+# @app.get("/get_video_options")
+# async def get_video_options() -> List[FileOption]:
+#     """Get list of available videos"""
+#     return [
+#         FileOption(label=video["name"], value=video["name"])
+#         for video in SAMPLE_VIDEOS
+#     ]
 
-    if not video:
-        return PlainTextResponse(content="")
+# # YouTube widget without transcript support
+# # This widget only displays the video player
+# @register_widget({
+#     "name": "Video Library",
+#     "description": "View YouTube videos",
+#     "type": "youtube",
+#     "endpoint": "/get_video",
+#     "gridData": {"w": 20, "h": 12},
+#     "params": [
+#         {
+#             "paramName": "video_name",
+#             "description": "Video to display",
+#             "type": "endpoint",
+#             "label": "Video",
+#             "optionsEndpoint": "/get_video_options",
+#             "value": "OpenBB Workspace Demo",
+#         }
+#     ]
+# })
+# @app.get("/get_video")
+# async def get_video(
+#     video_name: str = Query("", description="Selected video"),
+# ):
+#     """Get YouTube video URL"""
+#     video = next((v for v in SAMPLE_VIDEOS if v["name"] == video_name), None)
 
-    return PlainTextResponse(content=video["url"])
+#     if not video:
+#         return PlainTextResponse(content="")
 
-# YouTube widget with transcript support
-# When raw=True is set in the widget config, the frontend will request ?raw=true
-# to get the transcript for AI context
-@register_widget({
-    "name": "Video Library with Transcript",
-    "description": "View YouTube videos with transcript support for AI",
-    "type": "youtube",
-    "endpoint": "/get_video_with_transcript",
-    "raw": True,
-    "gridData": {"w": 20, "h": 12},
-    "params": [
-        {
-            "paramName": "video_name",
-            "description": "Video to display",
-            "type": "endpoint",
-            "label": "Video",
-            "optionsEndpoint": "/get_video_options",
-            "value": "OpenBB Workspace Demo",
-        }
-    ]
-})
-@app.get("/get_video_with_transcript")
-async def get_video_with_transcript(
-    video_name: str = Query("", description="Selected video"),
-    raw: bool = Query(False, description="Return transcript instead of URL"),
-):
-    """Get YouTube video URL or transcript"""
-    video = next((v for v in SAMPLE_VIDEOS if v["name"] == video_name), None)
+#     return PlainTextResponse(content=video["url"])
 
-    if not video:
-        return PlainTextResponse(content="*No video selected*" if raw else "")
+# # YouTube widget with transcript support
+# # When raw=True is set in the widget config, the frontend will request ?raw=true
+# # to get the transcript for AI context
+# @register_widget({
+#     "name": "Video Library with Transcript",
+#     "description": "View YouTube videos with transcript support for AI",
+#     "type": "youtube",
+#     "endpoint": "/get_video_with_transcript",
+#     "raw": True,
+#     "gridData": {"w": 20, "h": 12},
+#     "params": [
+#         {
+#             "paramName": "video_name",
+#             "description": "Video to display",
+#             "type": "endpoint",
+#             "label": "Video",
+#             "optionsEndpoint": "/get_video_options",
+#             "value": "OpenBB Workspace Demo",
+#         }
+#     ]
+# })
+# @app.get("/get_video_with_transcript")
+# async def get_video_with_transcript(
+#     video_name: str = Query("", description="Selected video"),
+#     raw: bool = Query(False, description="Return transcript instead of URL"),
+# ):
+#     """Get YouTube video URL or transcript"""
+#     video = next((v for v in SAMPLE_VIDEOS if v["name"] == video_name), None)
 
-    if raw:
-        return PlainTextResponse(content=video["transcript"], media_type="text/markdown")
+#     if not video:
+#         return PlainTextResponse(content="*No video selected*" if raw else "")
 
-    return PlainTextResponse(content=video["url"])
+#     if raw:
+#         return PlainTextResponse(content=video["transcript"], media_type="text/markdown")
+
+#     return PlainTextResponse(content=video["url"])
