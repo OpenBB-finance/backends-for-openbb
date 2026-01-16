@@ -61,32 +61,60 @@
     <div id="chart"></div>
 
     <script>
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const symbol = urlParams.get('symbol') || 'BTCUSD';
-        const interval = urlParams.get('interval') || '1h';
+        // These values are injected server-side
+        const symbol = '{{SYMBOL}}';
+        const interval = '{{INTERVAL}}';
+        const exchange = '{{EXCHANGE}}';
+        const theme = '{{THEME}}';
+
+        // Theme colors
+        const themes = {
+            dark: {
+                background: '#131722',
+                textColor: '#d1d4dc',
+                vertLines: '#1e222d',
+                horzLines: '#1e222d',
+                borderColor: '#2B2B43',
+                bodyBg: '#131722'
+            },
+            light: {
+                background: '#ffffff',
+                textColor: '#191919',
+                vertLines: '#e1e3e6',
+                horzLines: '#e1e3e6',
+                borderColor: '#e1e3e6',
+                bodyBg: '#ffffff'
+            }
+        };
+
+        const currentTheme = themes[theme] || themes.dark;
+
+        // Apply body background
+        document.body.style.backgroundColor = currentTheme.bodyBg;
+        document.body.style.color = currentTheme.textColor;
 
         // Update info display
-        document.getElementById('info').textContent = `${symbol} - ${interval}`;
+        const exchangeLabel = exchange === 'binancef' ? 'Binance Futures' : 'BinanceUS';
+        document.getElementById('info').textContent = `${exchangeLabel} - ${symbol} - ${interval}`;
 
-        // Create chart
+        // Create chart with theme
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: {
-                background: { color: '#131722' },
-                textColor: '#d1d4dc',
+                background: { color: currentTheme.background },
+                textColor: currentTheme.textColor,
             },
             grid: {
-                vertLines: { color: '#1e222d' },
-                horzLines: { color: '#1e222d' },
+                vertLines: { color: currentTheme.vertLines },
+                horzLines: { color: currentTheme.horzLines },
             },
             crosshair: {
                 mode: LightweightCharts.CrosshairMode.Normal,
             },
             rightPriceScale: {
-                borderColor: '#2B2B43',
+                borderColor: currentTheme.borderColor,
             },
             timeScale: {
-                borderColor: '#2B2B43',
+                borderColor: currentTheme.borderColor,
                 timeVisible: true,
                 secondsVisible: false,
             },
@@ -100,78 +128,42 @@
             wickDownColor: '#ef5350',
         });
 
-        // Transform Binance kline data to lightweight-charts format
-        function transformKline(kline) {
-            return {
-                time: kline[0] / 1000, // Convert ms to seconds
-                open: parseFloat(kline[1]),
-                high: parseFloat(kline[2]),
-                low: parseFloat(kline[3]),
-                close: parseFloat(kline[4]),
-            };
-        }
-
-        // Fetch historical data
-        async function fetchHistoricalData() {
-            try {
-                const response = await fetch(
-                    `https://api.binance.us/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=1000`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const transformedData = data.map(transformKline);
-                candlestickSeries.setData(transformedData);
-
-                // Send data to parent window
-                window.parent.postMessage({
-                    type: 'aiData',
-                    data: transformedData
-                }, '*');
-
-                document.getElementById('status').textContent = 'Connecting...';
-                document.getElementById('status').className = 'loading';
-
-                // Connect to WebSocket after loading historical data
-                connectWebSocket();
-            } catch (error) {
-                console.error('Error fetching historical data:', error);
-                document.getElementById('status').textContent = 'Error loading data';
-                document.getElementById('status').className = 'disconnected';
-            }
-        }
-
         let ws;
         let reconnectTimeout;
 
         function connectWebSocket() {
-            const wsUrl = `wss://stream.binance.us:9443/ws/${symbol.toLowerCase()}@kline_${interval}`;
+            // Hardcoded backend URL for development
+            const wsUrl = `ws://localhost:8000/ws/binance?symbol=${symbol}&interval=${interval}&exchange=${exchange}`;
+
+            document.getElementById('status').textContent = 'Connecting...';
+            document.getElementById('status').className = 'loading';
 
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('WebSocket connected');
-                document.getElementById('status').textContent = 'Live';
-                document.getElementById('status').className = 'connected';
+                console.log('WebSocket connected to Python backend');
             };
 
             ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
+                const message = JSON.parse(event.data);
 
-                if (data.e === 'kline') {
-                    const kline = data.k;
-                    const candle = {
-                        time: kline.t / 1000, // Convert ms to seconds
-                        open: parseFloat(kline.o),
-                        high: parseFloat(kline.h),
-                        low: parseFloat(kline.l),
-                        close: parseFloat(kline.c),
-                    };
+                // Handle historical data
+                if (message.type === 'historical') {
+                    console.log('Received historical data:', message.data.length, 'candles');
+                    candlestickSeries.setData(message.data);
 
-                    candlestickSeries.update(candle);
+                    // Send data to parent window for AI
+                    window.parent.postMessage({
+                        type: 'aiData',
+                        data: message.data
+                    }, '*');
+
+                    document.getElementById('status').textContent = 'Live';
+                    document.getElementById('status').className = 'connected';
+                }
+                // Handle real-time updates
+                else if (message.time) {
+                    candlestickSeries.update(message);
                 }
             };
 
@@ -201,8 +193,8 @@
             });
         });
 
-        // Start the application
-        fetchHistoricalData();
+        // Start the application by connecting to Python WebSocket
+        connectWebSocket();
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {

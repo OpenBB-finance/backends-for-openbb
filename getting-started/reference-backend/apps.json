@@ -1,5 +1,5 @@
 {
-  "name": "Template App",
+  "name": "Onboarding App for Devs",
   "img": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
   "img_dark": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
   "img_light": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
@@ -130,6 +130,14 @@
           "y": 15,
           "w": 40,
           "h": 8,
+          "groups": []
+        },
+        {
+          "i": "html_widget",
+          "x": 0,
+          "y": 70,
+          "w": 40,
+          "h": 22,
           "groups": []
         }
       ]
@@ -848,7 +856,7 @@
       "name": "Group 3",
       "type": "endpointParam",
       "paramName": "symbol",
-      "defaultValue": null
+      "defaultValue": "AMZN"
     }
   ]
 }

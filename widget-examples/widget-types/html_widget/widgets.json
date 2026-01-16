@@ -1,14 +1,59 @@
 {
   "html_binance_ohlc": {
-    "name": "BinanceUS OHLC",
-    "description": "Displays OHLC for a given symbol",
+    "name": "Binance OHLC",
+    "description": "Displays OHLC for a given symbol with real-time updates",
     "category": "Crypto",
     "type": "html",
     "endpoint": "html_binance_ohlc",
     "gridData": {
-      "w": 20,
-      "h": 9
+      "w": 40,
+      "h": 14
     },
-    "source": "BinanceUS"
+    "source": "Binance",
+    "raw": false,
+    "params": [
+      {
+        "paramName": "symbol",
+        "value": "BTCUSDT",
+        "options": [
+          {
+            "label": "BTCUSDT",
+            "value": "btcusdt"
+          },
+          {
+            "label": "ETHUSDT",
+            "value": "ethusdt"
+          }
+        ]
+      },
+      {
+        "paramName": "interval",
+        "value": "30m",
+        "options": [
+          {
+            "label": "1m",
+            "value": "1m"
+          },
+          {
+            "label": "30m",
+            "value": "30m"
+          }
+        ]
+      },
+      {
+        "paramName": "exchange",
+        "value": "BinanceUS",
+        "options": [
+          {
+            "label": "BinanceUS",
+            "value": "BinanceUS"
+          },
+          {
+            "label": "Binance Futures",
+            "value": "binancef"
+          }
+        ]
+      }
+    ]
   }
 }
