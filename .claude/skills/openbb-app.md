@@ -2674,3 +2674,160 @@ def get_symbols():
 6. **Add to OpenBB Workspace** - Apps > Connect Backend
 
 When users ask to build an OpenBB app, guide them through these steps and generate complete, working code based on their requirements.
+
+---
+
+# PROJECT DOCUMENTATION
+
+Every OpenBB app must include proper documentation to ensure users can set up and run the project seamlessly.
+
+## Required Files
+
+### 1. README.md
+
+Every app needs a README.md that includes:
+
+**Essential sections:**
+- **Project title and description** - What the app does
+- **Features** - Key functionality
+- **Setup instructions** - Step-by-step guide to run the project
+- **API endpoints** - List of available endpoints
+- **Notes/limitations** - Important caveats
+
+**Template structure:**
+
+```markdown
+# App Name
+
+Brief description of what the app does.
+
+## Features
+
+- Feature 1
+- Feature 2
+- Feature 3
+
+## Setup
+
+1. Create virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # or venv\Scripts\activate on Windows
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. (If external API) Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your API key
+   ```
+
+   Get your API key from: https://api.example.com/signup
+
+4. Run the server:
+   ```bash
+   uvicorn main:app --reload --port 7779
+   ```
+
+## Adding to OpenBB Workspace
+
+1. Go to **Apps**
+2. Click **Add Custom Backend**
+3. Enter URL: `http://localhost:7779`
+4. The "App Name" dashboard will appear in your apps
+
+## API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /` | Health check |
+| `GET /widgets.json` | Widget configurations |
+| `GET /apps.json` | Dashboard layout |
+| `GET /data_endpoint` | Main data endpoint |
+
+## Data Source
+
+Where the data comes from (API, scraping, local files, etc.)
+
+## Notes
+
+- Important caveats
+- Limitations
+- Data refresh rates
+```
+
+### 2. requirements.txt
+
+List ALL dependencies with version constraints:
+
+```
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.18.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+```
+
+**Best practices:**
+- Use `>=` for minimum versions (allows compatible upgrades)
+- Include transitive dependencies that are directly used
+- Group by purpose (core framework, data processing, visualization)
+- Test with fresh install: `pip install -r requirements.txt`
+
+### 3. .env.example (if using external APIs)
+
+Provide a template for environment variables:
+
+```bash
+# External API Configuration
+# Get your API key from: https://api.example.com/signup
+EXAMPLE_API_KEY=your_api_key_here
+
+# Optional: Custom settings
+CACHE_TTL=300
+```
+
+**Never commit `.env` with real keys!** Add `.env` to `.gitignore`.
+
+## API Key Documentation
+
+When your app uses external APIs that require authentication:
+
+1. **In README**: Include direct link to where users can get the API key
+2. **In .env.example**: Comment with the signup URL
+3. **In error messages**: Tell users where to get the key
+
+```python
+# In your endpoint
+if not api_key:
+    raise HTTPException(
+        status_code=401,
+        detail="API key required. Get one at: https://api.example.com/signup"
+    )
+```
+
+## Example Directory Structure
+
+```
+apps/my-app/
+├── main.py           # FastAPI backend
+├── apps.json         # Dashboard layout
+├── requirements.txt  # Python dependencies
+├── README.md         # Setup instructions
+├── .env.example      # Environment template (if needed)
+└── .gitignore        # Exclude .env, __pycache__, etc.
+```
+
+## Checklist Before Sharing
+
+- [ ] README has clear setup instructions
+- [ ] requirements.txt lists all dependencies
+- [ ] Can install and run from scratch with just the README
+- [ ] API key sources are documented (if applicable)
+- [ ] No secrets committed to the repository
