@@ -110,6 +110,24 @@ When a user wants to build an OpenBB app:
 4. Generate a complete backend with all necessary endpoints
 5. Create the apps.json configuration if they want a custom dashboard layout
 
+## Building Apps from Existing Websites
+
+When recreating an existing website/dashboard as an OpenBB app:
+
+1. **Explore the UI** - Understand what data is displayed and how it's organized
+2. **Find data sources** - Look for:
+   - API endpoints in browser Network tab
+   - Parquet/CSV files being loaded
+   - Schema files (e.g., `schema.json`)
+   - GitHub repos for the original project
+3. **Map UI components to widget types**:
+   - KPI cards → `metric` widget
+   - Time series charts → `chart` widget (Plotly) OR `table` with `chartView`
+   - Data tables → `table` widget
+   - Donut/pie charts → `chart` widget or `table` with `chartView` pie type
+4. **Identify parameters** - Filters, dropdowns, date ranges in the original UI become widget params
+5. **Design tab structure** - Group related widgets into logical tabs (Overview, Details, Analysis, etc.)
+
 ---
 
 # BEST PRACTICES
@@ -330,6 +348,22 @@ pip install fastapi uvicorn plotly pandas requests
 uvicorn main:app --reload --host 0.0.0.0 --port 7779
 ```
 
+### Dependency Installation Requires Server Restart
+
+The `--reload` flag only watches for code changes, NOT new package installations. When adding new dependencies while the server is running:
+
+```bash
+# Install new dependency
+pip install pyarrow
+
+# --reload does NOT detect new packages!
+# You must restart the server:
+lsof -ti:7779 | xargs kill -9
+uvicorn main:app --reload --port 7779
+```
+
+**Common symptom**: ImportError or "unable to find engine" errors even after pip install succeeds.
+
 ---
 
 # WIDGET TYPES
@@ -475,6 +509,42 @@ def stock_data():
 ```
 
 **Supported Chart Types**: column, groupedColumn, stackedColumn, bar, groupedBar, stackedBar, line, scatter, bubble, pie, donut, area, histogram, radarLine, boxPlot, sunburst, heatmap, waterfall, treemap, rangeBar
+
+### Complete Table with Chart View Example
+
+```python
+@register_widget({
+    "name": "Top Wells by Oil",
+    "type": "table",
+    "endpoint": "top_wells",
+    "gridData": {"w": 20, "h": 14},
+    "data": {
+        "table": {"enableCharts": True},
+        "chartView": {
+            "enabled": True,      # Start in chart view (user can toggle to table)
+            "chartType": "bar",   # bar, line, pie, donut, etc.
+        },
+        "columnsDefs": [
+            {"field": "name", "headerName": "Name", "chartDataType": "category"},
+            {"field": "oil_volume", "headerName": "Oil (sm³)", "cellDataType": "number", "formatterFn": "int", "chartDataType": "series"},
+            {"field": "water_volume", "headerName": "Water (sm³)", "cellDataType": "number", "formatterFn": "int", "chartDataType": "series"},
+            {"field": "notes", "headerName": "Notes", "chartDataType": "excluded"},  # Won't appear in chart
+        ],
+    },
+})
+@app.get("/top_wells")
+def top_wells():
+    return [
+        {"name": "Well A", "oil_volume": 45800, "water_volume": 68300, "notes": "Primary producer"},
+        {"name": "Well B", "oil_volume": 32100, "water_volume": 41200, "notes": "Secondary"},
+    ]
+```
+
+**chartDataType values**:
+- `category` - X-axis labels (usually first column)
+- `series` - Y-axis values (plotted data)
+- `time` - Time-based X-axis (for time series)
+- `excluded` - Column visible in table but NOT in chart
 
 ---
 
@@ -1339,6 +1409,36 @@ def stock_options():
     ]
 ```
 
+### Handling multiSelect Parameter Values
+
+When `multiSelect: True`, selected values arrive as a **comma-separated string**:
+
+```python
+# Widget config
+"params": [
+    {
+        "paramName": "wells",
+        "type": "endpoint",
+        "optionsEndpoint": "/well_options",
+        "multiSelect": True,  # User can select multiple
+        "value": ""
+    }
+]
+
+# Endpoint handling
+@app.get("/data")
+def get_data(wells: str = Query("")):
+    if wells:
+        # Split comma-separated values
+        well_list = [w.strip() for w in wells.split(",") if w.strip()]
+
+        # For numeric IDs
+        well_ids = [int(w) for w in wells.split(",") if w]
+        df = df[df["well_id"].isin(well_ids)]
+
+    return data
+```
+
 ## Dependent Dropdown
 
 Second dropdown filtered by first dropdown's selection.
@@ -1715,6 +1815,54 @@ When multiple widgets use the same parameter (e.g., `symbol`), define a group so
 - Use `type: "param"` for parameters with static options
 - Each widget must have `"groups": ["Group 1"]` in its layout definition to be included
 - When grouping is active, a chain link icon (🔗) appears next to each grouped dropdown.
+
+**CRITICAL ERROR**: If you define `groups` at app level but only SOME widgets have `"groups": ["Group 1"]` in their layout, you will get a JavaScript error:
+
+```
+TypeError: Cannot read properties of undefined (reading 'includes')
+```
+
+**Solution**: Either add `"groups": ["Group 1"]` to ALL widgets that use the grouped parameter, OR remove the groups configuration entirely if widgets don't share parameters.
+
+```json
+// BAD - causes JavaScript error (widget2 missing groups)
+{
+    "groups": [{"name": "Group 1", "paramName": "symbol", ...}],
+    "tabs": {
+        "main": {
+            "layout": [
+                {"i": "widget1", "x": 0, "y": 0, "w": 20, "h": 10, "groups": ["Group 1"]},
+                {"i": "widget2", "x": 20, "y": 0, "w": 20, "h": 10}  // Missing groups!
+            ]
+        }
+    }
+}
+
+// GOOD - all grouped widgets have groups array
+{
+    "groups": [{"name": "Group 1", "paramName": "symbol", ...}],
+    "tabs": {
+        "main": {
+            "layout": [
+                {"i": "widget1", "x": 0, "y": 0, "w": 20, "h": 10, "groups": ["Group 1"]},
+                {"i": "widget2", "x": 20, "y": 0, "w": 20, "h": 10, "groups": ["Group 1"]}
+            ]
+        }
+    }
+}
+
+// GOOD - no groups if widgets don't share parameters
+{
+    "tabs": {
+        "main": {
+            "layout": [
+                {"i": "widget1", "x": 0, "y": 0, "w": 20, "h": 10},
+                {"i": "widget2", "x": 20, "y": 0, "w": 20, "h": 10}
+            ]
+        }
+    }
+}
+```
 
 #### 3. Add Helpful AI Prompts
 
@@ -2116,32 +2264,68 @@ def parse_chart_data(data: dict) -> list[dict]:
     return []
 ```
 
+## Date Column Handling
+
+Always convert date columns explicitly when loading data, and format consistently for display:
+
+```python
+import pandas as pd
+
+def get_data() -> pd.DataFrame:
+    df = load_parquet("data.parquet")
+    df["date"] = pd.to_datetime(df["date"])  # Explicit conversion
+    return df
+
+@app.get("/endpoint")
+def endpoint():
+    df = get_data()
+    return [
+        {
+            "date": row["date"].strftime("%Y-%m-%d"),  # Daily data
+            "month": row["date"].strftime("%Y-%m"),    # Monthly data
+            "value": row["value"],
+        }
+        for _, row in df.iterrows()
+    ]
+```
+
 ## Error Handling in Widget Endpoints
 
 Return errors in the widget's expected data format so the UI displays them gracefully:
 
 ```python
+# Metric widget - return error as metric
 @app.get("/company_metrics")
 def company_metrics(symbol: str = "DEFAULT"):
     try:
-        scraper = DataScraper(symbol)
-        data = scraper.get_metrics()
+        data = fetch_metrics(symbol)
         return [
-            {"label": "Metric 1", "value": data.get("metric1", "N/A")},
-            {"label": "Metric 2", "value": data.get("metric2", "N/A")},
+            {"label": "Revenue", "value": data.get("revenue", "N/A")},
+            {"label": "Profit", "value": data.get("profit", "N/A")},
         ]
     except Exception as e:
-        # Return error in metric format so widget displays it
         return [{"label": "Error", "value": str(e)}]
 
+# Table widget - return error as table row
 @app.get("/data_table")
 def data_table(symbol: str = "DEFAULT"):
     try:
-        scraper = DataScraper(symbol)
-        return scraper.get_table_data()
+        return fetch_table_data(symbol)
     except Exception as e:
-        # Return error in table format
-        return [{"metric": "Error", "value": str(e)}]
+        return [{"error": "Error", "message": str(e)}]
+
+# Chart widget - return empty chart with error in layout
+@app.get("/chart_data")
+def chart_data(symbol: str = "DEFAULT", raw: bool = False):
+    try:
+        data = fetch_chart_data(symbol)
+        if raw:
+            return data
+        return build_plotly_chart(data)
+    except Exception as e:
+        if raw:
+            return []
+        return {"data": [], "layout": {"title": f"Error: {e}"}}
 ```
 
 ## Popular Symbols List Pattern
