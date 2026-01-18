@@ -112,6 +112,150 @@ When a user wants to build an OpenBB app:
 
 ---
 
+# BEST PRACTICES
+
+## Widget Configuration Defaults
+
+### runButton: false by default
+**Do NOT set `runButton: true` unless the endpoint performs heavy computation** like Monte Carlo simulations, complex ML inference, or queries that take >5 seconds. Most data fetches should auto-run.
+
+```python
+# BAD - unnecessary runButton for simple data fetch
+@register_widget({
+    "name": "Stock Prices",
+    "runButton": True  # Don't do this!
+})
+
+# GOOD - no runButton needed, data loads automatically
+@register_widget({
+    "name": "Stock Prices"
+    # runButton defaults to false
+})
+
+# GOOD - runButton appropriate for heavy computation
+@register_widget({
+    "name": "Monte Carlo Simulation",
+    "runButton": True  # Appropriate here - heavy computation
+})
+```
+
+### Reasonable Widget Heights
+Keep widget heights reasonable. Default recommendations:
+- **Metrics**: h=4-6
+- **Tables**: h=12-18 (not 20+)
+- **Charts**: h=12-15 (not 20+)
+- **Markdown**: h=6-10
+
+```python
+# BAD - too tall
+"gridData": {"w": 40, "h": 25}
+
+# GOOD - reasonable height
+"gridData": {"w": 40, "h": 15}
+```
+
+## Charts: Prefer AgGrid Charts Over Plotly
+
+**When displaying chart data, prefer using a table widget with chart view enabled.** This allows users to:
+- Access the underlying raw data directly from the workspace
+- Switch between table and chart views
+- Use AgGrid's built-in chart types
+
+```python
+# PREFERRED - Table with chart view (user can access raw data)
+@register_widget({
+    "name": "Price History",
+    "type": "table",
+    "endpoint": "price_history",
+    "gridData": {"w": 20, "h": 15},
+    "data": {
+        "table": {"enableCharts": True},
+        "chartView": {
+            "enabled": True,  # Start in chart view
+            "chartType": "line"
+        },
+        "columnsDefs": [
+            {"field": "date", "headerName": "Date", "chartDataType": "time"},
+            {"field": "price", "headerName": "Price", "chartDataType": "series"}
+        ]
+    }
+})
+@app.get("/price_history")
+def price_history():
+    return [
+        {"date": "2024-01-01", "price": 150},
+        {"date": "2024-01-02", "price": 152}
+    ]
+```
+
+### When to Use Plotly Charts
+Use Plotly (`type: "chart"`) only when you need:
+- Complex multi-axis charts
+- Specialized chart types not in AgGrid (waterfall, sankey, etc.)
+- Heavy customization of chart appearance
+
+When using Plotly:
+1. **Don't add a title** - the widget name already displays as the title
+2. **Always add `raw: True`** in widget config for AI data access
+3. **Support the `raw` query parameter** to return raw data
+
+```python
+# Plotly chart with raw support
+@register_widget({
+    "name": "Custom Chart",
+    "type": "chart",
+    "endpoint": "custom_chart",
+    "gridData": {"w": 20, "h": 15},
+    "raw": True  # REQUIRED - enables raw data access
+})
+@app.get("/custom_chart")
+def custom_chart(theme: str = "dark", raw: bool = False):
+    data = [{"date": "2024-01-01", "value": 100}]
+
+    # Return raw data if requested
+    if raw:
+        return data
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[d["date"] for d in data], y=[d["value"] for d in data]))
+
+    # NO TITLE - widget name is the title
+    fig.update_layout(
+        # title="..." # DON'T ADD TITLE
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=50, r=20, t=20, b=50)  # Small top margin since no title
+    )
+
+    return json.loads(fig.to_json())
+```
+
+## widgets.json Format
+
+**CRITICAL**: widgets.json must be an **object** with widget IDs as keys, NOT an array.
+
+```json
+// CORRECT - object format
+{
+    "stock_prices": {
+        "name": "Stock Prices",
+        "type": "table",
+        "endpoint": "stock_prices"
+    }
+}
+
+// WRONG - array format (OpenBB will reject this)
+[
+    {
+        "name": "Stock Prices",
+        "type": "table",
+        "endpoint": "stock_prices"
+    }
+]
+```
+
+---
+
 # BACKEND ARCHITECTURE (Python/FastAPI Reference)
 
 ## Core Structure
@@ -171,7 +315,7 @@ def root():
 
 @app.get("/widgets.json")
 def get_widgets():
-    return list(WIDGETS.values())
+    return WIDGETS  # Return as dict with widget IDs as keys
 
 @app.get("/apps.json")
 def get_apps():
@@ -1499,6 +1643,123 @@ Define custom dashboard layouts.
 | `state` | Widget state (params, chartView, columnState) |
 | `groups` | Array of group names this widget belongs to |
 
+### Best Practices for apps.json
+
+#### 1. Match Heights for Side-by-Side Widgets
+
+When placing widgets next to each other (same y position, different x positions), ensure they have the **same height** to avoid awkward empty spaces in the dashboard.
+
+```json
+// BAD - creates empty space below the shorter widget
+{
+    "layout": [
+        {"i": "chart", "x": 0, "y": 0, "w": 20, "h": 14},
+        {"i": "table", "x": 20, "y": 0, "w": 20, "h": 12}  // Different height!
+    ]
+}
+
+// GOOD - widgets align perfectly
+{
+    "layout": [
+        {"i": "chart", "x": 0, "y": 0, "w": 20, "h": 14},
+        {"i": "table", "x": 20, "y": 0, "w": 20, "h": 14}  // Same height
+    ]
+}
+```
+
+#### 2. Group Widgets with Shared Parameters
+
+When multiple widgets use the same parameter (e.g., `symbol`), define a group so changing one updates all others. This is essential for creating a cohesive dashboard experience.
+
+**Step 1: Define the group at app level:**
+```json
+{
+    "groups": [
+        {
+            "name": "Group 1",         // MUST follow "Group N" pattern
+            "type": "endpointParam",   // Use "endpointParam" for dropdown params with optionsEndpoint
+            "paramName": "symbol",     // The parameter name to sync
+            "defaultValue": "AAPL"     // Default value when dashboard loads
+        }
+    ]
+}
+```
+
+**Step 2: Add each widget to the group in the layout:**
+```json
+{
+    "layout": [
+        {
+            "i": "company_metrics",
+            "x": 0,
+            "y": 0,
+            "w": 40,
+            "h": 5,
+            "groups": ["Group 1"]      // Assign widget to group(s)
+        },
+        {
+            "i": "price_chart",
+            "x": 0,
+            "y": 5,
+            "w": 20,
+            "h": 14,
+            "groups": ["Group 1"]      // Same group = synced parameters
+        }
+    ]
+}
+```
+
+**Critical**:
+- Group names **MUST** follow the "Group N" pattern (e.g., "Group 1", "Group 2", "Group 3"). Custom names will not work.
+- Use `type: "endpointParam"` for parameters that use `optionsEndpoint` (dropdowns fetched from an endpoint)
+- Use `type: "param"` for parameters with static options
+- Each widget must have `"groups": ["Group 1"]` in its layout definition to be included
+- When grouping is active, a chain link icon (🔗) appears next to each grouped dropdown.
+
+#### 3. Add Helpful AI Prompts
+
+Include prompts that the AI agent can actually answer based on your widget data. Prompts should be:
+- Specific to your data (not generic questions)
+- Answerable using the widgets you've created
+- Actionable and useful for the end user
+
+```json
+{
+    "prompts": [
+        "What is the current P/E ratio and how does it compare to the industry average?",
+        "Analyze the quarterly revenue trend over the last 4 quarters",
+        "What is the shareholding pattern and how has promoter holding changed?",
+        "Summarize the key financial ratios and highlight any concerns",
+        "Compare the profit margins year over year"
+    ]
+}
+```
+
+**Bad prompts** (too generic or unanswerable):
+- "Tell me about the stock" (too vague)
+- "What will the price be tomorrow?" (can't predict)
+- "Show me insider trading" (data not available in widgets)
+
+#### 4. apps.json Must Be an Array
+
+The apps.json file must be an **array** of app objects, even if you only have one app:
+
+```json
+// CORRECT - array format
+[
+    {
+        "name": "My Dashboard",
+        "tabs": { ... }
+    }
+]
+
+// WRONG - single object (will be rejected)
+{
+    "name": "My Dashboard",
+    "tabs": { ... }
+}
+```
+
 ---
 
 # AGENTS.JSON SPECIFICATION
@@ -1583,7 +1844,7 @@ def root():
 
 @app.get("/widgets.json")
 def get_widgets():
-    return list(WIDGETS.values())
+    return WIDGETS  # Return as dict with widget IDs as keys
 
 # Symbol options endpoint
 @app.get("/symbol_options")
@@ -1672,6 +1933,246 @@ if __name__ == "__main__":
 
 ---
 
+# ADVANCED IMPLEMENTATION PATTERNS
+
+## Separate Scraper Module
+
+For apps that scrape external data sources, create a separate `scraper.py` module to keep `main.py` clean and focused on endpoint definitions:
+
+```
+apps/my-app/
+├── main.py          # FastAPI endpoints with @register_widget decorators
+├── scraper.py       # Data fetching and parsing logic
+├── apps.json
+└── requirements.txt
+```
+
+```python
+# scraper.py
+class DataScraper:
+    BASE_URL = "https://api.example.com"
+
+    def __init__(self, symbol: str):
+        self.symbol = symbol
+        self._load_entity()
+
+    def _load_entity(self):
+        """Load entity page to extract internal IDs needed for API calls."""
+        response = self._request(f"{self.BASE_URL}/entity/{self.symbol}")
+        # Extract internal ID from response
+        self.entity_id = self._extract_id(response)
+
+    def get_data(self) -> dict:
+        """Fetch data using the extracted entity ID."""
+        if not self.entity_id:
+            return {}
+        return self._request_json(f"{self.BASE_URL}/api/{self.entity_id}/data")
+
+# main.py
+from scraper import DataScraper
+
+@app.get("/widget_endpoint")
+def widget_endpoint(symbol: str = "DEFAULT"):
+    scraper = DataScraper(symbol)
+    return scraper.get_data()
+```
+
+## In-Memory Caching with TTL
+
+Simple caching pattern for rate limiting external API calls:
+
+```python
+import time
+from typing import Dict, Optional
+
+# Global cache
+_cache: Dict[str, tuple] = {}
+CACHE_TTL = 60  # seconds
+
+def cached_request(url: str, use_cache: bool = True) -> Optional[str]:
+    """Make HTTP request with caching."""
+    cache_key = url
+
+    if use_cache and cache_key in _cache:
+        cached_time, cached_data = _cache[cache_key]
+        if time.time() - cached_time < CACHE_TTL:
+            return cached_data
+
+    response = httpx.get(url)
+    response.raise_for_status()
+    data = response.text
+
+    _cache[cache_key] = (time.time(), data)
+    return data
+```
+
+## Daily Token/Symbol Caching
+
+For apps that need symbol mappings from external sources:
+
+```python
+from pathlib import Path
+from datetime import date
+
+TOKENS_DIR = Path(__file__).parent / "tokens"
+
+def get_token_dataframe():
+    """Load or download symbol mappings, cached daily."""
+    TOKENS_DIR.mkdir(exist_ok=True)
+
+    today = date.today().strftime("%Y%m%d")
+    token_file = TOKENS_DIR / f"tokens_{today}.csv"
+
+    if token_file.exists():
+        return pd.read_csv(token_file)
+
+    # Download fresh data
+    response = httpx.get("https://api.example.com/symbols.json")
+    df = pd.DataFrame(response.json())
+    df.to_csv(token_file, index=False)
+
+    # Clean up old files
+    for old_file in TOKENS_DIR.glob("tokens_*.csv"):
+        if old_file != token_file:
+            old_file.unlink()
+
+    return df
+```
+
+## Generic HTML Table Parser
+
+For scraping HTML tables with BeautifulSoup:
+
+```python
+from bs4 import BeautifulSoup
+
+def parse_table(soup: BeautifulSoup, section_id: str) -> list[dict]:
+    """Generic table parser that works with multiple table sections."""
+    section = soup.find("section", {"id": section_id})
+    if not section:
+        return []
+
+    table = section.find("table")
+    if not table:
+        return []
+
+    # Extract headers
+    headers = ["metric"]
+    thead = table.find("thead")
+    if thead:
+        for th in thead.find_all("th")[1:]:
+            headers.append(th.get_text(strip=True))
+
+    # Extract rows
+    rows = []
+    tbody = table.find("tbody")
+    if tbody:
+        for tr in tbody.find_all("tr"):
+            cells = tr.find_all(["td", "th"])
+            if cells:
+                row = {"metric": cells[0].get_text(strip=True)}
+                for i, cell in enumerate(cells[1:], 1):
+                    if i < len(headers):
+                        value = cell.get_text(strip=True)
+                        # Convert to number if possible
+                        try:
+                            value = float(value.replace(",", "").replace("%", ""))
+                        except ValueError:
+                            pass
+                        row[headers[i]] = value
+                rows.append(row)
+
+    return rows
+```
+
+## Handling Varied API Response Formats
+
+External APIs often return data in unexpected formats. Always inspect the actual response:
+
+```python
+# Example: Chart API might return data in different formats
+
+# Format 1: Separate labels array
+# {"labels": ["2024-01", "2024-02"], "datasets": [{"values": [100, 200]}]}
+
+# Format 2: Embedded dates in values (common!)
+# {"datasets": [{"values": [["2024-01", 100], ["2024-02", 200]]}]}
+
+def parse_chart_data(data: dict) -> list[dict]:
+    """Handle both formats gracefully."""
+    datasets = data.get("datasets", [])
+
+    # Check if we have a separate labels array
+    if "labels" in data and data["labels"]:
+        labels = data["labels"]
+        values = datasets[0].get("values", []) if datasets else []
+        return [{"date": labels[i], "value": values[i]} for i in range(len(labels))]
+
+    # Otherwise, dates are embedded in values as [date, value] pairs
+    if datasets and datasets[0].get("values"):
+        values = datasets[0]["values"]
+        return [{"date": v[0], "value": float(v[1])} for v in values]
+
+    return []
+```
+
+## Error Handling in Widget Endpoints
+
+Return errors in the widget's expected data format so the UI displays them gracefully:
+
+```python
+@app.get("/company_metrics")
+def company_metrics(symbol: str = "DEFAULT"):
+    try:
+        scraper = DataScraper(symbol)
+        data = scraper.get_metrics()
+        return [
+            {"label": "Metric 1", "value": data.get("metric1", "N/A")},
+            {"label": "Metric 2", "value": data.get("metric2", "N/A")},
+        ]
+    except Exception as e:
+        # Return error in metric format so widget displays it
+        return [{"label": "Error", "value": str(e)}]
+
+@app.get("/data_table")
+def data_table(symbol: str = "DEFAULT"):
+    try:
+        scraper = DataScraper(symbol)
+        return scraper.get_table_data()
+    except Exception as e:
+        # Return error in table format
+        return [{"metric": "Error", "value": str(e)}]
+```
+
+## Popular Symbols List Pattern
+
+For apps with dynamic dropdowns, provide a curated list of popular options:
+
+```python
+@app.get("/symbols")
+def get_symbols():
+    """Return list of popular symbols for dropdown."""
+    return [
+        {"label": "Apple Inc.", "value": "AAPL"},
+        {"label": "Microsoft", "value": "MSFT"},
+        {"label": "Google", "value": "GOOGL"},
+        # ... more popular symbols
+    ]
+
+# Widget uses this endpoint for dropdown
+@register_widget({
+    "name": "Price Data",
+    "params": [{
+        "paramName": "symbol",
+        "type": "endpoint",
+        "optionsEndpoint": "symbols",
+        "value": "AAPL"  # Default selection
+    }]
+})
+```
+
+---
+
 # DEVELOPMENT WORKFLOW
 
 1. **Start with this template** - Copy the complete example above
@@ -1679,6 +2180,6 @@ if __name__ == "__main__":
 3. **Choose widget types** - Based on how data should be displayed
 4. **Configure parameters** - User inputs for filtering/customization
 5. **Test locally** - `uvicorn main:app --reload --port 7779`
-6. **Add to OpenBB Workspace** - Settings > Data Connectors > Add Custom Backend
+6. **Add to OpenBB Workspace** - Apps > Connect Backend
 
 When users ask to build an OpenBB app, guide them through these steps and generate complete, working code based on their requirements.
