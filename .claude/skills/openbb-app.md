@@ -529,6 +529,114 @@ uvicorn main:app --reload --port 7779
 
 **Common symptom**: ImportError or "unable to find engine" errors even after pip install succeeds.
 
+## Authentication for External APIs
+
+When your backend calls external APIs that require authentication, use this pattern to support both:
+1. **Environment variables** - For local development
+2. **Request headers** - For user-provided API keys in OpenBB Workspace
+
+### Setup
+
+```python
+from fastapi import FastAPI, Request, HTTPException
+from dotenv import load_dotenv
+import os
+
+app = FastAPI()
+
+# Load environment variables from .env file
+load_dotenv()
+EXTERNAL_API_KEY = os.getenv("EXTERNAL_API_KEY")
+
+
+def get_api_key(request: Request) -> str:
+    """Get API key from request headers or environment variable.
+
+    OpenBB Workspace can pass API keys via X-API-KEY header.
+    Falls back to environment variable for local development.
+    """
+    # Check header first (user-provided in OpenBB Workspace)
+    api_key = request.headers.get("X-API-KEY") or EXTERNAL_API_KEY
+
+    if not api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="API key required. Set X-API-KEY header or EXTERNAL_API_KEY environment variable."
+        )
+
+    return api_key
+```
+
+### Using in Endpoints
+
+```python
+import requests
+
+@app.get("/data")
+def get_data(request: Request, symbol: str):
+    """Endpoint that calls an external API with authentication."""
+    api_key = get_api_key(request)
+
+    headers = {"X-API-KEY": api_key}
+    response = requests.get(
+        f"https://api.example.com/data?symbol={symbol}",
+        headers=headers
+    )
+
+    if response.status_code == 200:
+        return response.json()
+
+    return JSONResponse(
+        content={"error": response.text},
+        status_code=response.status_code
+    )
+```
+
+### Graceful Fallback for Options Endpoints
+
+For dropdown options endpoints, be lenient - return defaults if no API key:
+
+```python
+@app.get("/symbol_options")
+def get_symbol_options(request: Request):
+    """Options endpoint with graceful fallback."""
+    api_key = request.headers.get("X-API-KEY") or EXTERNAL_API_KEY
+
+    if not api_key:
+        # Return default options instead of error
+        return [
+            {"label": "AAPL", "value": "AAPL"},
+            {"label": "MSFT", "value": "MSFT"},
+            {"label": "TSLA", "value": "TSLA"},
+        ]
+
+    # Fetch full list from API if key available
+    headers = {"X-API-KEY": api_key}
+    response = requests.get("https://api.example.com/tickers", headers=headers)
+
+    if response.status_code == 200:
+        tickers = response.json().get("tickers", [])
+        return [{"label": t, "value": t} for t in tickers]
+
+    # Fallback on error
+    return [{"label": "AAPL", "value": "AAPL"}]
+```
+
+### Environment File (.env)
+
+Create a `.env` file (add to `.gitignore`):
+
+```bash
+EXTERNAL_API_KEY=your_api_key_here
+```
+
+### Key Points
+
+- **Header priority**: Check `X-API-KEY` header first, then environment variable
+- **Graceful degradation**: Options endpoints should return defaults, not errors
+- **Clear error messages**: Tell users how to provide the API key
+- **Never commit secrets**: Use `.env` files and add to `.gitignore`
+
 ---
 
 # WIDGET TYPES
