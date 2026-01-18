@@ -1853,13 +1853,47 @@ def endpoint():
 
 Define custom dashboard layouts.
 
+## App Thumbnail Images
+
+Every app should have a thumbnail image (`img` field) that represents its purpose. This image appears in the app selection UI.
+
+**If the user doesn't provide an image, find one based on the app's content:**
+
+1. **Use Unsplash** - Free, no attribution required, high quality
+   - Search: `https://unsplash.com/s/photos/{topic}`
+   - Direct URL format: `https://images.unsplash.com/photo-{id}?w=800&h=450&fit=crop`
+
+2. **Match the theme** - Trading app? Use chart/analytics imagery. Data app? Use dashboard/graph imagery.
+
+3. **Recommended dimensions** - Use `?w=800&h=450&fit=crop` for consistent sizing
+
+**Example thumbnail URLs by app type:**
+```
+# Trading/Finance
+https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop
+
+# Analytics/Dashboard
+https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop
+
+# Data/Charts
+https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=800&h=450&fit=crop
+
+# Crypto
+https://images.unsplash.com/photo-1641580529558-a96cf6efbc72?w=800&h=450&fit=crop
+```
+
+**Fields:**
+- `img` - Default image (used if dark/light not specified)
+- `img_dark` - Image for dark theme (optional)
+- `img_light` - Image for light theme (optional)
+
 ```json
 {
     "name": "My Dashboard",
     "description": "Custom financial dashboard",
-    "img": "https://example.com/icon.png",
-    "img_dark": "https://example.com/icon-dark.png",
-    "img_light": "https://example.com/icon-light.png",
+    "img": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop",
+    "img_dark": "",
+    "img_light": "",
     "allowCustomization": true,
     "tabs": {
         "overview": {
