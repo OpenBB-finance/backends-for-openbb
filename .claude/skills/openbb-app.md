@@ -106,9 +106,107 @@ widget-examples/
 When a user wants to build an OpenBB app:
 1. Ask what language/framework they prefer (recommend Python/FastAPI if unsure)
 2. Ask what data they want to display and what interactions they need
-3. Recommend appropriate widget types based on their use case
-4. Generate a complete backend with all necessary endpoints
-5. Create the apps.json configuration if they want a custom dashboard layout
+3. **Propose a layout for approval BEFORE writing any code** (see below)
+4. Recommend appropriate widget types based on their use case
+5. Generate a complete backend with all necessary endpoints
+6. Create the apps.json configuration if they want a custom dashboard layout
+
+## Propose Layout Before Implementation
+
+**CRITICAL**: Before writing any code, present a visual layout proposal to the user for approval. This prevents wasted effort and ensures alignment on the dashboard structure.
+
+### Layout Proposal Format
+
+Use ASCII art with `|_` notation to represent widget positions in each tab:
+
+```
+### Tab 1: Overview
+|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
+|  [Metric 1]  [Metric 2]  [Metric 3]  [Metric 4]  [Metric 5]                  |
+|_______________________________________________________________________________|
+|                                                                               |
+|                         Main Chart (full width)                               |
+|_______________________________________________________________________________|
+|                                   |                                           |
+|       Left Widget                 |           Right Widget                    |
+|      (half width)                 |          (half width)                     |
+|___________________________________|___________________________________________|
+
+### Tab 2: Details
+|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
+|                                                                               |
+|                          Data Table (full width)                              |
+|_______________________________________________________________________________|
+```
+
+### What to Include in the Proposal
+
+1. **Global Parameters** - Shared dropdowns/inputs across widgets
+   ```markdown
+   ### Global Parameters (shared across widgets)
+   | Parameter | Type | Description |
+   |-----------|------|-------------|
+   | `symbol` | dropdown | Stock ticker selection |
+   | `start_date` | date picker | Analysis start date |
+   ```
+
+2. **Tab Structure** - Each tab with ASCII layout showing widget positions
+
+3. **Widget Summary Table** - List all widgets with type and tab
+   ```markdown
+   | Widget | Type | Tab |
+   |--------|------|-----|
+   | `key_metrics` | metric | Overview |
+   | `price_chart` | chart | Overview |
+   | `data_table` | table | Details |
+   ```
+
+4. **Clarifying Questions** - Ask about:
+   - Predefined options vs free-text inputs
+   - Fixed defaults vs user-adjustable parameters
+   - Scope (core features vs advanced features)
+   - Data sources and API availability
+
+### Example Proposal Flow
+
+```markdown
+## My App - Layout Proposal
+
+### Predefined Options (dropdown)
+| Option | Value 1 | Value 2 | Category |
+|--------|---------|---------|----------|
+| Option A | X | Y | Type 1 |
+| Option B | Z | W | Type 2 |
+
+### Fixed Defaults
+- Window: 30 days
+- Initial Value: $100,000
+
+### Tab 1: Overview
+[ASCII layout here]
+
+### Tab 2: Analysis
+[ASCII layout here]
+
+### Widget Summary (8 total)
+| Widget | Type | Tab |
+|--------|------|-----|
+...
+
+### Questions for Discussion
+1. Should X be predefined or free-text?
+2. Should Y be user-adjustable or fixed?
+3. Do you want feature Z included?
+```
+
+### Why This Matters
+
+- **Prevents rework** - User approves structure before coding starts
+- **Clarifies requirements** - Questions surface ambiguities early
+- **Sets expectations** - User knows exactly what they'll get
+- **Enables collaboration** - User can request changes before implementation
+
+**Only proceed with implementation after receiving explicit approval** (e.g., "Yes, this layout works for you").
 
 ## Building Apps from Existing Websites
 
@@ -170,6 +268,73 @@ Keep widget heights reasonable. Default recommendations:
 
 # GOOD - reasonable height
 "gridData": {"w": 40, "h": 15}
+```
+
+### Widget params vs Endpoint parameters
+
+**CRITICAL**: Defining a parameter in your FastAPI endpoint does NOT automatically create a UI dropdown. You must define `params` in BOTH places:
+
+1. **Endpoint** - Handles the backend request
+2. **Widget config `params`** - Creates the UI dropdown
+
+```python
+# BAD - endpoint has parameter but NO UI dropdown will appear!
+@register_widget({
+    "name": "Stock Data",
+    "type": "table",
+    "endpoint": "stock_data",
+    # Missing params! No dropdown in UI
+})
+@app.get("/stock_data")
+def stock_data(symbol: str = Query("AAPL")):  # This alone won't show UI
+    return fetch_data(symbol)
+
+# GOOD - both endpoint AND widget params defined
+@register_widget({
+    "name": "Stock Data",
+    "type": "table",
+    "endpoint": "stock_data",
+    "params": [  # This creates the UI dropdown
+        {
+            "paramName": "symbol",
+            "type": "endpoint",
+            "label": "Symbol",
+            "optionsEndpoint": "symbol_options",
+            "value": "AAPL"
+        }
+    ],
+})
+@app.get("/stock_data")
+def stock_data(symbol: str = Query("AAPL")):
+    return fetch_data(symbol)
+```
+
+**Common symptom**: Backend works perfectly when testing with curl/browser, but the OpenBB Workspace widget shows no dropdown controls.
+
+**Tip for multiple widgets sharing the same parameter**: Define a common param dict and reuse it:
+
+```python
+# Define once
+SYMBOL_PARAM = {
+    "paramName": "symbol",
+    "type": "endpoint",
+    "label": "Symbol",
+    "optionsEndpoint": "symbol_options",
+    "value": "AAPL"
+}
+
+# Reuse across widgets
+@register_widget({
+    "name": "Price Chart",
+    "params": [SYMBOL_PARAM],
+    ...
+})
+
+@register_widget({
+    "name": "Company Info",
+    "params": [SYMBOL_PARAM],
+    ...
+})
 ```
 
 ## Charts: Prefer AgGrid Charts Over Plotly
