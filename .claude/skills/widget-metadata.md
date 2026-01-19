@@ -26,21 +26,23 @@ Before starting, read the APP-SPEC.md file to understand:
 
 Choose the appropriate widget type for each data view:
 
-| Type | Use Case | Example |
-|------|----------|---------|
-| `table` | Tabular data with rows/columns | Holdings, Transactions, Stock lists |
-| `chart` | Plotly visualizations | Price charts, Performance graphs |
-| `chart-highcharts` | Highcharts visualizations | Alternative to Plotly |
-| `markdown` | Formatted text content | Summaries, Reports, Analysis |
-| `metric` | KPI values with deltas | Portfolio value, Daily P&L |
-| `newsfeed` | Article lists | News, Research reports |
-| `html` | Custom HTML (no JS) | Custom visualizations |
-| `pdf` | PDF viewer | Documents, Reports |
-| `multi_file_viewer` | Multiple files | Document library |
-| `advanced_charting` | TradingView charts | Professional charting |
-| `live_grid` | Real-time table | Live prices, Order book |
-| `omni` | Dynamic content | AI responses, Mixed content |
-| `ssrm_table` | Large datasets (100k+ rows) | Historical data, Logs |
+| Type | Use Case | Example | Grouping Support |
+|------|----------|---------|------------------|
+| `table` | Tabular data with rows/columns | Holdings, Transactions, Stock lists | ✅ Yes |
+| `chart` | Plotly visualizations | Price charts, Performance graphs | ✅ Yes |
+| `chart-highcharts` | Highcharts visualizations | Alternative to Plotly | ✅ Yes |
+| `markdown` | Formatted text content | Summaries, Reports, Analysis | ✅ Yes |
+| `metric` | KPI values with deltas | Portfolio value, Daily P&L | ✅ Yes |
+| `newsfeed` | Article lists | News, Research reports | ✅ Yes |
+| `html` | Custom HTML (no JS) | Custom visualizations | ✅ Yes |
+| `pdf` | PDF viewer | Documents, Reports | ✅ Yes |
+| `multi_file_viewer` | Multiple files | Document library | ✅ Yes |
+| `advanced_charting` | TradingView charts | Professional charting | ❌ **NO** |
+| `live_grid` | Real-time table | Live prices, Order book | ✅ Yes |
+| `omni` | Dynamic content | AI responses, Mixed content | ✅ Yes |
+| `ssrm_table` | Large datasets (100k+ rows) | Historical data, Logs | ✅ Yes |
+
+**⚠️ TradingView Limitation**: The `advanced_charting` widget type does NOT support parameter-based grouping. If you need a chart that updates when clicking a watchlist row, use `chart` (Plotly) instead.
 
 ## Widget Definition Template
 
@@ -212,20 +214,52 @@ Date modifiers: `$currentDate`, `$currentDate-1d`, `$currentDate-1w`, `$currentD
 - `object` - Complex objects
 
 ### Formatter Functions
+
+**CRITICAL**: Only these values are valid for `formatterFn`:
 - `int` - Integer formatting
-- `none` - No formatting
-- `percent` - Percentage
+- `none` - No formatting (use for currency/decimal display)
+- `percent` - Percentage formatting
 - `normalized` - Normalize to scale
 - `normalizedPercent` - Normalized percentage
 - `dateToYear` - Extract year from date
+
+**Common Error**: `"currency"` is NOT a valid formatterFn value:
+```
+Invalid enum value. Expected: 'int' | 'none' | 'percent' | 'normalized' | 'normalizedPercent' | 'dateToYear' Received: 'currency'
+```
+Use `"none"` for currency values instead.
 
 ### Render Functions
 - `greenRed` - Positive=green, Negative=red
 - `titleCase` - Capitalize words
 - `hoverCard` - Show markdown on hover
-- `cellOnClick` - Action on click
+- `cellOnClick` - Action on click (commonly used for watchlist pattern)
 - `columnColor` - Conditional coloring
 - `showCellChange` - Animate value changes
+
+### cellOnClick with groupBy (Watchlist Pattern)
+
+Make table cells clickable to update other widgets in the same group:
+
+```json
+{
+    "field": "symbol",
+    "headerName": "Symbol",
+    "cellDataType": "text",
+    "pinned": "left",
+    "renderFn": "cellOnClick",
+    "renderFnParams": {
+        "actionType": "groupBy",
+        "groupByParamName": "symbol"
+    }
+}
+```
+
+**Requirements for this pattern:**
+1. Both table and target widget must be in the same group (`"groups": ["Group 1"]`)
+2. Target widget MUST support param grouping (NOT `advanced_charting`)
+3. Both widgets need matching `paramName` with `type: "endpoint"`
+4. Group names MUST follow "Group N" pattern
 
 ### Sparkline Columns
 ```json

@@ -45,11 +45,20 @@ Before starting, read APP-SPEC.md to understand:
    - Example: `{"type": "param", "paramName": "period", "defaultValue": "1M", "widgetIds": ["chart1", "chart2"]}`
 
 2. **`type: "endpointParam"`** - Dynamic dropdown from API endpoint
-   - Widgets reference the group via `groups: ["Group Name"]` in their layout items
+   - Widgets reference the group via `groups: ["Group 1"]` in their layout items
    - Options come from the widget's `optionsEndpoint` parameter
-   - Example: `{"type": "endpointParam", "paramName": "account_id", "defaultValue": "ACC123"}`
+   - Example: `{"type": "endpointParam", "paramName": "symbol", "defaultValue": "AAPL"}`
+
+**CRITICAL - Group Naming Pattern**:
+- Group names **MUST** follow the "Group N" pattern: `"Group 1"`, `"Group 2"`, `"Group 3"`, etc.
+- Custom names like `"symbol-group"` or `"my-group"` will **fail silently** - widgets won't sync
+- This is a common gotcha that causes hours of debugging
 
 **IMPORTANT**: Always set `defaultValue` to a valid option value. Without it, widgets load with no selection and users must manually pick a value before seeing data.
+
+**Widget Type Limitations for Grouping**:
+- `advanced_charting` (TradingView) does **NOT** support parameter grouping
+- If you need a chart that updates when clicking a watchlist row, use `chart` (Plotly) instead
 
 ## Layout Design Process
 
@@ -173,6 +182,25 @@ Identify widgets that should share parameters:
 │                w=40, h=15               │
 └─────────────────────────────────────────┘
 ```
+
+### Template: Watchlist + Chart (Interactive)
+```
+┌─────────────────────────────────────────┐
+│          [Watchlist Table]              │  <- w=40, h=8
+│   Click ticker to update chart below    │     cellOnClick with groupBy
+├─────────────────────────────────────────┤
+│                                         │
+│          [Price Chart]                  │  <- w=40, h=15
+│   Updates when ticker clicked above     │     MUST be Plotly, not TradingView
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Key requirements for this pattern:**
+1. Both widgets in same group: `"groups": ["Group 1"]`
+2. Watchlist symbol column has `renderFn: "cellOnClick"` with `groupByParamName`
+3. Chart MUST be `type: "chart"` (Plotly) - TradingView doesn't support grouping
+4. Both widgets have matching `paramName` and `optionsEndpoint`
 
 ### Template: News Feed
 ```
@@ -360,8 +388,8 @@ Show what the final apps.json will look like:
       "name": "Overview",
       "layout": [
         {"i": "market_stats", "x": 0, "y": 0, "w": 40, "h": 4},
-        {"i": "price_chart", "x": 0, "y": 4, "w": 20, "h": 15, "groups": ["Account"]},
-        {"i": "crypto_prices", "x": 20, "y": 4, "w": 20, "h": 15, "groups": ["Account"]}
+        {"i": "price_chart", "x": 0, "y": 4, "w": 20, "h": 15, "groups": ["Group 1"]},
+        {"i": "crypto_prices", "x": 20, "y": 4, "w": 20, "h": 15, "groups": ["Group 1"]}
       ]
     },
     "news": {
@@ -374,17 +402,10 @@ Show what the final apps.json will look like:
   },
   "groups": [
     {
-      "name": "Symbol",
-      "type": "param",
-      "paramName": "symbol",
-      "defaultValue": "BTC",
-      "widgetIds": ["price_chart", "crypto_prices"]
-    },
-    {
-      "name": "Account",
+      "name": "Group 1",
       "type": "endpointParam",
-      "paramName": "account_id",
-      "defaultValue": "ACC123"
+      "paramName": "symbol",
+      "defaultValue": "BTC"
     }
   ],
   "prompts": [
@@ -394,6 +415,8 @@ Show what the final apps.json will look like:
   ]
 }
 ```
+
+**CRITICAL**: Note that group names use "Group 1" pattern, NOT custom names like "Symbol" or "Account".
 
 **Group Types Explained:**
 

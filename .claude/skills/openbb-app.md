@@ -705,6 +705,31 @@ def stock_data():
 | `width` | number | Column width in pixels |
 | `align` | string | `left`, `center`, `right` |
 
+### Valid formatterFn Values
+
+**CRITICAL**: Only these values are valid for `formatterFn`:
+- `int` - Integer formatting
+- `none` - No formatting (use for currency/decimal display)
+- `percent` - Percentage formatting
+- `normalized` - Normalize to scale
+- `normalizedPercent` - Normalized percentage
+- `dateToYear` - Extract year from date
+
+**Common Error**: `"currency"` is NOT a valid formatterFn value and will cause an error:
+```
+Invalid enum value. Expected: 'int' | 'none' | 'percent' | 'normalized' | 'normalizedPercent' | 'dateToYear' Received: 'currency'
+```
+
+**Solution**: Use `"none"` for currency values:
+```python
+{
+    "field": "price",
+    "headerName": "Price",
+    "cellDataType": "number",
+    "formatterFn": "none"  # NOT "currency"
+}
+```
+
 ### Render Functions
 
 **greenRed** - Color based on positive/negative values:
@@ -733,16 +758,32 @@ def stock_data():
 }
 ```
 
-**cellOnClick** - Action on click:
+**cellOnClick** - Action on click (for triggering group parameter changes):
 ```python
 "renderFn": "cellOnClick",
 "renderFnParams": {
     "actionType": "groupBy",
-    "groupBy": {
-        "paramName": "symbol"
-    }
+    "groupByParamName": "symbol"  # Updates this param across grouped widgets
 }
 ```
+
+**Watchlist Pattern** - Make table cells clickable to update other widgets:
+```python
+"columnsDefs": [
+    {
+        "field": "symbol",
+        "headerName": "Symbol",
+        "cellDataType": "text",
+        "pinned": "left",
+        "renderFn": "cellOnClick",
+        "renderFnParams": {
+            "actionType": "groupBy",
+            "groupByParamName": "symbol"  # Clicking updates symbol param for grouped widgets
+        }
+    }
+]
+```
+This pattern is commonly used for watchlist tables where clicking a ticker updates a chart widget.
 
 ### Sparklines in Tables
 
@@ -1142,9 +1183,137 @@ async def get_documents(doc_name: List[str] = Body(...)):
 
 ---
 
+## Widget Type Capabilities for Grouping
+
+**CRITICAL**: Not all widget types support parameter-based grouping. Before implementing widget interactions:
+
+| Widget Type | Param Grouping Support | Notes |
+|-------------|------------------------|-------|
+| `table` | ✅ Yes | Full support for cellOnClick with groupBy |
+| `chart` (Plotly) | ✅ Yes | Responds to param changes from groups |
+| `metric` | ✅ Yes | Updates based on grouped params |
+| `markdown` | ✅ Yes | Can use params in endpoint |
+| `newsfeed` | ✅ Yes | Can filter by grouped params |
+| `advanced_charting` (TradingView) | ❌ **NO** | Does NOT respond to param grouping |
+
+**TradingView Limitation**: The `advanced_charting` widget type uses TradingView's UDF protocol for symbol resolution. It does NOT respond to param changes from widget groups. If you need a chart that updates when clicking a watchlist row, **use a Plotly chart (`type: "chart"`) instead**.
+
+### Choosing Between TradingView and Plotly
+
+**Use TradingView (`advanced_charting`) when:**
+- You need professional-grade charting with built-in indicators
+- Symbol changes are handled through TradingView's own symbol search
+- Widget doesn't need to respond to external parameter changes
+
+**Use Plotly (`chart`) when:**
+- Chart needs to update based on params from other widgets (grouping)
+- You need custom chart types (candlestick with volume, multi-axis, etc.)
+- Chart is part of an interactive dashboard with watchlist/selector
+
+## Plotly Candlestick Chart Pattern
+
+Complete implementation for candlestick chart with volume bars:
+
+```python
+import plotly.graph_objects as go
+import json
+
+@app.get("/price_chart")
+def price_chart(symbol: str = "AAPL", theme: str = "dark"):
+    """Returns candlestick chart with volume for the selected symbol."""
+    import yfinance as yf
+
+    ticker = yf.Ticker(symbol)
+    df = ticker.history(period="1y", interval="1d")
+
+    if df.empty:
+        return {"data": [], "layout": {"title": "No data available"}}
+
+    # Theme colors
+    if theme == "light":
+        text_color = "#333333"
+        grid_color = "rgba(128, 128, 128, 0.2)"
+        bg_color = "rgba(255,255,255,0)"
+    else:
+        text_color = "#ffffff"
+        grid_color = "rgba(128, 128, 128, 0.2)"
+        bg_color = "rgba(0,0,0,0)"
+
+    fig = go.Figure()
+
+    # Candlestick chart
+    fig.add_trace(go.Candlestick(
+        x=[d.strftime("%Y-%m-%d") for d in df.index],
+        open=df["Open"],
+        high=df["High"],
+        low=df["Low"],
+        close=df["Close"],
+        name=symbol,
+        increasing=dict(line=dict(color="#26a69a"), fillcolor="#26a69a"),
+        decreasing=dict(line=dict(color="#ef5350"), fillcolor="#ef5350"),
+    ))
+
+    # Volume as bar chart on secondary y-axis
+    fig.add_trace(go.Bar(
+        x=[d.strftime("%Y-%m-%d") for d in df.index],
+        y=df["Volume"],
+        name="Volume",
+        marker=dict(
+            color=["#26a69a" if close >= open else "#ef5350"
+                   for close, open in zip(df["Close"], df["Open"])],
+            opacity=0.3
+        ),
+        yaxis="y2"
+    ))
+
+    fig.update_layout(
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=text_color),
+        xaxis=dict(
+            showgrid=False,
+            color=text_color,
+            rangeslider=dict(visible=False),
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor=grid_color,
+            color=text_color,
+            side="right",
+        ),
+        yaxis2=dict(
+            overlaying="y",
+            side="left",
+            showgrid=False,
+            showticklabels=False,
+            range=[0, df["Volume"].max() * 4],  # Scale volume to bottom quarter
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5
+        ),
+        margin=dict(l=50, r=50, t=30, b=50),
+        hovermode="x unified"
+    )
+
+    return json.loads(fig.to_json())
+```
+
+**Key Features:**
+- Candlestick with green/red coloring for up/down days
+- Volume bars on secondary y-axis (bottom quarter of chart)
+- Volume colors match candlestick direction
+- Theme support (dark/light)
+- No title (widget name serves as title)
+
 ## 8. TradingView Chart (type: "advanced_charting")
 
 Professional charting with UDF protocol.
+
+**⚠️ Limitation**: TradingView does NOT support parameter-based grouping. Use Plotly charts instead if you need the chart to update based on params from other widgets (like a watchlist).
 
 ```python
 @register_widget({
@@ -2388,6 +2557,126 @@ if __name__ == "__main__":
 
 ---
 
+# WATCHLIST + CHART PATTERN
+
+This is a common pattern for financial apps: a watchlist table where clicking a ticker updates a chart widget below.
+
+## Key Requirements
+
+1. **Watchlist widget**: Table with clickable symbol column using `cellOnClick` with `groupBy`
+2. **Chart widget**: Plotly chart (NOT TradingView) that responds to param changes
+3. **Both widgets in same group**: Connected via `groups: ["Group 1"]`
+4. **Group naming**: MUST use "Group 1", "Group 2" pattern (custom names fail silently)
+
+## Complete Example
+
+### Widget Configuration
+
+```python
+def get_widget_config():
+    return {
+        "watchlist": {
+            "name": "Watchlist",
+            "description": "Stock watchlist - click a symbol to update the chart",
+            "type": "table",
+            "endpoint": "watchlist",
+            "gridData": {"w": 40, "h": 8},
+            "data": {
+                "table": {"showAll": True},
+                "columnsDefs": [
+                    {
+                        "field": "symbol",
+                        "headerName": "Symbol",
+                        "cellDataType": "text",
+                        "pinned": "left",
+                        "renderFn": "cellOnClick",
+                        "renderFnParams": {
+                            "actionType": "groupBy",
+                            "groupByParamName": "symbol"  # Updates this param for grouped widgets
+                        }
+                    },
+                    {"field": "name", "headerName": "Name", "cellDataType": "text"},
+                    {"field": "price", "headerName": "Price", "cellDataType": "number", "formatterFn": "none"},
+                    {"field": "change", "headerName": "Change %", "cellDataType": "number", "formatterFn": "percent", "renderFn": "greenRed"}
+                ]
+            },
+            "params": [
+                {
+                    "paramName": "symbol",
+                    "type": "endpoint",
+                    "optionsEndpoint": "/get_tickers_list",
+                    "value": "AAPL",
+                    "show": False  # Hidden - controlled by cell click
+                }
+            ]
+        },
+        "price_chart": {
+            "name": "Price Chart",
+            "description": "Candlestick chart for selected symbol",
+            "type": "chart",  # MUST be "chart" (Plotly), NOT "advanced_charting" (TradingView)
+            "endpoint": "price_chart",
+            "gridData": {"w": 40, "h": 15},
+            "params": [
+                {
+                    "paramName": "symbol",  # Same param name as watchlist
+                    "type": "endpoint",
+                    "optionsEndpoint": "/get_tickers_list",  # Same options endpoint
+                    "value": "AAPL",
+                    "show": True  # Visible dropdown
+                }
+            ]
+        }
+    }
+```
+
+### Apps Configuration
+
+```python
+def get_apps_config():
+    return [{
+        "name": "Watchlist & Chart",
+        "description": "Interactive watchlist with chart - click a ticker to update",
+        "allowCustomization": True,
+        "tabs": {
+            "main": {
+                "id": "main",
+                "name": "Watchlist",
+                "layout": [
+                    {
+                        "i": "watchlist",
+                        "x": 0, "y": 0, "w": 40, "h": 8,
+                        "groups": ["Group 1"]  # MUST be "Group 1" pattern
+                    },
+                    {
+                        "i": "price_chart",
+                        "x": 0, "y": 8, "w": 40, "h": 15,
+                        "state": {"params": {"symbol": "AAPL"}},
+                        "groups": ["Group 1"]  # Same group = synced params
+                    }
+                ]
+            }
+        },
+        "groups": [
+            {
+                "name": "Group 1",  # MUST be "Group N" pattern
+                "type": "endpointParam",  # For params with optionsEndpoint
+                "paramName": "symbol",
+                "defaultValue": "AAPL"
+            }
+        ]
+    }]
+```
+
+## Common Mistakes
+
+1. **Using TradingView instead of Plotly**: TradingView (`advanced_charting`) does NOT support param grouping
+2. **Custom group names**: `"name": "symbol-group"` fails silently - MUST use "Group 1", "Group 2" pattern
+3. **Missing groups in layout**: If you define `groups` at app level, ALL grouped widgets need `"groups": ["Group 1"]`
+4. **Different optionsEndpoint**: Both widgets should use the same `optionsEndpoint` for param sync
+5. **Using `type: "param"` instead of `type: "endpointParam"`**: Use `endpointParam` when param has `optionsEndpoint`
+
+---
+
 # ADVANCED IMPLEMENTATION PATTERNS
 
 ## Separate Scraper Module
@@ -2670,10 +2959,56 @@ def get_symbols():
 2. **Define your data sources** - APIs, databases, calculations
 3. **Choose widget types** - Based on how data should be displayed
 4. **Configure parameters** - User inputs for filtering/customization
-5. **Test locally** - `uvicorn main:app --reload --port 7779`
+5. **Test locally** - `uvicorn main:app --reload --host 0.0.0.0 --port 7779`
 6. **Add to OpenBB Workspace** - Apps > Connect Backend
 
 When users ask to build an OpenBB app, guide them through these steps and generate complete, working code based on their requirements.
+
+## Backend Refresh Workflow in OpenBB Workspace
+
+When developing and testing your backend with OpenBB Workspace, follow this workflow:
+
+### Refreshing Widget Configuration Changes
+
+When you modify `widgets.json` or `apps.json` (widget metadata, not Python code):
+
+1. **Right-click on empty space** in the dashboard
+2. Click **"Refresh backend"**
+3. This reloads cached widget configurations from your backend
+
+### Refreshing Python Code Changes
+
+**IMPORTANT**: The `--reload` flag only watches for code changes. When you make changes to your Python code:
+
+1. The uvicorn auto-reload should pick up changes automatically
+2. Then right-click → "Refresh backend" in OpenBB Workspace
+3. If changes don't appear, **restart the server manually**:
+   ```bash
+   # Kill existing process
+   lsof -ti:7779 | xargs kill -9
+
+   # Restart server
+   uvicorn main:app --reload --host 0.0.0.0 --port 7779
+   ```
+
+### Opening Fresh App Instance After Major Changes
+
+**CRITICAL**: After making changes to widget IDs or app structure:
+
+1. Existing dashboards may cache old widget configurations
+2. **Solution**: Go to the **Apps gallery** and click the **refresh icon** on your app's card
+3. Then **open a fresh instance** of the app from the gallery
+4. Do NOT rely on an existing open dashboard to show changes
+
+### Common Issues and Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Widget changes not appearing | Right-click → Refresh backend |
+| Python code changes not working | Restart uvicorn server |
+| Old widget still showing in dashboard | Open fresh app instance from gallery |
+| "Module not found" after pip install | Restart uvicorn (--reload doesn't detect new packages) |
+| Widget ID changed but old one shows | Refresh app card in gallery, open fresh instance |
 
 ---
 
