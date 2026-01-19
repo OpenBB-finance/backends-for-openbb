@@ -38,6 +38,19 @@ Before starting, read APP-SPEC.md to understand:
 - Groups appear in dashboard header
 - Changing one updates all synced widgets
 
+**Two group types:**
+
+1. **`type: "param"`** - Static dropdown with hardcoded options
+   - Uses `widgetIds` array to specify which widgets sync
+   - Example: `{"type": "param", "paramName": "period", "defaultValue": "1M", "widgetIds": ["chart1", "chart2"]}`
+
+2. **`type: "endpointParam"`** - Dynamic dropdown from API endpoint
+   - Widgets reference the group via `groups: ["Group Name"]` in their layout items
+   - Options come from the widget's `optionsEndpoint` parameter
+   - Example: `{"type": "endpointParam", "paramName": "account_id", "defaultValue": "ACC123"}`
+
+**IMPORTANT**: Always set `defaultValue` to a valid option value. Without it, widgets load with no selection and users must manually pick a value before seeing data.
+
 ## Layout Design Process
 
 ### Step 1: Define Tabs
@@ -347,8 +360,8 @@ Show what the final apps.json will look like:
       "name": "Overview",
       "layout": [
         {"i": "market_stats", "x": 0, "y": 0, "w": 40, "h": 4},
-        {"i": "price_chart", "x": 0, "y": 4, "w": 20, "h": 15},
-        {"i": "crypto_prices", "x": 20, "y": 4, "w": 20, "h": 15}
+        {"i": "price_chart", "x": 0, "y": 4, "w": 20, "h": 15, "groups": ["Account"]},
+        {"i": "crypto_prices", "x": 20, "y": 4, "w": 20, "h": 15, "groups": ["Account"]}
       ]
     },
     "news": {
@@ -366,6 +379,12 @@ Show what the final apps.json will look like:
       "paramName": "symbol",
       "defaultValue": "BTC",
       "widgetIds": ["price_chart", "crypto_prices"]
+    },
+    {
+      "name": "Account",
+      "type": "endpointParam",
+      "paramName": "account_id",
+      "defaultValue": "ACC123"
     }
   ],
   "prompts": [
@@ -375,3 +394,12 @@ Show what the final apps.json will look like:
   ]
 }
 ```
+
+**Group Types Explained:**
+
+| Type | Use Case | Widget Association | Options Source |
+|------|----------|-------------------|----------------|
+| `param` | Static dropdown | `widgetIds` in group | `options` in widget param |
+| `endpointParam` | Dynamic dropdown | `groups` in layout items | `optionsEndpoint` in widget param |
+
+**Note**: For `endpointParam`, widgets must have a matching parameter with `type: "endpoint"` and `optionsEndpoint` defined in their metadata.
