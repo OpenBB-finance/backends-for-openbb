@@ -69,7 +69,20 @@ This repository contains working examples you can reference:
 ```
 getting-started/
 ├── hello-world/              # Minimal starter template
-└── reference-backend/        # Comprehensive reference with all widget types
+└── reference-backend/        # Comprehensive reference with all widget types (organized by tab)
+    ├── main.py               # Entry point, imports routers from modules
+    ├── core.py               # Shared: app, WIDGETS dict, register_widget decorator, models
+    ├── apps.json             # Dashboard layout configuration
+    ├── widgets_types.py      # "types-of-widgets" tab: markdown, table, metric, PDF, HTML, newsfeed
+    ├── widgets_settings.py   # "settings" tab: auto-refresh, stale_time, runButton
+    ├── widgets_input_params.py   # "input_parameters" tab: text, number, date, dropdown, boolean
+    ├── widgets_aggrid_table.py   # "aggrid_table" tab: render functions, formatters, hover cards
+    ├── widgets_plotly_chart.py   # "plotly_chart" tab: themes, toolbars, heatmaps
+    ├── widgets_input_form.py     # "input-form" tab: form submission widgets
+    ├── widgets_tradingview.py    # "tradingview" tab: TradingView UDF protocol
+    ├── widgets_omni.py           # "omni" tab: dynamic markdown/table/chart content
+    ├── widgets_sparkline.py      # "chart-in-table" tab: sparkline charts in table cells
+    └── widgets_youtube.py        # "youtube" tab: video widgets with transcript support
 
 widget-examples/
 ├── widget-types/             # Examples for each widget type
@@ -110,6 +123,89 @@ When a user wants to build an OpenBB app:
 4. Recommend appropriate widget types based on their use case
 5. Generate a complete backend with all necessary endpoints
 6. Create the apps.json configuration if they want a custom dashboard layout
+
+## File Organization Patterns
+
+### Simple Apps (Recommended for most cases)
+For apps with 1-10 widgets, use a single `main.py` file:
+```
+my-app/
+├── main.py           # All widgets with @register_widget decorators
+├── apps.json         # Dashboard layout
+└── requirements.txt
+```
+
+### Large Apps / Reference Implementations
+For apps with many widgets (10+), split into modular files **by dashboard/tab/feature**, not by widget type:
+```
+my-app/
+├── main.py           # Entry point, imports routers from modules
+├── core.py           # Shared: app, WIDGETS dict, register_widget decorator, models
+├── apps.json         # Dashboard layout
+├── widgets_portfolio.py      # All widgets for the Portfolio tab
+├── widgets_analytics.py      # All widgets for the Analytics tab
+├── widgets_settings.py       # All widgets for the Settings tab
+└── requirements.txt
+```
+
+**Why organize by tab/feature?**
+- All related widgets for a feature are in one place
+- Easier to understand which widgets belong together
+- Matches the mental model of your dashboard structure
+- Simpler to add/remove entire features
+
+**core.py pattern** (shared components):
+```python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from functools import wraps
+
+WIDGETS = {}
+
+def register_widget(widget_config):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        endpoint = widget_config.get("endpoint")
+        if endpoint:
+            widget_config.setdefault("widgetId", endpoint)
+            WIDGETS[widget_config["widgetId"]] = widget_config
+        return wrapper
+    return decorator
+
+app = FastAPI(title="My App")
+app.add_middleware(CORSMiddleware, allow_origins=["https://pro.openbb.co"], ...)
+```
+
+**Module file pattern** (e.g., widgets_charts.py):
+```python
+from fastapi import APIRouter
+from core import register_widget, WIDGETS
+
+router = APIRouter()
+
+@register_widget({...})
+@router.get("/my_chart")
+def my_chart():
+    ...
+```
+
+**main.py pattern** (entry point):
+```python
+from core import app, WIDGETS
+from widgets_charts import router as charts_router
+from widgets_tables import router as tables_router
+
+app.include_router(charts_router)
+app.include_router(tables_router)
+
+@app.get("/widgets.json")
+def get_widgets():
+    return WIDGETS
+```
+
+See `getting-started/reference-backend/` for a complete example of this modular pattern with 69 widgets organized across 10 module files.
 
 ## Propose Layout Before Implementation
 

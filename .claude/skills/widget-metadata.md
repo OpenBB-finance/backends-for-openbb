@@ -232,10 +232,41 @@ Use `"none"` for currency values instead.
 ### Render Functions
 - `greenRed` - Positive=green, Negative=red
 - `titleCase` - Capitalize words
-- `hoverCard` - Show markdown on hover
+- `hoverCard` - Show markdown on hover (requires special config, see below)
 - `cellOnClick` - Action on click (commonly used for watchlist pattern)
 - `columnColor` - Conditional coloring
 - `showCellChange` - Animate value changes
+
+### hoverCard Configuration
+
+The `hoverCard` renderFn requires `renderFnParams` and nested object data:
+
+```json
+{
+    "field": "name",
+    "renderFn": "hoverCard",
+    "renderFnParams": {
+        "hoverCard": {
+            "cellField": "value",           // Which nested field to display in cell
+            "title": "Details",             // Hover card popup title
+            "markdown": "### {value}\n**Description:** {description}"
+        }
+    }
+}
+```
+
+**Data structure** - the field value must be a nested object:
+```python
+{
+    "name": {
+        "value": "Display Text",        # Shown in cell (via cellField)
+        "description": "Full details",  # Available as {description} in markdown
+    },
+    "other_columns": ...
+}
+```
+
+The markdown template uses `{placeholder}` syntax to reference nested object properties.
 
 ### cellOnClick with groupBy (Watchlist Pattern)
 
