@@ -1,11 +1,6 @@
----
-name: app-interview
-description: Gather comprehensive requirements for an OpenBB app through structured interview or reference example analysis
----
+# App Interview Reference
 
-# App Interview Skill
-
-You are conducting a structured interview to gather all requirements for building an OpenBB Workspace app. Your goal is to extract complete information before any code is written.
+Detailed guide for gathering requirements through structured interview or reference example analysis.
 
 ## Two Modes of Operation
 
@@ -78,16 +73,6 @@ Look for:
 - Query parameters and request bodies
 - Database connections
 - External API calls
-
-### Analyzing React/Vue Dashboards
-
-Look for:
-- Component structure
-- State management
-- API calls (fetch, axios)
-- Chart libraries (recharts, chart.js, plotly)
-- Table components (ag-grid, react-table)
-- Form inputs
 
 ### Reference Analysis Output
 
@@ -213,14 +198,6 @@ Ask about:
 
 3. **Environment Variables**: What secrets/config need to be stored in .env?
 
-### Phase 6: Advanced Features (Optional)
-
-Ask about:
-1. **MCP Tool Matching**: Link widgets to MCP tools for AI citations?
-2. **WebSocket**: Need real-time updates via WebSocket?
-3. **SSRM**: Will tables have 100k+ rows? (Requires server-side pagination)
-4. **Custom Agents**: Need an AI agent endpoint?
-
 ---
 
 ## Smart Defaults
@@ -239,7 +216,7 @@ When in doubt, suggest sensible defaults:
 
 ## Output Format
 
-After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/APP-SPEC.md`:
+After gathering all information, create an APP-SPEC.md file:
 
 ```markdown
 # App Specification: {App Name}
@@ -248,9 +225,6 @@ After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/
 - **Name**: {name}
 - **Description**: {description}
 - **Category**: {category}
-- **Author**: {user's name or "Developer"}
-- **Created**: {today's date}
-- **Source**: {Reference app URL or "Original design"}
 
 ## Data Source
 
@@ -262,11 +236,6 @@ After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/
 - **Documentation**: {docs_url}
 - **Rate Limits**: {limits if known}
 
-### Reference Mapping (if from reference)
-| Original Component | OpenBB Widget |
-|-------------------|---------------|
-| {original} | {widget type} |
-
 ## Authentication
 
 ### API Auth
@@ -274,15 +243,11 @@ After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/
 - **Header Name**: {header if applicable}
 - **User Provides Key**: {yes | no}
 
-### Custom Headers
-{list any special headers}
-
 ## Configuration
 
 ### Caching
 - **Strategy**: {real-time | short | medium | long}
 - **Refetch Interval**: {milliseconds}
-- **Stale Time**: {milliseconds}
 
 ### Features
 - **Raw Mode**: {yes | no}
@@ -299,12 +264,6 @@ After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/
 ```
 {VAR_NAME}=description
 ```
-
-## Advanced Features
-- **MCP Matching**: {yes | no}
-- **WebSocket**: {yes | no}
-- **SSRM**: {yes | no}
-- **Custom Agent**: {yes | no}
 
 ## Status
 - [x] Requirements gathered
@@ -327,52 +286,3 @@ After gathering all information, create an APP-SPEC.md file in `apps/{app-name}/
 5. **Be flexible** - Skip sections that don't apply
 6. **Summarize** - Recap what you've gathered periodically
 7. **Accept references** - If user provides code/screenshots, analyze them
-
----
-
-## Example: Reference-Based Interview
-
-```
-User: Convert this Streamlit app to OpenBB:
-
-import streamlit as st
-import yfinance as yf
-
-symbol = st.selectbox("Symbol", ["AAPL", "GOOGL", "MSFT"])
-data = yf.download(symbol, period="1mo")
-st.line_chart(data["Close"])
-st.dataframe(data)
-
-Claude: I've analyzed your Streamlit app. Here's what I found:
-
-**Detected Components:**
-| Original | OpenBB Widget | Purpose |
-|----------|---------------|---------|
-| st.selectbox | param (endpoint) | Stock symbol selector |
-| st.line_chart | chart | Price visualization |
-| st.dataframe | table | Raw price data |
-
-**Data Source:** Yahoo Finance via yfinance library
-
-**Suggested App Structure:**
-- 1 chart widget for price visualization
-- 1 table widget for OHLCV data
-- Symbol parameter synced between both
-
-**Questions:**
-1. Should the symbol list come from an endpoint (dynamic) or be static?
-2. Do you want to add any additional time period options (1D, 1W, 1M, 3M, 1Y)?
-3. Should the chart include volume as a secondary axis?
-
-Let me know your preferences and I'll generate the full specification.
-```
-
----
-
-## Next Step
-
-After the interview is complete and APP-SPEC.md is created, tell the user:
-
-"Requirements gathered and saved to `apps/{app-name}/APP-SPEC.md`. Ready for the next step: **Widget Metadata Definition**. Would you like to continue to define your widgets?"
-
-This allows the pipeline to continue to the widget-metadata skill.

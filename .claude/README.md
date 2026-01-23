@@ -1,14 +1,6 @@
-# OpenBB App Builder Harness v2.0
+# OpenBB App Builder Skill
 
-A comprehensive pipeline for building OpenBB Workspace apps in a single shot.
-
-## What's New in v2.0
-
-- **Reference Example Support** - Convert Streamlit, Gradio, React, Flask apps to OpenBB
-- **Smart Interview** - Structured requirements gathering with sensible defaults
-- **Automated Validation** - 4 validation scripts for complete coverage
-- **Browser Testing** - Claude-in-Chrome integration for end-to-end verification
-- **Error Recovery** - Auto-fix common issues with retry logic
+A comprehensive skill for building OpenBB Workspace apps in a single shot.
 
 ## Quick Start
 
@@ -39,42 +31,31 @@ st.dataframe(data)
 ## Pipeline Phases
 
 ```
-┌────────────────────────────────────────────────────────────────────────────┐
-│                      OPENBB APP BUILDER PIPELINE v2.0                      │
-├────────────────────────────────────────────────────────────────────────────┤
-│                                                                            │
-│  INPUT TYPES SUPPORTED                                                     │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
-│  │ Description │ │  Streamlit  │ │   Gradio    │ │ React/Vue   │          │
-│  └──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘          │
-│         └───────────────┴───────────────┴───────────────┘                  │
-│                                    │                                       │
-│                                    ▼                                       │
-│                                                                            │
-│   PHASE 1      PHASE 2       PHASE 3      PHASE 4      PHASE 5            │
-│  ┌────────┐  ┌──────────┐  ┌─────────┐  ┌────────┐  ┌─────────┐           │
-│  │Interview│->│Widget    │->│Dashboard│->│Planner │->│Builder  │           │
-│  │         │  │Metadata  │  │Layout   │  │        │  │         │           │
-│  └────────┘  └──────────┘  └─────────┘  └────────┘  └─────────┘           │
-│       │           │             │            │           │                 │
-│       v           v             v            v           v                 │
-│   APP-SPEC.md (requirements + widgets + layout)      main.py              │
-│                                             PLAN.md   widgets.json         │
-│                                                       apps.json            │
-│                                                                            │
-│   PHASE 6           PHASE 7                                                │
-│  ┌───────────┐    ┌──────────┐                                            │
-│  │Validation │ -> │Tester    │ -> SUCCESS!                                │
-│  │           │    │(Browser) │                                            │
-│  └───────────┘    └──────────┘                                            │
-│       │                │                                                   │
-│       v                v                                                   │
-│   Pass/Fail        Screenshots + Test Report                              │
-│       │                                                                    │
-│       └── If fail: Auto-fix → Retry (max 3x)                              │
-│                                                                            │
-└────────────────────────────────────────────────────────────────────────────┘
+Phase 1: Interview    → Gather requirements, analyze references
+Phase 2: Widgets      → Define widget metadata
+Phase 3: Layout       → Design dashboard layout
+Phase 4: Plan         → Generate implementation plan
+Phase 5: Build        → Create all files
+Phase 6: Validate     → Run validation scripts
+Phase 7: Test         → Browser testing (optional)
 ```
+
+## Skill Structure
+
+The skill uses **progressive disclosure** - Claude loads reference files only when needed:
+
+```
+.claude/skills/openbb-app-builder/
+├── SKILL.md              # Main orchestrator (loaded when skill triggers)
+├── APP-INTERVIEW.md      # Phase 1: Requirements gathering
+├── WIDGET-METADATA.md    # Phase 2: Widget definitions
+├── DASHBOARD-LAYOUT.md   # Phase 3: Layout design
+├── APP-PLANNER.md        # Phase 4: Implementation planning
+├── OPENBB-APP.md         # Phase 5: Core implementation reference
+└── APP-TESTER.md         # Phase 7: Browser testing
+```
+
+When the main SKILL.md says `see [APP-INTERVIEW.md](APP-INTERVIEW.md)`, Claude reads that file via bash when it needs the detailed instructions.
 
 ## Validation Scripts
 
@@ -111,44 +92,10 @@ python scripts/validate_endpoints.py apps/my-app/ --base-url http://localhost:77
 | Verbose | "verbose" | Detailed explanations, educational |
 | Reference | Code snippets | Auto-analyze and convert |
 
-## Skills Reference
-
-| Skill | Purpose |
-|-------|---------|
-| `openbb-app-builder` | Master orchestrator for entire pipeline |
-| `app-interview` | Requirements gathering + reference analysis |
-| `widget-metadata` | Widget specification definitions |
-| `dashboard-layout` | Dashboard layout design |
-| `app-planner` | Generate PLAN.md |
-| `openbb-app` | Core OpenBB implementation knowledge |
-| `app-tester` | Browser-based testing with Claude-in-Chrome |
-
-## Directory Structure
-
-```
-.claude/
-├── README.md                    # This file
-├── HARNESS_ARCHITECTURE.md      # Detailed architecture documentation
-└── skills/
-    ├── openbb-app.md           # Core OpenBB implementation knowledge
-    ├── openbb-app-builder.md   # Master orchestrator
-    ├── app-interview.md        # Requirements + reference analysis
-    ├── widget-metadata.md      # Widget definitions
-    ├── dashboard-layout.md     # Layout design
-    ├── app-planner.md          # Plan generation
-    └── app-tester.md           # Browser testing
-
-scripts/
-├── validate_widgets.py         # Widget configuration validation
-├── validate_apps.py            # Dashboard layout validation
-├── validate_app.py             # Combined validation
-└── validate_endpoints.py       # Live endpoint testing
-```
-
 ## Generated App Structure
 
 ```
-apps/{app-name}/
+{app-name}/
 ├── APP-SPEC.md        # Requirements and specifications
 ├── PLAN.md            # Implementation plan
 ├── main.py            # FastAPI application
@@ -160,27 +107,9 @@ apps/{app-name}/
 └── README.md          # App documentation
 ```
 
-## Using Individual Skills
-
-You can invoke skills individually:
-
-```
-# Just interview
-"Let's do an app interview for my new idea"
-
-# Just widget design
-"Help me define the widgets for my app"
-
-# Just validation
-"Validate my widgets.json"
-
-# Just testing
-"Test my app in the browser"
-```
-
 ## Error Recovery
 
-The harness includes automatic error recovery:
+The skill includes automatic error recovery:
 
 1. **Validation Errors**: Automatically fixes and re-validates
 2. **Build Errors**: Diagnoses and corrects issues
@@ -199,6 +128,6 @@ The harness includes automatic error recovery:
 
 ## Related Resources
 
-- [HARNESS_ARCHITECTURE.md](./HARNESS_ARCHITECTURE.md) - Detailed architecture and flow diagrams
+- [HARNESS_ARCHITECTURE.md](./HARNESS_ARCHITECTURE.md) - Detailed architecture documentation
 - [OpenBB Workspace Docs](https://docs.openbb.co/workspace)
 - [Backend Examples](../getting-started/)

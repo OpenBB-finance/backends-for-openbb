@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(openbb-app-builder)",
+      "Skill(openbb-app-builder:*)",
+      "Bash(sqlite3:*)"
+    ]
+  }
+}
