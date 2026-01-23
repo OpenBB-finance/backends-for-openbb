@@ -1,11 +1,6 @@
 ---
 name: widget-metadata
 description: Define complete widget metadata for each widget in the app
-triggers:
-  - widget metadata
-  - define widgets
-  - widget definition
-  - widget design
 ---
 
 # Widget Metadata Skill
@@ -302,7 +297,12 @@ Make table cells clickable to update other widgets in the same group:
     "dataField": "trend_data",
     "options": {
       "stroke": "#3b82f6",
-      "fill": "rgba(34, 197, 94, 0.3)"
+      "fill": "rgba(34, 197, 94, 0.3)",
+      "markers": {"enabled": true, "size": 2},
+      "pointsOfInterest": {
+        "maximum": {"fill": "#ffd700", "size": 6},
+        "minimum": {"fill": "#ef4444", "size": 6}
+      }
     }
   }
 }

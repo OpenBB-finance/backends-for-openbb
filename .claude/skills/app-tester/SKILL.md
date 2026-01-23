@@ -1,13 +1,6 @@
 ---
 name: app-tester
 description: Test an OpenBB app in the browser using Claude-in-Chrome automation with specific OpenBB Workspace flows
-triggers:
-  - test app
-  - app tester
-  - browser test
-  - test openbb app
-  - verify app
-  - add backend
 ---
 
 # App Tester Skill

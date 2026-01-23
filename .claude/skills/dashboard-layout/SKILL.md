@@ -1,11 +1,6 @@
 ---
 name: dashboard-layout
 description: Design the visual dashboard layout with tabs and widget positioning
-triggers:
-  - dashboard layout
-  - layout design
-  - design dashboard
-  - widget layout
 ---
 
 # Dashboard Layout Skill

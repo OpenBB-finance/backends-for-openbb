@@ -1,11 +1,6 @@
 ---
 name: app-planner
 description: Generate a comprehensive implementation plan (PLAN.md) for building the app
-triggers:
-  - app planner
-  - implementation plan
-  - generate plan
-  - plan app
 ---
 
 # App Planner Skill

@@ -1,14 +1,6 @@
 ---
 name: app-interview
 description: Gather comprehensive requirements for an OpenBB app through structured interview or reference example analysis
-triggers:
-  - app interview
-  - openbb interview
-  - gather requirements
-  - app requirements
-  - convert streamlit
-  - convert app
-  - analyze reference
 ---
 
 # App Interview Skill

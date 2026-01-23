@@ -1,15 +1,6 @@
 ---
 name: openbb-app-builder
 description: Master orchestrator for one-shot OpenBB app creation pipeline - from requirements to tested deployment
-triggers:
-  - build openbb app
-  - create openbb app
-  - one-shot openbb app
-  - openbb app pipeline
-  - new openbb app
-  - openbb builder
-  - convert to openbb
-  - streamlit to openbb
 ---
 
 # OpenBB App Builder - Master Orchestration Skill
