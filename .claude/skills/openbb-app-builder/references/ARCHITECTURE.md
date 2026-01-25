@@ -1,7 +1,6 @@
-# OpenBB App Builder Harness - Architecture Document v2.0
+# Architecture Reference
 
-> **Note**: This document is for **human maintainers** to understand the overall system design.
-> Claude uses `SKILL.md` and the referenced files directly during execution.
+System design overview for the OpenBB App Builder pipeline.
 
 ## Overview
 
@@ -257,18 +256,21 @@ st.sidebar            →      parameter groups
 
 ```
 .claude/
-├── README.md                    # Quick start guide (human)
-├── HARNESS_ARCHITECTURE.md      # This document (human)
+├── README.md                    # Quick start guide
 ├── settings.local.json          # Skill permissions
 └── skills/
     └── openbb-app-builder/
         ├── SKILL.md             # Master orchestrator (Claude entry point)
-        ├── APP-INTERVIEW.md     # Phase 1: Requirements
-        ├── WIDGET-METADATA.md   # Phase 2: Widget specs
-        ├── DASHBOARD-LAYOUT.md  # Phase 3: Layout design
-        ├── APP-PLANNER.md       # Phase 4: Plan generation
-        ├── OPENBB-APP.md        # Phase 5: Implementation reference
-        └── APP-TESTER.md        # Phase 7: Browser testing
+        ├── README.md            # Skill documentation (for skills.sh)
+        └── references/          # Docs loaded on demand
+            ├── ARCHITECTURE.md      # This document
+            ├── APP-INTERVIEW.md     # Phase 1: Requirements
+            ├── WIDGET-METADATA.md   # Phase 2: Widget specs
+            ├── DASHBOARD-LAYOUT.md  # Phase 3: Layout design
+            ├── APP-PLANNER.md       # Phase 4: Plan generation
+            ├── OPENBB-APP.md        # Phase 5: Implementation reference
+            ├── VALIDATE.md          # Phase 6: Validation commands
+            └── APP-TESTER.md        # Phase 7: Browser testing
 
 scripts/
 ├── validate_widgets.py          # Widget validation

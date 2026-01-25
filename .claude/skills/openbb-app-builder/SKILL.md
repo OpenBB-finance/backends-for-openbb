@@ -38,6 +38,8 @@ Phase 6: Validate     → Run validation scripts
 Phase 7: Test         → Browser testing (optional)
 ```
 
+For full architecture details, error recovery patterns, and troubleshooting, see [ARCHITECTURE.md](references/ARCHITECTURE.md).
+
 ## Phase Execution
 
 ### Phase 1: Requirements Interview
@@ -48,7 +50,7 @@ Phase 7: Test         → Browser testing (optional)
 1. **Interactive** - Ask structured questions about data, widgets, auth
 2. **Reference** - Analyze Streamlit/Gradio/React code and extract components
 
-For detailed interview process and component mapping, see [APP-INTERVIEW.md](APP-INTERVIEW.md).
+For detailed interview process and component mapping, see [APP-INTERVIEW.md](references/APP-INTERVIEW.md).
 
 **Output**: Create `{app-name}/APP-SPEC.md` with requirements.
 
@@ -64,7 +66,7 @@ For each widget, define:
 - Column definitions (for tables)
 - Data format
 
-For complete widget type reference and parameter guide, see [WIDGET-METADATA.md](WIDGET-METADATA.md).
+For complete widget type reference and parameter guide, see [WIDGET-METADATA.md](references/WIDGET-METADATA.md).
 
 **Output**: Append widget definitions to APP-SPEC.md.
 
@@ -80,7 +82,7 @@ For complete widget type reference and parameter guide, see [WIDGET-METADATA.md]
 
 **CRITICAL**: Group names must follow "Group 1", "Group 2" pattern - custom names fail silently.
 
-For layout templates and ASCII design guide, see [DASHBOARD-LAYOUT.md](DASHBOARD-LAYOUT.md).
+For layout templates and ASCII design guide, see [DASHBOARD-LAYOUT.md](references/DASHBOARD-LAYOUT.md).
 
 **Output**: Append layout to APP-SPEC.md.
 
@@ -90,7 +92,7 @@ For layout templates and ASCII design guide, see [DASHBOARD-LAYOUT.md](DASHBOARD
 
 **Goal**: Generate step-by-step build plan.
 
-For plan structure and templates, see [APP-PLANNER.md](APP-PLANNER.md).
+For plan structure and templates, see [APP-PLANNER.md](references/APP-PLANNER.md).
 
 **Output**: Create `{app-name}/PLAN.md`.
 
@@ -107,7 +109,7 @@ Files to create:
 - `requirements.txt` - Dependencies
 - `.env.example` - Environment template
 
-For core implementation patterns and widget type details, see [OPENBB-APP.md](OPENBB-APP.md).
+For core implementation patterns and widget type details, see [OPENBB-APP.md](references/OPENBB-APP.md).
 
 ---
 
@@ -115,10 +117,7 @@ For core implementation patterns and widget type details, see [OPENBB-APP.md](OP
 
 **Goal**: Validate all generated files.
 
-```bash
-python scripts/validate_widgets.py {app-path}/
-python scripts/validate_apps.py {app-path}/
-```
+For validation commands and error handling, see [VALIDATE.md](references/VALIDATE.md).
 
 If errors, fix and re-validate (max 3 retries).
 
@@ -128,7 +127,7 @@ If errors, fix and re-validate (max 3 retries).
 
 **Goal**: Test in real browser with OpenBB Workspace.
 
-For browser testing procedures, see [APP-TESTER.md](APP-TESTER.md).
+For browser testing procedures, see [APP-TESTER.md](references/APP-TESTER.md).
 
 ---
 

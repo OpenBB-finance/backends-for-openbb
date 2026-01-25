@@ -7,9 +7,15 @@ A comprehensive skill for building OpenBB Workspace apps in a single shot.
 | File | Purpose | Audience |
 |------|---------|----------|
 | `skills/openbb-app-builder/SKILL.md` | Main orchestrator - Claude reads this | Claude |
-| `skills/openbb-app-builder/*.md` | Phase-specific reference docs | Claude (on-demand) |
-| `HARNESS_ARCHITECTURE.md` | System design overview | Human maintainers |
+| `skills/openbb-app-builder/references/*.md` | Phase-specific reference docs | Claude (on-demand) |
+| `skills/openbb-app-builder/README.md` | Skill documentation for skills.sh | Humans |
 | `README.md` | This quick start guide | Humans |
+
+## Install via skills.sh
+
+```bash
+npx skills add OpenBB-finance/backends-for-openbb
+```
 
 ## Quick Start
 
