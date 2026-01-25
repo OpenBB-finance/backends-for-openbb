@@ -206,31 +206,79 @@ def news():
 
 ## apps.json Structure
 
+**CRITICAL**: apps.json must be an ARRAY, not an object.
+
 ```json
-{
-  "my_dashboard": {
+[
+  {
     "name": "My Dashboard",
     "description": "Dashboard description",
+    "allowCustomization": true,
     "tabs": {
       "overview": {
+        "id": "overview",
         "name": "Overview",
-        "widgets": {
-          "widget_1": {
-            "id": "widget_id",
-            "gridData": {"x": 0, "y": 0, "w": 20, "h": 12}
-          }
-        }
+        "layout": [
+          {"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12}
+        ]
       }
     },
-    "groups": {
-      "Group 1": {
-        "paramName": "symbol",
-        "widgetIds": ["widget_1", "widget_2"]
-      }
-    }
+    "groups": [],
+    "prompts": []
   }
+]
+```
+
+### Required App Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Display name for the app |
+| `description` | string | What the app does |
+| `allowCustomization` | boolean | Whether users can modify layout |
+| `tabs` | object | Tab configurations |
+| `groups` | array | Parameter synchronization groups (can be empty `[]`) |
+| `prompts` | array | AI copilot suggestions (can be empty `[]`) |
+
+### Required Tab Fields
+
+Each tab within `tabs` must have:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the tab |
+| `name` | string | Display name |
+| `layout` | array | Widget positioning with `i`, `x`, `y`, `w`, `h` |
+
+### Layout Item Fields
+
+Each item in the `layout` array:
+
+| Field | Description |
+|-------|-------------|
+| `i` | Widget ID (must match key in widgets.json) |
+| `x` | X position (0-39) |
+| `y` | Y position |
+| `w` | Width (10-40) |
+| `h` | Height (4+) |
+
+### Groups with Parameter Sync
+
+For synced parameters across widgets:
+
+```json
+{
+  "groups": [
+    {
+      "type": "endpointParam",
+      "paramName": "symbol",
+      "defaultValue": "AAPL"
+    }
+  ]
 }
 ```
+
+Then reference in layout items: `{"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}`
 
 ---
 

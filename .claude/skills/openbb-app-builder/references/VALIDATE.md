@@ -169,6 +169,74 @@ When validation fails, apply these fixes automatically:
 |---------------|----------|
 | `formatterFn: currency` | Replace with `formatterFn: none` |
 | `widgets.json is array` | Convert to object with IDs as keys |
+| `apps.json is object` | Convert to array: `[{...}]` |
 | `Missing endpoint field` | Add `"endpoint": "{widget_id}"` |
 | `Group name invalid` | Replace with `"Group 1"`, `"Group 2"`, etc. |
 | `Widget not found` | Check for typos, fix ID reference |
+
+---
+
+## Browser Validation (Highly Recommended)
+
+Static JSON validation cannot catch all issues. OpenBB Workspace has its own schema validation that may differ from documentation.
+
+### If browser automation is available (Claude in Chrome MCP):
+
+1. Navigate to `https://pro.openbb.co`
+2. Go to **Settings → Data Connectors → Connect Backend**
+3. Enter the backend URL (e.g., `http://localhost:7779`)
+4. Click **"Test"** to validate against OpenBB's actual schema
+5. If errors appear, read the exact error message and fix accordingly
+
+### Common Browser Validation Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Unknown App: [name]: Required` | apps.json is object, not array | Change `{...}` to `[{...}]` |
+| `[tabs]: Required` | Missing tabs or wrong structure | Ensure each tab has `id`, `name`, `layout` |
+| `Widget 'x' not found` | Layout references non-existent widget | Check `i` values match widgets.json keys |
+| `allowCustomization: Required` | Missing required field | Add `"allowCustomization": true` |
+| `groups: Required` | Missing groups field | Add `"groups": []` |
+| `prompts: Required` | Missing prompts field | Add `"prompts": []` |
+
+### Why Browser Validation Matters
+
+- OpenBB documentation may lag behind actual implementation
+- Schema validation rules are enforced server-side
+- Error messages from the actual validator are more specific
+- Catches issues that static file validation misses
+
+---
+
+## Validation Priority
+
+1. **Static validation** - Check JSON syntax and basic structure
+2. **Cross-reference validation** - Ensure widget IDs in apps.json exist in widgets.json
+3. **Browser validation (if available)** - Test against actual OpenBB Workspace
+   - This is the most reliable validation method
+   - OpenBB's validator will catch schema mismatches
+   - Always trust browser errors over documentation
+
+## When Documentation Conflicts with Reality
+
+If browser validation fails but files match documentation:
+
+1. Trust the browser error message
+2. Fetch latest docs: `https://docs.openbb.co/workspace/llms-full.txt`
+3. Adjust files to match actual OpenBB requirements
+4. Report documentation discrepancy for future reference
+
+---
+
+## Pre-Deployment Checklist
+
+Before deploying, verify:
+
+- [ ] apps.json is an ARRAY (starts with `[`)
+- [ ] Each app has: `name`, `description`, `allowCustomization`, `tabs`, `groups`, `prompts`
+- [ ] Each tab has: `id`, `name`, `layout`
+- [ ] Layout uses `i` for widget ID (not `id`)
+- [ ] Layout uses `x`, `y`, `w`, `h` directly (not nested in `gridData`)
+- [ ] All widget IDs in layout exist in widgets.json
+- [ ] widgets.json is an OBJECT (starts with `{`)
+- [ ] Browser validation passes (if available)

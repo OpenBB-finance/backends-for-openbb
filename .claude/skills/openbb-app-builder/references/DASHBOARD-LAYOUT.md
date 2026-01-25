@@ -148,33 +148,59 @@ Convert ASCII to coordinates:
 
 ## apps.json Structure
 
+**CRITICAL**: apps.json must be an ARRAY, not an object.
+
 ```json
-{
-  "app_id": {
+[
+  {
     "name": "App Name",
     "description": "App description",
+    "allowCustomization": true,
     "img": "",
     "img_dark": "",
     "tabs": {
       "tab_id": {
+        "id": "tab_id",
         "name": "Tab Name",
-        "widgets": {
-          "widget_instance_id": {
-            "id": "widget_definition_id",
-            "gridData": {"x": 0, "y": 0, "w": 20, "h": 12}
-          }
-        }
+        "layout": [
+          {"i": "widget_definition_id", "x": 0, "y": 0, "w": 20, "h": 12}
+        ]
       }
     },
-    "groups": {
-      "Group 1": {
-        "paramName": "symbol",
-        "widgetIds": ["widget1", "widget2"]
-      }
-    }
+    "groups": [],
+    "prompts": []
   }
+]
+```
+
+### Key Differences from Old Format
+
+| Aspect | Wrong (Object) | Correct (Array) |
+|--------|----------------|-----------------|
+| Root structure | `{"app_id": {...}}` | `[{...}]` |
+| Tab widgets | `widgets` object with `id` + `gridData` | `layout` array with `i`, `x`, `y`, `w`, `h` |
+| Tab identifier | Implicit from key | Explicit `id` field required |
+| Widget reference | `"id": "widget_id"` | `"i": "widget_id"` |
+| Groups | Object | Array |
+| Required fields | - | `allowCustomization`, `groups`, `prompts` |
+
+### Groups with Parameter Sync
+
+For syncing parameters across widgets, use array format:
+
+```json
+{
+  "groups": [
+    {
+      "type": "endpointParam",
+      "paramName": "symbol",
+      "defaultValue": "AAPL"
+    }
+  ]
 }
 ```
+
+Then add `"groups": ["Group 1"]` to each layout item that should sync.
 
 ---
 

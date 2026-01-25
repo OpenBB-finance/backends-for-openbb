@@ -29,13 +29,14 @@ You are an expert OpenBB app developer. This skill handles the complete pipeline
 ## Pipeline Overview
 
 ```
-Phase 1: Interview    → Gather requirements, analyze references
-Phase 2: Widgets      → Define widget metadata
-Phase 3: Layout       → Design dashboard layout
-Phase 4: Plan         → Generate implementation plan
-Phase 5: Build        → Create all files
-Phase 6: Validate     → Run validation scripts
-Phase 7: Test         → Browser testing (optional)
+Phase 1: Interview      → Gather requirements, analyze references
+Phase 2: Widgets        → Define widget metadata
+Phase 3: Layout         → Design dashboard layout
+Phase 4: Plan           → Generate implementation plan
+Phase 5: Build          → Create all files
+Phase 6: Validate       → Run validation scripts
+Phase 6.5: Browser Val  → Test against OpenBB Workspace (recommended)
+Phase 7: Test           → Browser testing (optional)
 ```
 
 For full architecture details, error recovery patterns, and troubleshooting, see [ARCHITECTURE.md](references/ARCHITECTURE.md).
@@ -123,6 +124,24 @@ If errors, fix and re-validate (max 3 retries).
 
 ---
 
+### Phase 6.5: Browser Validation (Highly Recommended)
+
+**Goal**: Validate against OpenBB Workspace's actual schema.
+
+Static validation cannot catch all issues. If browser automation is available:
+
+1. Start the backend server
+2. Navigate to `https://pro.openbb.co`
+3. Go to **Settings → Data Connectors → Connect Backend**
+4. Enter the backend URL and click **Test**
+5. Fix any schema errors reported by OpenBB
+
+**Why this matters**: OpenBB's actual validator may enforce rules not captured in static validation. Browser errors are authoritative.
+
+See [VALIDATE.md](references/VALIDATE.md) for common browser validation errors.
+
+---
+
 ### Phase 7: Browser Testing (Optional)
 
 **Goal**: Test in real browser with OpenBB Workspace.
@@ -179,8 +198,40 @@ def get_widgets():
 1. **No `runButton: true`** unless heavy computation (>5 seconds)
 2. **Reasonable heights**: metrics h=4-6, tables h=12-18, charts h=12-15
 3. **widgets.json must be dict** format with widget IDs as keys
-4. **Plotly charts**: No title (widget provides it), support `raw` param
-5. **Group names**: Must be "Group 1", "Group 2" etc.
+4. **apps.json must be array** format: `[{...}]`
+5. **Plotly charts**: No title (widget provides it), support `raw` param
+6. **Group names**: Must be "Group 1", "Group 2" etc.
+
+### Critical File Formats
+
+| File | Format | Example |
+|------|--------|---------|
+| `widgets.json` | Object `{...}` | `{"widget_id": {...}}` |
+| `apps.json` | Array `[...]` | `[{"name": "App", ...}]` |
+
+### apps.json Required Fields
+
+Each app must have:
+- `name`, `description`, `allowCustomization` (boolean)
+- `tabs` (object with tab configs)
+- `groups` (array, can be `[]`)
+- `prompts` (array, can be `[]`)
+
+Each tab must have:
+- `id`, `name`, `layout` (array with `i`, `x`, `y`, `w`, `h`)
+
+### Pre-Deployment Checklist
+
+Before deployment, verify:
+
+- [ ] apps.json is an ARRAY (starts with `[`)
+- [ ] Each app has: `name`, `description`, `allowCustomization`, `tabs`, `groups`, `prompts`
+- [ ] Each tab has: `id`, `name`, `layout`
+- [ ] Layout uses `i` for widget ID (not `id`)
+- [ ] Layout uses `x`, `y`, `w`, `h` directly (not nested in `gridData`)
+- [ ] All widget IDs in layout exist in widgets.json
+- [ ] widgets.json is an OBJECT (starts with `{`)
+- [ ] Browser validation passes (if available)
 
 ---
 

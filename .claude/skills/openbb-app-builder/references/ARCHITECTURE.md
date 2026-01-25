@@ -395,6 +395,38 @@ Claude: [Minimal questions]
 
 ---
 
+## Documentation vs Reality
+
+**Important**: OpenBB Workspace's actual schema validation may differ from this documentation. When in doubt:
+
+1. **Browser validation is authoritative** - Test against `pro.openbb.co` using Data Connectors
+2. **Fetch latest docs** - `https://docs.openbb.co/workspace/llms-full.txt`
+3. **Trust error messages** - OpenBB's validator provides specific error messages
+
+### Critical Format Differences
+
+| File | Format | Notes |
+|------|--------|-------|
+| `widgets.json` | Object `{...}` | Keys are widget IDs |
+| `apps.json` | Array `[...]` | Each element is an app config |
+
+### apps.json Required Fields
+
+Each app in the array must have:
+- `name` (string)
+- `description` (string)
+- `allowCustomization` (boolean)
+- `tabs` (object with tab configs)
+- `groups` (array, can be empty `[]`)
+- `prompts` (array, can be empty `[]`)
+
+Each tab must have:
+- `id` (string)
+- `name` (string)
+- `layout` (array of widget positions with `i`, `x`, `y`, `w`, `h`)
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
