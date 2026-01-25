@@ -128,17 +128,9 @@ If errors, fix and re-validate (max 3 retries).
 
 **Goal**: Validate against OpenBB Workspace's actual schema.
 
-Static validation cannot catch all issues. If browser automation is available:
+Static validation cannot catch all issues. Browser validation against `pro.openbb.co` is the most reliable method.
 
-1. Start the backend server
-2. Navigate to `https://pro.openbb.co`
-3. Go to **Settings → Data Connectors → Connect Backend**
-4. Enter the backend URL and click **Test**
-5. Fix any schema errors reported by OpenBB
-
-**Why this matters**: OpenBB's actual validator may enforce rules not captured in static validation. Browser errors are authoritative.
-
-See [VALIDATE.md](references/VALIDATE.md) for common browser validation errors.
+See [VALIDATE.md](references/VALIDATE.md#browser-validation-highly-recommended) for steps and common errors.
 
 ---
 
@@ -202,36 +194,9 @@ def get_widgets():
 5. **Plotly charts**: No title (widget provides it), support `raw` param
 6. **Group names**: Must be "Group 1", "Group 2" etc.
 
-### Critical File Formats
+For complete apps.json structure and required fields, see [OPENBB-APP.md](references/OPENBB-APP.md#appsjson-structure).
 
-| File | Format | Example |
-|------|--------|---------|
-| `widgets.json` | Object `{...}` | `{"widget_id": {...}}` |
-| `apps.json` | Array `[...]` | `[{"name": "App", ...}]` |
-
-### apps.json Required Fields
-
-Each app must have:
-- `name`, `description`, `allowCustomization` (boolean)
-- `tabs` (object with tab configs)
-- `groups` (array, can be `[]`)
-- `prompts` (array, can be `[]`)
-
-Each tab must have:
-- `id`, `name`, `layout` (array with `i`, `x`, `y`, `w`, `h`)
-
-### Pre-Deployment Checklist
-
-Before deployment, verify:
-
-- [ ] apps.json is an ARRAY (starts with `[`)
-- [ ] Each app has: `name`, `description`, `allowCustomization`, `tabs`, `groups`, `prompts`
-- [ ] Each tab has: `id`, `name`, `layout`
-- [ ] Layout uses `i` for widget ID (not `id`)
-- [ ] Layout uses `x`, `y`, `w`, `h` directly (not nested in `gridData`)
-- [ ] All widget IDs in layout exist in widgets.json
-- [ ] widgets.json is an OBJECT (starts with `{`)
-- [ ] Browser validation passes (if available)
+For pre-deployment checklist and browser validation, see [VALIDATE.md](references/VALIDATE.md#pre-deployment-checklist).
 
 ---
 

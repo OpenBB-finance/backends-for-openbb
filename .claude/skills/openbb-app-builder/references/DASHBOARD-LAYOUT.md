@@ -148,59 +148,12 @@ Convert ASCII to coordinates:
 
 ## apps.json Structure
 
-**CRITICAL**: apps.json must be an ARRAY, not an object.
+For complete apps.json structure, required fields, and JSON examples, see [OPENBB-APP.md](OPENBB-APP.md#appsjson-structure).
 
-```json
-[
-  {
-    "name": "App Name",
-    "description": "App description",
-    "allowCustomization": true,
-    "img": "",
-    "img_dark": "",
-    "tabs": {
-      "tab_id": {
-        "id": "tab_id",
-        "name": "Tab Name",
-        "layout": [
-          {"i": "widget_definition_id", "x": 0, "y": 0, "w": 20, "h": 12}
-        ]
-      }
-    },
-    "groups": [],
-    "prompts": []
-  }
-]
-```
-
-### Key Differences from Old Format
-
-| Aspect | Wrong (Object) | Correct (Array) |
-|--------|----------------|-----------------|
-| Root structure | `{"app_id": {...}}` | `[{...}]` |
-| Tab widgets | `widgets` object with `id` + `gridData` | `layout` array with `i`, `x`, `y`, `w`, `h` |
-| Tab identifier | Implicit from key | Explicit `id` field required |
-| Widget reference | `"id": "widget_id"` | `"i": "widget_id"` |
-| Groups | Object | Array |
-| Required fields | - | `allowCustomization`, `groups`, `prompts` |
-
-### Groups with Parameter Sync
-
-For syncing parameters across widgets, use array format:
-
-```json
-{
-  "groups": [
-    {
-      "type": "endpointParam",
-      "paramName": "symbol",
-      "defaultValue": "AAPL"
-    }
-  ]
-}
-```
-
-Then add `"groups": ["Group 1"]` to each layout item that should sync.
+**Quick reference for layout items:**
+- Use `i` for widget ID (not `id`)
+- Use `x`, `y`, `w`, `h` directly (not nested in `gridData`)
+- Add `"groups": ["Group 1"]` to sync widgets
 
 ---
 
