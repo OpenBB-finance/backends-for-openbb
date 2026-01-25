@@ -15,6 +15,17 @@ You are an expert OpenBB app developer. This skill handles the complete pipeline
 | "Convert this Streamlit app" | Reference-based build |
 | "Quick mode: build X" | Minimal questions |
 
+## Execution Modes
+
+| Mode | Triggers | Behavior |
+|------|----------|----------|
+| **Standard** | (default) | Confirm at each phase, detailed explanations |
+| **Quick** | "quick mode", "fast", "minimal" | Sensible defaults, single final confirmation |
+| **Reference** | Code snippets, "convert this", "like this app" | Auto-analyze code, extract components, map to OpenBB |
+| **Verbose** | "verbose", "teach me", "explain" | Educational approach, explain decisions |
+
+**Mode detection**: Check user's first message for trigger phrases. Default to Standard if unclear.
+
 ## Pipeline Overview
 
 ```

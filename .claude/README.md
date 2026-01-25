@@ -2,6 +2,15 @@
 
 A comprehensive skill for building OpenBB Workspace apps in a single shot.
 
+## File Structure
+
+| File | Purpose | Audience |
+|------|---------|----------|
+| `skills/openbb-app-builder/SKILL.md` | Main orchestrator - Claude reads this | Claude |
+| `skills/openbb-app-builder/*.md` | Phase-specific reference docs | Claude (on-demand) |
+| `HARNESS_ARCHITECTURE.md` | System design overview | Human maintainers |
+| `README.md` | This quick start guide | Humans |
+
 ## Quick Start
 
 ### Option 1: Build from Description
@@ -82,15 +91,6 @@ python scripts/validate_endpoints.py apps/my-app/ --base-url http://localhost:77
 | Flask | `from flask import` | Route → endpoint |
 | FastAPI | `from fastapi import` | Endpoint extraction |
 | React | `useState`, `useEffect` | Component mapping |
-
-## Mode Options
-
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| Standard | (default) | User confirmation at each phase |
-| Quick | "quick mode" | Sensible defaults, minimal questions |
-| Verbose | "verbose" | Detailed explanations, educational |
-| Reference | Code snippets | Auto-analyze and convert |
 
 ## Generated App Structure
 

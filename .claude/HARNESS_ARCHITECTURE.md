@@ -1,5 +1,8 @@
 # OpenBB App Builder Harness - Architecture Document v2.0
 
+> **Note**: This document is for **human maintainers** to understand the overall system design.
+> Claude uses `SKILL.md` and the referenced files directly during execution.
+
 ## Overview
 
 This document describes a comprehensive harness for building OpenBB Workspace apps in a single shot. The harness consists of multiple interconnected skills and validation tools that guide the user through the entire app creation lifecycle.
@@ -132,15 +135,15 @@ The goal is to transform app creation from a confusing multi-step journey into a
 
 ## Skills Reference
 
-| Skill | File | Triggers | Purpose |
-|-------|------|----------|---------|
-| `openbb-app-builder` | `openbb-app-builder.md` | "build openbb app", "convert to openbb" | Master orchestrator |
-| `app-interview` | `app-interview.md` | "app interview", "convert streamlit" | Requirements + reference analysis |
-| `widget-metadata` | `widget-metadata.md` | "define widgets" | Widget specifications |
-| `dashboard-layout` | `dashboard-layout.md` | "dashboard layout" | Layout design |
-| `app-planner` | `app-planner.md` | "implementation plan" | Generate PLAN.md |
-| `openbb-app` | `openbb-app.md` | "openbb widget" | Core implementation knowledge |
-| `app-tester` | `app-tester.md` | "test app", "add backend" | Browser-based testing |
+| File | Phase | Purpose |
+|------|-------|---------|
+| `SKILL.md` | Entry | Master orchestrator, pipeline overview |
+| `APP-INTERVIEW.md` | 1 | Requirements gathering, reference analysis |
+| `WIDGET-METADATA.md` | 2 | Widget type specs, parameters, columns |
+| `DASHBOARD-LAYOUT.md` | 3 | Layout design, grid system, groups |
+| `APP-PLANNER.md` | 4 | Implementation plan generation |
+| `OPENBB-APP.md` | 5 | Core implementation patterns |
+| `APP-TESTER.md` | 7 | Browser testing, debugging |
 
 ---
 
@@ -254,22 +257,24 @@ st.sidebar            →      parameter groups
 
 ```
 .claude/
-├── README.md                    # Quick start guide
-├── HARNESS_ARCHITECTURE.md      # This document
+├── README.md                    # Quick start guide (human)
+├── HARNESS_ARCHITECTURE.md      # This document (human)
+├── settings.local.json          # Skill permissions
 └── skills/
-    ├── openbb-app.md           # Core OpenBB implementation knowledge
-    ├── openbb-app-builder.md   # Master orchestrator
-    ├── app-interview.md        # Requirements + reference analysis
-    ├── widget-metadata.md      # Widget definitions
-    ├── dashboard-layout.md     # Layout design
-    ├── app-planner.md          # Plan generation
-    └── app-tester.md           # Browser testing
+    └── openbb-app-builder/
+        ├── SKILL.md             # Master orchestrator (Claude entry point)
+        ├── APP-INTERVIEW.md     # Phase 1: Requirements
+        ├── WIDGET-METADATA.md   # Phase 2: Widget specs
+        ├── DASHBOARD-LAYOUT.md  # Phase 3: Layout design
+        ├── APP-PLANNER.md       # Phase 4: Plan generation
+        ├── OPENBB-APP.md        # Phase 5: Implementation reference
+        └── APP-TESTER.md        # Phase 7: Browser testing
 
 scripts/
-├── validate_widgets.py         # Widget validation
-├── validate_apps.py            # Apps validation
-├── validate_app.py             # Combined validation
-└── validate_endpoints.py       # Live endpoint testing
+├── validate_widgets.py          # Widget validation
+├── validate_apps.py             # Apps validation
+├── validate_app.py              # Combined validation
+└── validate_endpoints.py        # Live endpoint testing
 ```
 
 ### Generated App Structure
@@ -288,31 +293,6 @@ apps/{app-name}/
 ```
 
 ---
-
-## Mode Configurations
-
-### Standard Mode (Default)
-- User confirmation at each phase
-- Detailed explanations
-- Best for first-time users
-
-### Quick Mode
-Trigger: "quick mode", "fast", "minimal"
-- Sensible defaults
-- Minimal interruptions
-- Single final confirmation
-
-### Verbose Mode
-Trigger: "verbose", "teach me", "explain"
-- Detailed explanations
-- Educational approach
-- Best for learning
-
-### Reference Mode
-Trigger: Code snippets, "convert this"
-- Analyze provided code
-- Auto-extract components
-- Map to OpenBB equivalents
 
 ---
 
