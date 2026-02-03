@@ -206,27 +206,34 @@ def news():
 
 ## apps.json Structure
 
-**CRITICAL**: apps.json must be an ARRAY, not an object.
+**CRITICAL**: apps.json must be an OBJECT, not an array. The backend must serve this via `GET /apps.json`.
 
 ```json
-[
-  {
-    "name": "My Dashboard",
-    "description": "Dashboard description",
-    "allowCustomization": true,
-    "tabs": {
-      "overview": {
-        "id": "overview",
-        "name": "Overview",
-        "layout": [
-          {"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12}
-        ]
-      }
-    },
-    "groups": [],
-    "prompts": []
-  }
-]
+{
+  "name": "My Dashboard",
+  "description": "Dashboard description",
+  "img": "",
+  "img_dark": "",
+  "img_light": "",
+  "allowCustomization": true,
+  "tabs": {
+    "": {
+      "id": "",
+      "name": "",
+      "layout": [
+        {"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "Group 1",
+      "type": "param",
+      "paramName": "symbol",
+      "defaultValue": "AAPL"
+    }
+  ]
+}
 ```
 
 ### Required App Fields
@@ -235,20 +242,39 @@ def news():
 |-------|------|-------------|
 | `name` | string | Display name for the app |
 | `description` | string | What the app does |
+| `img`, `img_dark`, `img_light` | string | Image URLs (can be empty `""`) |
 | `allowCustomization` | boolean | Whether users can modify layout |
 | `tabs` | object | Tab configurations |
 | `groups` | array | Parameter synchronization groups (can be empty `[]`) |
-| `prompts` | array | AI copilot suggestions (can be empty `[]`) |
 
-### Required Tab Fields
+### Tab Configuration
 
-Each tab within `tabs` must have:
+**Single unnamed tab** (most common): Use empty string for id/name:
+```json
+"tabs": {
+  "": {
+    "id": "",
+    "name": "",
+    "layout": [...]
+  }
+}
+```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique identifier for the tab |
-| `name` | string | Display name |
-| `layout` | array | Widget positioning with `i`, `x`, `y`, `w`, `h` |
+**Multiple named tabs**:
+```json
+"tabs": {
+  "overview": {
+    "id": "overview",
+    "name": "Overview",
+    "layout": [...]
+  },
+  "details": {
+    "id": "details",
+    "name": "Details",
+    "layout": [...]
+  }
+}
+```
 
 ### Layout Item Fields
 
@@ -261,22 +287,78 @@ Each item in the `layout` array:
 | `y` | Y position |
 | `w` | Width (10-40) |
 | `h` | Height (4+) |
+| `groups` | Array of group names, e.g. `["Group 1"]` |
+| `state` | Optional: Pre-configure widget display (see below) |
+
+### Layout Item State (Optional)
+
+Pre-configure how widgets display using the `state` object:
+
+```json
+{
+  "i": "my_table",
+  "x": 0, "y": 0, "w": 40, "h": 14,
+  "state": {
+    "chartView": {
+      "enabled": true,
+      "chartType": "line"
+    },
+    "chartModel": {
+      "modelType": "range",
+      "chartType": "line",
+      "chartOptions": {},
+      "cellRange": {
+        "columns": ["date", "value1", "value2"]
+      },
+      "suppressChartRanges": true
+    },
+    "columnState": {
+      "default": {
+        "rowGroup": {
+          "groupColIds": ["category"]
+        },
+        "columnVisibility": {
+          "hiddenColIds": []
+        },
+        "columnOrder": {
+          "orderedColIds": ["col1", "col2", "col3"]
+        }
+      }
+    }
+  },
+  "groups": ["Group 1"]
+}
+```
+
+**State options:**
+- `chartView.enabled`: Show as chart instead of table
+- `chartView.chartType`: `"line"`, `"bar"`, `"area"`, etc.
+- `chartModel`: Configure AG Grid chart (columns, type, options)
+- `columnState`: Row grouping, column visibility, column order
 
 ### Groups with Parameter Sync
 
-For synced parameters across widgets:
+**CRITICAL**: Group objects MUST include the `name` field.
 
 ```json
 {
   "groups": [
     {
-      "type": "endpointParam",
+      "name": "Group 1",
+      "type": "param",
       "paramName": "symbol",
       "defaultValue": "AAPL"
     }
   ]
 }
 ```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Must follow "Group N" pattern: `"Group 1"`, `"Group 2"`, etc. |
+| `type` | Use `"param"` for static dropdowns with options |
+| `paramName` | The parameter name to sync across widgets |
+| `defaultValue` | Default value (must match an option value) |
 
 Then reference in layout items: `{"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}`
 

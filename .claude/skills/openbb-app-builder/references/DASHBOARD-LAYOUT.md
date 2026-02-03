@@ -22,16 +22,29 @@ Guide for designing visual dashboard layouts with tabs and widget positioning.
 - Group names **MUST** follow the "Group N" pattern: `"Group 1"`, `"Group 2"`, `"Group 3"`, etc.
 - Custom names like `"symbol-group"` or `"my-group"` will **fail silently** - widgets won't sync
 
-**Two group types:**
+**Group structure** (MUST include `name` field):
 
-1. **`type: "param"`** - Static dropdown with hardcoded options
-   - Uses `widgetIds` array to specify which widgets sync
-   - Example: `{"type": "param", "paramName": "period", "defaultValue": "1M", "widgetIds": ["chart1", "chart2"]}`
+```json
+{
+  "groups": [
+    {
+      "name": "Group 1",
+      "type": "param",
+      "paramName": "symbol",
+      "defaultValue": "AAPL"
+    }
+  ]
+}
+```
 
-2. **`type: "endpointParam"`** - Dynamic dropdown from API endpoint
-   - Widgets reference the group via `groups: ["Group 1"]` in their layout items
-   - Options come from the widget's `optionsEndpoint` parameter
-   - Example: `{"type": "endpointParam", "paramName": "symbol", "defaultValue": "AAPL"}`
+| Field | Description |
+|-------|-------------|
+| `name` | Required. Must be "Group 1", "Group 2", etc. |
+| `type` | Use `"param"` for syncing parameters |
+| `paramName` | The parameter name to sync across widgets |
+| `defaultValue` | Default value (must match an option value) |
+
+Widgets reference the group via `groups: ["Group 1"]` in their layout items.
 
 **IMPORTANT**: Always set `defaultValue` to a valid option value.
 
@@ -148,12 +161,64 @@ Convert ASCII to coordinates:
 
 ## apps.json Structure
 
-For complete apps.json structure, required fields, and JSON examples, see [OPENBB-APP.md](OPENBB-APP.md#appsjson-structure).
+**CRITICAL**: apps.json is an OBJECT, not an array. Must be served via `GET /apps.json` endpoint.
+
+For complete apps.json structure, see [OPENBB-APP.md](OPENBB-APP.md#appsjson-structure).
 
 **Quick reference for layout items:**
 - Use `i` for widget ID (not `id`)
 - Use `x`, `y`, `w`, `h` directly (not nested in `gridData`)
 - Add `"groups": ["Group 1"]` to sync widgets
+- Add `"state"` to pre-configure widget display (charts, row grouping, etc.)
+
+### Single Tab (No Tab Bar)
+
+Use empty strings for id/name to hide the tab bar:
+
+```json
+{
+  "name": "My App",
+  "tabs": {
+    "": {
+      "id": "",
+      "name": "",
+      "layout": [...]
+    }
+  }
+}
+```
+
+### Layout Item State
+
+Pre-configure widget display with the `state` object:
+
+```json
+{
+  "i": "my_table",
+  "x": 0, "y": 0, "w": 40, "h": 14,
+  "state": {
+    "chartView": {
+      "enabled": true,
+      "chartType": "line"
+    },
+    "chartModel": {
+      "modelType": "range",
+      "chartType": "line",
+      "cellRange": {
+        "columns": ["date", "value1", "value2"]
+      },
+      "suppressChartRanges": true
+    }
+  },
+  "groups": ["Group 1"]
+}
+```
+
+**Common state options:**
+- `chartView.enabled: true` - Display as chart instead of table
+- `chartView.chartType` - `"line"`, `"bar"`, `"area"`, etc.
+- `chartModel.cellRange.columns` - Which columns to chart
+- `columnState.default.rowGroup.groupColIds` - Group rows by column
 
 ---
 

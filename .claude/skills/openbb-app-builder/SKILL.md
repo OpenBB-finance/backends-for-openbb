@@ -149,6 +149,8 @@ For browser testing procedures, see [APP-TESTER.md](references/APP-TESTER.md).
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import json
+from pathlib import Path
 
 app = FastAPI()
 
@@ -164,6 +166,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load apps.json at startup
+APPS_FILE = Path(__file__).parent / "apps.json"
+with open(APPS_FILE) as f:
+    APPS_CONFIG = json.load(f)
+
 @app.get("/widgets.json")
 def get_widgets():
     return {  # MUST be dict, NOT array
@@ -173,6 +180,10 @@ def get_widgets():
             "endpoint": "my_endpoint"
         }
     }
+
+@app.get("/apps.json")
+def get_apps():
+    return APPS_CONFIG  # MUST be object, NOT array
 ```
 
 ### Widget Types
@@ -190,9 +201,9 @@ def get_widgets():
 1. **No `runButton: true`** unless heavy computation (>5 seconds)
 2. **Reasonable heights**: metrics h=4-6, tables h=12-18, charts h=12-15
 3. **widgets.json must be dict** format with widget IDs as keys
-4. **apps.json must be array** format: `[{...}]`
+4. **apps.json must be object** format (NOT array), served via `/apps.json` endpoint
 5. **Plotly charts**: No title (widget provides it), support `raw` param
-6. **Group names**: Must be "Group 1", "Group 2" etc.
+6. **Group names**: Must be "Group 1", "Group 2" etc. with `name` field in group object
 
 For complete apps.json structure and required fields, see [OPENBB-APP.md](references/OPENBB-APP.md#appsjson-structure).
 
