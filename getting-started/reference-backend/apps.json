@@ -1,862 +1,864 @@
-{
-  "name": "Onboarding App for Devs",
-  "img": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
-  "img_dark": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
-  "img_light": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
-  "description": "This is a template app that demonstrates how to create a simple app with the OpenBB Workspace. It highlights the different types of widgets that can be used in the OpenBB Workspace, the different ways to customize the widgets and the different ways to use parameters.",
-  "allowCustomization": true,
-  "tabs": {
-    "types-of-widgets": {
-      "id": "types-of-widgets",
-      "name": "Types of widgets",
-      "layout": [
-        {
-          "i": "metric_widget",
-          "x": 0,
-          "y": 2,
-          "w": 40,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget",
-          "x": 0,
-          "y": 7,
-          "w": 12,
-          "h": 4,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_error_handling",
-          "x": 24,
-          "y": 7,
-          "w": 16,
-          "h": 8,
-          "groups": []
-        },
-        {
-          "i": "pdf_widget_base64",
-          "x": 0,
-          "y": 39,
-          "w": 20,
-          "h": 15,
-          "groups": []
-        },
-        {
-          "i": "pdf_widget_url",
-          "x": 0,
-          "y": 54,
-          "w": 20,
-          "h": 16,
-          "groups": []
-        },
-        {
-          "i": "table_widget",
-          "x": 0,
-          "y": 11,
-          "w": 12,
-          "h": 4,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
-            }
+[
+  {
+    "name": "Onboarding App for Devs",
+    "img": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
+    "img_dark": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
+    "img_light": "https://repository-images.githubusercontent.com/323048702/4659bbdb-ae11-4f51-8a16-860fa9dfc551",
+    "description": "This is a template app that demonstrates how to create a simple app with the OpenBB Workspace. It highlights the different types of widgets that can be used in the OpenBB Workspace, the different ways to customize the widgets and the different ways to use parameters.",
+    "allowCustomization": true,
+    "tabs": {
+      "types-of-widgets": {
+        "id": "types-of-widgets",
+        "name": "Types of widgets",
+        "layout": [
+          {
+            "i": "metric_widget",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 5,
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "table_widget_from_api_endpoint",
-          "x": 12,
-          "y": 7,
-          "w": 12,
-          "h": 8,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
-            }
+          {
+            "i": "markdown_widget",
+            "x": 0,
+            "y": 7,
+            "w": 12,
+            "h": 4,
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_local_image",
-          "x": 0,
-          "y": 23,
-          "w": 20,
-          "h": 16,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_image_from_url",
-          "x": 20,
-          "y": 23,
-          "w": 20,
-          "h": 16,
-          "groups": []
-        },
-        {
-          "i": "/multi_pdf_base64",
-          "x": 20,
-          "y": 39,
-          "w": 20,
-          "h": 15,
-          "state": {
-            "params": {
-              "pdf_name": [
-                "Sample"
-              ]
-            }
+          {
+            "i": "markdown_widget_with_error_handling",
+            "x": 24,
+            "y": 7,
+            "w": 16,
+            "h": 8,
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "/multi_pdf_url",
-          "x": 20,
-          "y": 54,
-          "w": 20,
-          "h": 16,
-          "state": {
-            "params": {
-              "pdf_name": [
-                "Sample"
-              ]
-            }
+          {
+            "i": "pdf_widget_base64",
+            "x": 0,
+            "y": 39,
+            "w": 20,
+            "h": 15,
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "sample_newsfeed",
-          "x": 0,
-          "y": 15,
-          "w": 40,
-          "h": 8,
-          "groups": []
-        },
-        {
-          "i": "html_widget",
-          "x": 0,
-          "y": 70,
-          "w": 40,
-          "h": 22,
-          "groups": []
-        }
-      ]
-    },
-    "settings": {
-      "id": "settings",
-      "name": "Settings",
-      "layout": [
-        {
-          "i": "markdown_widget_with_run_button",
-          "x": 20,
-          "y": 7,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
-          "x": 0,
-          "y": 7,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_short_refetch_interval",
-          "x": 20,
-          "y": 2,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_short_refetch_interval_and_run_button",
-          "x": 0,
-          "y": 12,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_stale_time",
-          "x": 0,
-          "y": 2,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "/vendor1/markdown_widget_with_better_structured_api",
-          "x": 20,
-          "y": 12,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        }
-      ]
-    },
-    "input_parameters": {
-      "id": "input_parameters",
-      "name": "Input parameters",
-      "layout": [
-        {
-          "i": "markdown_widget_with_boolean",
-          "x": 0,
-          "y": 2,
-          "w": 20,
-          "h": 5,
-          "state": {
-            "params": {
-              "condition": "true"
-            }
+          {
+            "i": "pdf_widget_url",
+            "x": 0,
+            "y": 54,
+            "w": 20,
+            "h": 16,
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_date_picker",
-          "x": 20,
-          "y": 2,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_dropdown",
-          "x": 0,
-          "y": 7,
-          "w": 20,
-          "h": 5,
-          "state": {
-            "params": {
-              "days_picker": [
-                "1"
-              ]
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_multi_select_advanced_dropdown",
-          "x": 20,
-          "y": 12,
-          "w": 20,
-          "h": 6,
-          "state": {
-            "params": {
-              "stock_picker": [
-                "AAPL"
-              ]
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_number_input",
-          "x": 20,
-          "y": 7,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_text_input",
-          "x": 0,
-          "y": 12,
-          "w": 20,
-          "h": 6,
-          "groups": []
-        },
-        {
-          "i": "markdown_widget_with_editable_text_input",
-          "x": 0,
-          "y": 18,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "dropdown_dependent_widget",
-          "x": 20,
-          "y": 18,
-          "w": 20,
-          "h": 5,
-          "groups": []
-        },
-        {
-          "i": "table_widget_with_grouping_by_cell_click",
-          "x": 0,
-          "y": 31,
-          "w": 20,
-          "h": 8,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
+          {
+            "i": "table_widget",
+            "x": 0,
+            "y": 11,
+            "w": 12,
+            "h": 4,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              }
             },
-            "columnState": {
-              "default": {
-                "columnPinning": {
-                  "leftColIds": [
-                    "symbol"
-                  ],
-                  "rightColIds": []
-                },
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "price",
-                    "change",
-                    "volume"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "table_widget_from_api_endpoint",
+            "x": 12,
+            "y": 7,
+            "w": 12,
+            "h": 8,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_local_image",
+            "x": 0,
+            "y": 23,
+            "w": 20,
+            "h": 16,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_image_from_url",
+            "x": 20,
+            "y": 23,
+            "w": 20,
+            "h": 16,
+            "groups": []
+          },
+          {
+            "i": "/multi_pdf_base64",
+            "x": 20,
+            "y": 39,
+            "w": 20,
+            "h": 15,
+            "state": {
+              "params": {
+                "pdf_name": [
+                  "Sample"
+                ]
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "/multi_pdf_url",
+            "x": 20,
+            "y": 54,
+            "w": 20,
+            "h": 16,
+            "state": {
+              "params": {
+                "pdf_name": [
+                  "Sample"
+                ]
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "sample_newsfeed",
+            "x": 0,
+            "y": 15,
+            "w": 40,
+            "h": 8,
+            "groups": []
+          },
+          {
+            "i": "html_widget",
+            "x": 0,
+            "y": 70,
+            "w": 40,
+            "h": 22,
+            "groups": []
+          }
+        ]
+      },
+      "settings": {
+        "id": "settings",
+        "name": "Settings",
+        "layout": [
+          {
+            "i": "markdown_widget_with_run_button",
+            "x": 20,
+            "y": 7,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
+            "x": 0,
+            "y": 7,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_short_refetch_interval",
+            "x": 20,
+            "y": 2,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_short_refetch_interval_and_run_button",
+            "x": 0,
+            "y": 12,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_stale_time",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "/vendor1/markdown_widget_with_better_structured_api",
+            "x": 20,
+            "y": 12,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          }
+        ]
+      },
+      "input_parameters": {
+        "id": "input_parameters",
+        "name": "Input parameters",
+        "layout": [
+          {
+            "i": "markdown_widget_with_boolean",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 5,
+            "state": {
+              "params": {
+                "condition": "true"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_date_picker",
+            "x": 20,
+            "y": 2,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_dropdown",
+            "x": 0,
+            "y": 7,
+            "w": 20,
+            "h": 5,
+            "state": {
+              "params": {
+                "days_picker": [
+                  "1"
+                ]
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_multi_select_advanced_dropdown",
+            "x": 20,
+            "y": 12,
+            "w": 20,
+            "h": 6,
+            "state": {
+              "params": {
+                "stock_picker": [
+                  "AAPL"
+                ]
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_number_input",
+            "x": 20,
+            "y": 7,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_text_input",
+            "x": 0,
+            "y": 12,
+            "w": 20,
+            "h": 6,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_editable_text_input",
+            "x": 0,
+            "y": 18,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "dropdown_dependent_widget",
+            "x": 20,
+            "y": 18,
+            "w": 20,
+            "h": 5,
+            "groups": []
+          },
+          {
+            "i": "table_widget_with_grouping_by_cell_click",
+            "x": 0,
+            "y": 31,
+            "w": 20,
+            "h": 8,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": [
+                      "symbol"
+                    ],
+                    "rightColIds": []
+                  },
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "price",
+                      "change",
+                      "volume"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": [
-            "Group 3"
-          ]
-        },
-        {
-          "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
-          "x": 20,
-          "y": 31,
-          "w": 20,
-          "h": 8,
-          "state": {
-            "params": {
-              "symbol": "AMZN"
-            }
-          },
-          "groups": [
-            "Group 3"
-          ]
-        },
-        {
-          "i": "company_performance",
-          "x": 0,
-          "y": 23,
-          "w": 20,
-          "h": 8,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "metric",
-                    "value",
-                    "change"
-                  ]
+            "groups": [
+              "Group 3"
+            ]
+          },
+          {
+            "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+            "x": 20,
+            "y": 31,
+            "w": 20,
+            "h": 8,
+            "state": {
+              "params": {
+                "symbol": "AMZN"
+              }
+            },
+            "groups": [
+              "Group 3"
+            ]
+          },
+          {
+            "i": "company_performance",
+            "x": 0,
+            "y": 23,
+            "w": 20,
+            "h": 8,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "metric",
+                      "value",
+                      "change"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": [
-            "Group 1",
-            "Group 2"
-          ]
-        },
-        {
-          "i": "company_details",
-          "x": 20,
-          "y": 23,
-          "w": 20,
-          "h": 8,
-          "groups": [
-            "Group 1",
-            "Group 2"
-          ]
-        },
-        {
-          "i": "markdown_widget_with_organized_params",
-          "x": 0,
-          "y": 39,
-          "w": 40,
-          "h": 13,
-          "state": {
-            "params": {
-              "enable_feature": "true",
-              "lookback_period": "32"
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "/vendor1/markdown_widget_with_str_and_int",
-          "x": 0,
-          "y": 52,
-          "w": 20,
-          "h": 8,
-          "groups": []
-        },
-        {
-          "i": "/vendor1/table_widget_with_str_param",
-          "x": 20,
-          "y": 52,
-          "w": 20,
-          "h": 8,
-          "state": {
-            "params": {
-              "filter_text": "C"
             },
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
-            }
+            "groups": [
+              "Group 1",
+              "Group 2"
+            ]
           },
-          "groups": []
-        }
-      ]
-    },
-    "aggrid_table": {
-      "id": "aggrid_table",
-      "name": "AgGrid Table",
-      "layout": [
-        {
-          "i": "table_widget_with_hover_card",
-          "x": 27,
-          "y": 2,
-          "w": 13,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
+          {
+            "i": "company_details",
+            "x": 20,
+            "y": 23,
+            "w": 20,
+            "h": 8,
+            "groups": [
+              "Group 1",
+              "Group 2"
+            ]
+          },
+          {
+            "i": "markdown_widget_with_organized_params",
+            "x": 0,
+            "y": 39,
+            "w": 40,
+            "h": 13,
+            "state": {
+              "params": {
+                "enable_feature": "true",
+                "lookback_period": "32"
+              }
             },
-            "columnState": {
-              "default": {
-                "columnPinning": {
-                  "leftColIds": [
-                    "name"
-                  ],
-                  "rightColIds": []
+            "groups": []
+          },
+          {
+            "i": "/vendor1/markdown_widget_with_str_and_int",
+            "x": 0,
+            "y": 52,
+            "w": 20,
+            "h": 8,
+            "groups": []
+          },
+          {
+            "i": "/vendor1/table_widget_with_str_param",
+            "x": 20,
+            "y": 52,
+            "w": 20,
+            "h": 8,
+            "state": {
+              "params": {
+                "filter_text": "C"
+              },
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "aggrid_table": {
+        "id": "aggrid_table",
+        "name": "AgGrid Table",
+        "layout": [
+          {
+            "i": "table_widget_with_hover_card",
+            "x": 27,
+            "y": 2,
+            "w": 13,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": [
+                      "name"
+                    ],
+                    "rightColIds": []
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "table_widget_with_render_functions",
-          "x": 12,
-          "y": 2,
-          "w": 15,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnPinning": {
-                  "leftColIds": [
-                    "name"
-                  ],
-                  "rightColIds": []
+            "groups": []
+          },
+          {
+            "i": "table_widget_with_render_functions",
+            "x": 12,
+            "y": 2,
+            "w": 15,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": [
+                      "name"
+                    ],
+                    "rightColIds": []
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "table_widget_with_column_definitions",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnPinning": {
-                  "leftColIds": [
-                    "name"
-                  ],
-                  "rightColIds": []
-                },
-                "columnVisibility": {
-                  "hiddenColIds": [
-                    "change_7d"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "table_widget_with_column_definitions",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": [
+                      "name"
+                    ],
+                    "rightColIds": []
+                  },
+                  "columnVisibility": {
+                    "hiddenColIds": [
+                      "change_7d"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "table_to_chart_widget",
-          "x": 0,
-          "y": 9,
-          "w": 20,
-          "h": 12,
-          "state": {
-            "chartModel": {
-              "modelType": "range",
-              "chartType": "column",
-              "chartOptions": {},
-              "suppressChartRanges": true
             },
-            "chartView": {
-              "enabled": true,
-              "chartType": "column"
-            }
+            "groups": []
           },
-          "groups": []
-        },
-        {
-          "i": "table_to_time_series_widget",
-          "x": 20,
-          "y": 9,
-          "w": 20,
-          "h": 12,
-          "state": {
-            "chartModel": {
-              "modelType": "range",
-              "chartType": "line",
-              "chartOptions": {},
-              "suppressChartRanges": true
+          {
+            "i": "table_to_chart_widget",
+            "x": 0,
+            "y": 9,
+            "w": 20,
+            "h": 12,
+            "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "column",
+                "chartOptions": {},
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "column"
+              }
             },
-            "chartView": {
-              "enabled": true,
-              "chartType": "line"
-            }
+            "groups": []
           },
-          "groups": []
-        }
-      ]
-    },
-    "plotly_chart": {
-      "id": "plotly_chart",
-      "name": "Plotly Chart",
-      "layout": [
-        {
-          "i": "plotly_chart",
-          "x": 0,
-          "y": 2,
-          "w": 40,
-          "h": 15,
-          "groups": []
-        },
-        {
-          "i": "plotly_chart_with_theme",
-          "x": 0,
-          "y": 17,
-          "w": 40,
-          "h": 15,
-          "groups": []
-        },
-        {
-          "i": "plotly_chart_with_theme_and_toolbar",
-          "x": 0,
-          "y": 32,
-          "w": 40,
-          "h": 15,
-          "groups": []
-        },
-        {
-          "i": "plotly_chart_with_theme_and_toolbar_using_config_file",
-          "x": 0,
-          "y": 47,
-          "w": 40,
-          "h": 15,
-          "groups": []
-        },
-        {
-          "i": "plotly_heatmap",
-          "x": 0,
-          "y": 62,
-          "w": 40,
-          "h": 15,
-          "state": {
-            "params": {
-              "color_scale": "Inferno"
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "plotly_heatmap_with_raw_data",
-          "x": 0,
-          "y": 77,
-          "w": 40,
-          "h": 15,
-          "state": {
-            "params": {
-              "color_scale": "Plasma"
-            }
-          },
-          "groups": []
-        }
-      ]
-    },
-    "input-form": {
-      "id": "input-form",
-      "name": "Input Form",
-      "layout": [
-        {
-          "i": "all_forms",
-          "x": 0,
-          "y": 2,
-          "w": 40,
-          "h": 10,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
-            }
-          },
-          "groups": []
-        }
-      ]
-    },
-    "tradingview": {
-      "id": "tradingview",
-      "name": "TradingView",
-      "layout": [
-        {
-          "i": "/udf",
-          "x": 0,
-          "y": 2,
-          "w": 40,
-          "h": 21,
-          "groups": []
-        }
-      ]
-    },
-    "omni": {
-      "id": "omni",
-      "name": "Omni",
-      "layout": [
-        {
-          "i": "omni-widget",
-          "x": 0,
-          "y": 2,
-          "w": 19,
-          "h": 22,
-          "state": {
-            "params": {
-              "prompt": "Hello World asd",
-              "type": "markdown"
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "omni-widget-with-citations",
-          "x": 19,
-          "y": 2,
-          "w": 21,
-          "h": 22,
-          "state": {
-            "params": {
-              "prompt": "test",
-              "type": "chart",
-              "include_metadata": "false"
-            }
-          },
-          "groups": []
-        }
-      ]
-    },
-    "chart-in-table": {
-      "id": "chart-in-table",
-      "name": "Chart in table",
-      "layout": [
-        {
-          "i": "sparkline",
-          "x": 0,
-          "y": 2,
-          "w": 40,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
+          {
+            "i": "table_to_time_series_widget",
+            "x": 20,
+            "y": 9,
+            "w": 20,
+            "h": 12,
+            "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "line",
+                "chartOptions": {},
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "name",
-                    "lastPrice",
-                    "marketCap",
-                    "volume",
-                    "sector",
-                    "rateOfChange"
-                  ]
+            "groups": []
+          }
+        ]
+      },
+      "plotly_chart": {
+        "id": "plotly_chart",
+        "name": "Plotly Chart",
+        "layout": [
+          {
+            "i": "plotly_chart",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 15,
+            "groups": []
+          },
+          {
+            "i": "plotly_chart_with_theme",
+            "x": 0,
+            "y": 17,
+            "w": 40,
+            "h": 15,
+            "groups": []
+          },
+          {
+            "i": "plotly_chart_with_theme_and_toolbar",
+            "x": 0,
+            "y": 32,
+            "w": 40,
+            "h": 15,
+            "groups": []
+          },
+          {
+            "i": "plotly_chart_with_theme_and_toolbar_using_config_file",
+            "x": 0,
+            "y": 47,
+            "w": 40,
+            "h": 15,
+            "groups": []
+          },
+          {
+            "i": "plotly_heatmap",
+            "x": 0,
+            "y": 62,
+            "w": 40,
+            "h": 15,
+            "state": {
+              "params": {
+                "color_scale": "Inferno"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "plotly_heatmap_with_raw_data",
+            "x": 0,
+            "y": 77,
+            "w": 40,
+            "h": 15,
+            "state": {
+              "params": {
+                "color_scale": "Plasma"
+              }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "input-form": {
+        "id": "input-form",
+        "name": "Input Form",
+        "layout": [
+          {
+            "i": "all_forms",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 10,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "tradingview": {
+        "id": "tradingview",
+        "name": "TradingView",
+        "layout": [
+          {
+            "i": "/udf",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 21,
+            "groups": []
+          }
+        ]
+      },
+      "omni": {
+        "id": "omni",
+        "name": "Omni",
+        "layout": [
+          {
+            "i": "omni-widget",
+            "x": 0,
+            "y": 2,
+            "w": 19,
+            "h": 22,
+            "state": {
+              "params": {
+                "prompt": "Hello World asd",
+                "type": "markdown"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni-widget-with-citations",
+            "x": 19,
+            "y": 2,
+            "w": 21,
+            "h": 22,
+            "state": {
+              "params": {
+                "prompt": "test",
+                "type": "chart",
+                "include_metadata": "false"
+              }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "chart-in-table": {
+        "id": "chart-in-table",
+        "name": "Chart in table",
+        "layout": [
+          {
+            "i": "sparkline",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "name",
+                      "lastPrice",
+                      "marketCap",
+                      "volume",
+                      "sector",
+                      "rateOfChange"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "sparkline-bar",
-          "x": 0,
-          "y": 29,
-          "w": 40,
-          "h": 8,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "name",
-                    "ytdReturn",
-                    "monthlyReturns",
-                    "bestMonth"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "sparkline-bar",
+            "x": 0,
+            "y": 29,
+            "w": 40,
+            "h": 8,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "name",
+                      "ytdReturn",
+                      "monthlyReturns",
+                      "bestMonth"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "sparkline-line",
-          "x": 0,
-          "y": 9,
-          "w": 40,
-          "h": 6,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "name",
-                    "currentPrice",
-                    "priceTrend",
-                    "changePercent"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "sparkline-line",
+            "x": 0,
+            "y": 9,
+            "w": 40,
+            "h": 6,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "name",
+                      "currentPrice",
+                      "priceTrend",
+                      "changePercent"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "sparkline-column",
-          "x": 0,
-          "y": 22,
-          "w": 40,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "name",
-                    "marketCap",
-                    "quarterlyEps",
-                    "epsGrowth"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "sparkline-column",
+            "x": 0,
+            "y": 22,
+            "w": 40,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "name",
+                      "marketCap",
+                      "quarterlyEps",
+                      "epsGrowth"
+                    ]
+                  }
                 }
               }
-            }
-          },
-          "groups": []
-        },
-        {
-          "i": "sparkline-area",
-          "x": 0,
-          "y": 15,
-          "w": 40,
-          "h": 7,
-          "state": {
-            "chartView": {
-              "enabled": false,
-              "chartType": "line"
             },
-            "columnState": {
-              "default": {
-                "columnOrder": {
-                  "orderedColIds": [
-                    "symbol",
-                    "name",
-                    "avgVolume",
-                    "volumeTrend",
-                    "volumeChangePercent"
-                  ]
+            "groups": []
+          },
+          {
+            "i": "sparkline-area",
+            "x": 0,
+            "y": 15,
+            "w": 40,
+            "h": 7,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "name",
+                      "avgVolume",
+                      "volumeTrend",
+                      "volumeChangePercent"
+                    ]
+                  }
                 }
               }
-            }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "youtube": {
+        "id": "youtube",
+        "name": "YouTube",
+        "layout": [
+          {
+            "i": "/get_video",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 14,
+            "groups": []
           },
-          "groups": []
-        }
-      ]
+          {
+            "i": "/get_video_with_transcript",
+            "x": 20,
+            "y": 2,
+            "w": 20,
+            "h": 14,
+            "state": {
+              "params": {
+                "video_name": "Open Data Platform Demo"
+              }
+            },
+            "groups": []
+          }
+        ]
+      }
     },
-    "youtube": {
-      "id": "youtube",
-      "name": "YouTube",
-      "layout": [
-        {
-          "i": "/get_video",
-          "x": 0,
-          "y": 2,
-          "w": 20,
-          "h": 14,
-          "groups": []
-        },
-        {
-          "i": "/get_video_with_transcript",
-          "x": 20,
-          "y": 2,
-          "w": 20,
-          "h": 14,
-          "state": {
-            "params": {
-              "video_name": "Open Data Platform Demo"
-            }
-          },
-          "groups": []
-        }
-      ]
-    }
-  },
-  "groups": [
-    {
-      "name": "Group 1",
-      "type": "endpointParam",
-      "paramName": "company",
-      "defaultValue": "TM"
-    },
-    {
-      "name": "Group 2",
-      "type": "param",
-      "paramName": "year",
-      "defaultValue": "2024"
-    },
-    {
-      "name": "Group 3",
-      "type": "endpointParam",
-      "paramName": "symbol",
-      "defaultValue": "AMZN"
-    }
-  ]
-}
+    "groups": [
+      {
+        "name": "Group 1",
+        "type": "endpointParam",
+        "paramName": "company",
+        "defaultValue": "TM"
+      },
+      {
+        "name": "Group 2",
+        "type": "param",
+        "paramName": "year",
+        "defaultValue": "2024"
+      },
+      {
+        "name": "Group 3",
+        "type": "endpointParam",
+        "paramName": "symbol",
+        "defaultValue": "AMZN"
+      }
+    ]
+  }
+]
