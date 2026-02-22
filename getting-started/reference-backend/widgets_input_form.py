@@ -81,7 +81,7 @@ async def form_submit(params: dict) -> JSONResponse:
     "name": "Entry Form",
     "description": "Example of a more complex entry form",
     "category": "forms",
-    "subcategory": "form",
+    "subCategory": "form",
     "endpoint": "all_forms",
     "type": "table",
     "gridData": {"w": 20, "h": 9},

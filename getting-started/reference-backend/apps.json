@@ -29,8 +29,8 @@
           },
           {
             "i": "markdown_widget_with_error_handling",
-            "x": 24,
-            "y": 7,
+            "x": 0,
+            "y": 15,
             "w": 16,
             "h": 8,
             "groups": []
@@ -45,18 +45,18 @@
           },
           {
             "i": "pdf_widget_url",
-            "x": 0,
-            "y": 54,
+            "x": 20,
+            "y": 39,
             "w": 20,
-            "h": 16,
+            "h": 15,
             "groups": []
           },
           {
             "i": "table_widget",
-            "x": 0,
-            "y": 11,
-            "w": 12,
-            "h": 4,
+            "x": 12,
+            "y": 7,
+            "w": 13,
+            "h": 8,
             "state": {
               "chartView": {
                 "enabled": false,
@@ -67,9 +67,9 @@
           },
           {
             "i": "table_widget_from_api_endpoint",
-            "x": 12,
+            "x": 25,
             "y": 7,
-            "w": 12,
+            "w": 15,
             "h": 8,
             "state": {
               "chartView": {
@@ -97,8 +97,8 @@
           },
           {
             "i": "/multi_pdf_base64",
-            "x": 20,
-            "y": 39,
+            "x": 0,
+            "y": 54,
             "w": 20,
             "h": 15,
             "state": {
@@ -113,7 +113,7 @@
             "x": 20,
             "y": 54,
             "w": 20,
-            "h": 16,
+            "h": 15,
             "state": {
               "params": {
                 "pdf_name": ["Sample"]
@@ -123,18 +123,26 @@
           },
           {
             "i": "sample_newsfeed",
-            "x": 0,
+            "x": 16,
             "y": 15,
-            "w": 40,
+            "w": 24,
             "h": 8,
             "groups": []
           },
           {
             "i": "html_widget",
             "x": 0,
-            "y": 70,
+            "y": 69,
             "w": 40,
             "h": 22,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_category_and_subcategory",
+            "x": 0,
+            "y": 11,
+            "w": 12,
+            "h": 4,
             "groups": []
           }
         ]
@@ -250,14 +258,11 @@
             "y": 12,
             "w": 20,
             "h": 6,
-            "groups": []
-          },
-          {
-            "i": "markdown_widget_with_editable_text_input",
-            "x": 0,
-            "y": 18,
-            "w": 20,
-            "h": 5,
+            "state": {
+              "params": {
+                "name": "Didier"
+              }
+            },
             "groups": []
           },
           {
@@ -266,12 +271,17 @@
             "y": 18,
             "w": 20,
             "h": 5,
+            "state": {
+              "params": {
+                "category": "finance"
+              }
+            },
             "groups": []
           },
           {
             "i": "table_widget_with_grouping_by_cell_click",
             "x": 0,
-            "y": 31,
+            "y": 26,
             "w": 20,
             "h": 8,
             "state": {
@@ -285,9 +295,7 @@
                     "leftColIds": ["symbol"],
                     "rightColIds": []
                   },
-                  "columnOrder": {
-                    "orderedColIds": ["symbol", "price", "change", "volume"]
-                  }
+                  "rowSelection": ["0"]
                 }
               }
             },
@@ -309,7 +317,7 @@
           {
             "i": "company_performance",
             "x": 0,
-            "y": 23,
+            "y": 18,
             "w": 20,
             "h": 8,
             "state": {
@@ -319,9 +327,7 @@
               },
               "columnState": {
                 "default": {
-                  "columnOrder": {
-                    "orderedColIds": ["metric", "value", "change"]
-                  }
+                  "rowSelection": ["1"]
                 }
               }
             },
@@ -418,6 +424,9 @@
                   "columnPinning": {
                     "leftColIds": ["name"],
                     "rightColIds": []
+                  },
+                  "columnOrder": {
+                    "orderedColIds": ["name", "price", "change", "status"]
                   }
                 }
               }
@@ -434,17 +443,6 @@
               "chartView": {
                 "enabled": false,
                 "chartType": "line"
-              },
-              "columnState": {
-                "default": {
-                  "columnPinning": {
-                    "leftColIds": ["name"],
-                    "rightColIds": []
-                  },
-                  "columnVisibility": {
-                    "hiddenColIds": ["change_7d"]
-                  }
-                }
               }
             },
             "groups": []
@@ -460,7 +458,10 @@
                 "modelType": "range",
                 "chartType": "column",
                 "chartOptions": {},
-                "suppressChartRanges": true
+                "suppressChartRanges": true,
+                "cellRange": {
+                  "columns": ["category", "value", "target"]
+                }
               },
               "chartView": {
                 "enabled": true,
@@ -480,7 +481,10 @@
                 "modelType": "range",
                 "chartType": "line",
                 "chartOptions": {},
-                "suppressChartRanges": true
+                "suppressChartRanges": true,
+                "cellRange": {
+                  "columns": ["date", "revenue", "profit"]
+                }
               },
               "chartView": {
                 "enabled": true,

@@ -60,7 +60,7 @@ def markdown_widget_with_short_refetch_interval():
     "description": "A markdown widget with both refetch interval and shorter stale time",
     "type": "markdown",
     "endpoint": "markdown_widget_with_refetch_interval_and_shorter_stale_time",
-    "refetch_Interval": 10000,  # 10 seconds
+    "refetchInterval": 10000,  # 10 seconds
     "staleTime": 5000,  # 5 seconds - shorter than refetch interval
     "gridData": {"w": 20, "h": 5},
 })
