@@ -48,26 +48,6 @@ def markdown_widget_with_text_input(name: str = "OpenBB"):
     return f"# Hello {name}!"
 
 
-@register_widget({
-    "name": "Markdown Widget with Editable Text Input",
-    "description": "A markdown widget with an editable text input parameter",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_editable_text_input",
-    "gridData": {"w": 20, "h": 5},
-    "params": [{
-        "paramName": "message",
-        "description": "Enter a custom message",
-        "value": "Welcome to OpenBB",
-        "label": "Message",
-        "type": "text",
-    }],
-})
-@router.get("/markdown_widget_with_editable_text_input")
-def markdown_widget_with_editable_text_input(message: str = "Welcome to OpenBB"):
-    """Returns a markdown widget with an editable text input"""
-    return f"# {message}\n\nThis message was entered in the text input field."
-
-
 # ============================================================================
 # NUMBER INPUT PARAMETERS
 # ============================================================================

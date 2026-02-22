@@ -43,7 +43,7 @@ router = APIRouter()
 @router.get("/markdown_widget")
 def markdown_widget():
     """Returns a markdown widget"""
-    return "# Markdown Widget aswdasdasdasdsa"
+    return "# Markdown Widget"
 
 
 @register_widget({
@@ -192,7 +192,7 @@ def metric_widget():
         {"label": "Active Sessions", "value": "45,678", "delta": "-2.3"},
         {"label": "Revenue (USD)", "value": "$89,432", "delta": "8.9"},
         {"label": "Conversion Rate", "value": "3.2%", "delta": "0.0"},
-        {"label": "Avg. Session Duration", "value": "4m 32s", "delta": "0.5"},
+        {"label": "Avg. Session Duration", "value": "4m 32s", "delta": "3.5"},
     ]
     return JSONResponse(content=data)
 

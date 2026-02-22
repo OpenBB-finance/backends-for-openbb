@@ -103,9 +103,7 @@
             "h": 15,
             "state": {
               "params": {
-                "pdf_name": [
-                  "Sample"
-                ]
+                "pdf_name": ["Sample"]
               }
             },
             "groups": []
@@ -118,9 +116,7 @@
             "h": 16,
             "state": {
               "params": {
-                "pdf_name": [
-                  "Sample"
-                ]
+                "pdf_name": ["Sample"]
               }
             },
             "groups": []
@@ -186,14 +182,6 @@
             "w": 20,
             "h": 5,
             "groups": []
-          },
-          {
-            "i": "/vendor1/markdown_widget_with_better_structured_api",
-            "x": 20,
-            "y": 12,
-            "w": 20,
-            "h": 5,
-            "groups": []
           }
         ]
       },
@@ -230,9 +218,7 @@
             "h": 5,
             "state": {
               "params": {
-                "days_picker": [
-                  "1"
-                ]
+                "days_picker": ["1"]
               }
             },
             "groups": []
@@ -245,9 +231,7 @@
             "h": 6,
             "state": {
               "params": {
-                "stock_picker": [
-                  "AAPL"
-                ]
+                "stock_picker": ["AAPL"]
               }
             },
             "groups": []
@@ -298,25 +282,16 @@
               "columnState": {
                 "default": {
                   "columnPinning": {
-                    "leftColIds": [
-                      "symbol"
-                    ],
+                    "leftColIds": ["symbol"],
                     "rightColIds": []
                   },
                   "columnOrder": {
-                    "orderedColIds": [
-                      "symbol",
-                      "price",
-                      "change",
-                      "volume"
-                    ]
+                    "orderedColIds": ["symbol", "price", "change", "volume"]
                   }
                 }
               }
             },
-            "groups": [
-              "Group 3"
-            ]
+            "groups": ["Group 3"]
           },
           {
             "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
@@ -329,9 +304,7 @@
                 "symbol": "AMZN"
               }
             },
-            "groups": [
-              "Group 3"
-            ]
+            "groups": ["Group 3"]
           },
           {
             "i": "company_performance",
@@ -347,19 +320,12 @@
               "columnState": {
                 "default": {
                   "columnOrder": {
-                    "orderedColIds": [
-                      "metric",
-                      "value",
-                      "change"
-                    ]
+                    "orderedColIds": ["metric", "value", "change"]
                   }
                 }
               }
             },
-            "groups": [
-              "Group 1",
-              "Group 2"
-            ]
+            "groups": ["Group 1", "Group 2"]
           },
           {
             "i": "company_details",
@@ -367,10 +333,7 @@
             "y": 23,
             "w": 20,
             "h": 8,
-            "groups": [
-              "Group 1",
-              "Group 2"
-            ]
+            "groups": ["Group 1", "Group 2"]
           },
           {
             "i": "markdown_widget_with_organized_params",
@@ -431,9 +394,7 @@
               "columnState": {
                 "default": {
                   "columnPinning": {
-                    "leftColIds": [
-                      "name"
-                    ],
+                    "leftColIds": ["name"],
                     "rightColIds": []
                   }
                 }
@@ -455,9 +416,7 @@
               "columnState": {
                 "default": {
                   "columnPinning": {
-                    "leftColIds": [
-                      "name"
-                    ],
+                    "leftColIds": ["name"],
                     "rightColIds": []
                   }
                 }
@@ -479,15 +438,11 @@
               "columnState": {
                 "default": {
                   "columnPinning": {
-                    "leftColIds": [
-                      "name"
-                    ],
+                    "leftColIds": ["name"],
                     "rightColIds": []
                   },
                   "columnVisibility": {
-                    "hiddenColIds": [
-                      "change_7d"
-                    ]
+                    "hiddenColIds": ["change_7d"]
                   }
                 }
               }
@@ -844,8 +799,7 @@
       {
         "name": "Group 1",
         "type": "endpointParam",
-        "paramName": "company",
-        "defaultValue": "TM"
+        "paramName": "company"
       },
       {
         "name": "Group 2",
@@ -856,8 +810,7 @@
       {
         "name": "Group 3",
         "type": "endpointParam",
-        "paramName": "symbol",
-        "defaultValue": "AMZN"
+        "paramName": "symbol"
       }
     ]
   }
