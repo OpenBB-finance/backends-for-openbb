@@ -1,17 +1,3 @@
-"""
-Plotly Chart Widgets for OpenBB Workspace
-
-This module demonstrates Plotly charting capabilities:
-- Basic charts: Line, bar, scatter, area charts
-- Theme support: Dark and light theme configurations
-- Toolbar customization: Add/remove chart interaction tools
-- Multiple chart types: Heatmaps, dual-axis charts
-- Raw data support: Provide underlying data for AI analysis
-- Config file usage: Reusable chart configuration helpers
-
-Plotly charts provide rich, interactive visualizations with zoom, pan, and hover.
-"""
-
 import json
 from datetime import datetime
 from fastapi import APIRouter
@@ -20,11 +6,6 @@ import plotly.graph_objects as go
 from core import register_widget, WIDGETS
 
 router = APIRouter()
-
-
-# ============================================================================
-# PLOTLY CONFIG HELPERS
-# ============================================================================
 
 def get_theme_colors(theme: str = "dark") -> dict:
     """Get color palette based on theme."""
@@ -102,10 +83,6 @@ def get_toolbar_config() -> dict:
     }
 
 
-# ============================================================================
-# BASIC PLOTLY CHART
-# ============================================================================
-
 @register_widget({
     "name": "Plotly Chart",
     "description": "A basic Plotly chart widget",
@@ -172,10 +149,6 @@ def get_plotly_chart():
 
     return json.loads(fig.to_json())
 
-
-# ============================================================================
-# PLOTLY CHART WITH THEME
-# ============================================================================
 
 @register_widget({
     "name": "Plotly Chart with Theme",
@@ -257,10 +230,6 @@ def get_plotly_chart_with_theme(theme: str = "dark"):
     return json.loads(fig.to_json())
 
 
-# ============================================================================
-# PLOTLY CHART WITH THEME AND TOOLBAR
-# ============================================================================
-
 @register_widget({
     "name": "Plotly Chart with Theme and Toolbar",
     "description": "Plotly chart with Theme and toolbar",
@@ -332,10 +301,6 @@ def get_plotly_chart_with_theme_and_toolbar(theme: str = "dark"):
     return figure_json
 
 
-# ============================================================================
-# PLOTLY CHART USING CONFIG FILE
-# ============================================================================
-
 @register_widget({
     "name": "Plotly Chart with Theme and Toolbar using Config File",
     "description": "Plotly chart with theme and toolbar using config file",
@@ -404,10 +369,6 @@ def get_plotly_chart_with_theme_and_toolbar_using_config_file(theme: str = "dark
 
     return figure_json
 
-
-# ============================================================================
-# PLOTLY HEATMAP
-# ============================================================================
 
 @register_widget({
     "name": "Plotly Heatmap",
@@ -481,10 +442,6 @@ def get_plotly_heatmap(color_scale: str = "RdBu_r", theme: str = "dark"):
 
     return figure_json
 
-
-# ============================================================================
-# PLOTLY HEATMAP WITH RAW DATA
-# ============================================================================
 
 @register_widget({
     "name": "Plotly Heatmap with Raw Data",

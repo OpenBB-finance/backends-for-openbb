@@ -1,16 +1,3 @@
-"""
-Input Form Widgets for OpenBB Workspace
-
-This module demonstrates form widgets for data entry:
-- Form submission: POST endpoints for data submission
-- Form validation: Required field validation
-- Add/Update actions: Different button actions for CRUD operations
-- Form fields: Text inputs, dropdowns, multi-select
-- Table display: Show form submissions in table format
-
-Forms allow users to enter and manage data within the workspace.
-"""
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -18,19 +5,9 @@ from core import register_widget, WIDGETS
 
 router = APIRouter()
 
-
-# ============================================================================
-# FORM DATA STORAGE
-# ============================================================================
-
 # Global variable to store form submissions
 # This acts as a simple in-memory database for our form entries
 ALL_FORMS = []
-
-
-# ============================================================================
-# FORM SUBMISSION ENDPOINT
-# ============================================================================
 
 @router.post("/form_submit")
 async def form_submit(params: dict) -> JSONResponse:
@@ -73,15 +50,11 @@ async def form_submit(params: dict) -> JSONResponse:
     return JSONResponse(content={"success": True})
 
 
-# ============================================================================
-# FORM WIDGET
-# ============================================================================
-
 @register_widget({
     "name": "Entry Form",
     "description": "Example of a more complex entry form",
     "category": "forms",
-    "subcategory": "form",
+    "subCategory": "form",
     "endpoint": "all_forms",
     "type": "table",
     "gridData": {"w": 20, "h": 9},

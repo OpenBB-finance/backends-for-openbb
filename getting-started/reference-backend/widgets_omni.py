@@ -1,16 +1,3 @@
-"""
-Omni Widgets for OpenBB Workspace
-
-This module demonstrates Omni widgets that can return multiple content types:
-- Markdown: Rich text content
-- Table: Tabular data
-- Chart: Plotly charts
-- Citations: Source tracking for AI context
-
-Omni widgets are versatile and can dynamically return different content
-types based on parameters or user interaction.
-"""
-
 import json
 from fastapi import APIRouter, Body
 import plotly.graph_objects as go

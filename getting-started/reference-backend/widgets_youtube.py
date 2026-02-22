@@ -1,15 +1,3 @@
-"""
-YouTube Widgets for OpenBB Workspace
-
-This module demonstrates YouTube video widgets:
-- Basic video player: Display YouTube videos
-- Transcript support: Provide video transcripts for AI context
-- Video selection: Dynamic video selection from options endpoint
-
-YouTube widgets allow embedding videos with optional transcript support
-for AI assistants to understand video content.
-"""
-
 from typing import List
 from fastapi import APIRouter, Query
 from fastapi.responses import PlainTextResponse
@@ -17,11 +5,6 @@ from fastapi.responses import PlainTextResponse
 from core import register_widget, WIDGETS, FileOption
 
 router = APIRouter()
-
-
-# ============================================================================
-# SAMPLE VIDEO DATA
-# ============================================================================
 
 SAMPLE_VIDEOS = [
     {
@@ -36,11 +19,6 @@ SAMPLE_VIDEOS = [
     }
 ]
 
-
-# ============================================================================
-# VIDEO OPTIONS ENDPOINT
-# ============================================================================
-
 @router.get("/get_video_options")
 async def get_video_options() -> List[FileOption]:
     """Get list of available videos for dropdown selection"""
@@ -49,10 +27,6 @@ async def get_video_options() -> List[FileOption]:
         for video in SAMPLE_VIDEOS
     ]
 
-
-# ============================================================================
-# YOUTUBE WIDGET (BASIC)
-# ============================================================================
 
 @register_widget({
     "name": "Video Library",
@@ -84,11 +58,6 @@ async def get_video(
         return PlainTextResponse(content="")
 
     return PlainTextResponse(content=video["url"])
-
-
-# ============================================================================
-# YOUTUBE WIDGET WITH TRANSCRIPT
-# ============================================================================
 
 @register_widget({
     "name": "Video Library with Transcript",
