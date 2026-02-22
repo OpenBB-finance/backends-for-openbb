@@ -85,7 +85,7 @@ def table_widget_basic_sparklines():
                     "cellDataType": "object",
                     "chartDataType": "excluded",
                     "sparkline": {
-                        "type": "area",
+                        "type": "line",
                         "options": {
                             "fill": "rgba(34, 197, 94, 0.2)",
                             "stroke": "#22c55e",
