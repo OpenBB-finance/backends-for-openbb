@@ -200,9 +200,9 @@
           {
             "i": "markdown_widget_with_boolean",
             "x": 0,
-            "y": 2,
+            "y": 6,
             "w": 20,
-            "h": 5,
+            "h": 4,
             "state": {
               "params": {
                 "condition": "true"
@@ -213,20 +213,74 @@
           {
             "i": "markdown_widget_with_date_picker",
             "x": 20,
+            "y": 6,
+            "w": 20,
+            "h": 4,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_number_input",
+            "x": 20,
             "y": 2,
             "w": 20,
+            "h": 4,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_text_input",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 4,
+            "state": {
+              "paramOrder": ["name"]
+            },
+            "groups": []
+          },
+          {
+            "i": "dropdown_dependent_widget",
+            "x": 0,
+            "y": 23,
+            "w": 20,
             "h": 5,
+            "state": {
+              "params": {
+                "document_type": "Investor Presentation"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_organized_params",
+            "x": 0,
+            "y": 28,
+            "w": 40,
+            "h": 9,
+            "state": {
+              "params": {
+                "enable_feature": "true",
+                "lookback_period": "32"
+              }
+            },
             "groups": []
           },
           {
             "i": "markdown_widget_with_dropdown",
             "x": 0,
-            "y": 7,
+            "y": 10,
             "w": 20,
-            "h": 5,
+            "h": 4,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_multi_select_dropdown",
+            "x": 20,
+            "y": 10,
+            "w": 20,
+            "h": 4,
             "state": {
               "params": {
-                "days_picker": ["1"]
+                "stock_picker": ["AAPL", "MSFT"]
               }
             },
             "groups": []
@@ -234,56 +288,95 @@
           {
             "i": "markdown_widget_with_multi_select_advanced_dropdown",
             "x": 20,
-            "y": 12,
+            "y": 14,
             "w": 20,
-            "h": 6,
+            "h": 4,
             "state": {
               "params": {
-                "stock_picker": ["AAPL"]
+                "stock_picker": ["AAPL", "MSFT"]
               }
             },
             "groups": []
           },
           {
-            "i": "markdown_widget_with_number_input",
-            "x": 20,
-            "y": 7,
-            "w": 20,
-            "h": 5,
-            "groups": []
-          },
-          {
-            "i": "markdown_widget_with_text_input",
+            "i": "markdown_widget_with_multi_text_input",
             "x": 0,
-            "y": 12,
+            "y": 14,
             "w": 20,
-            "h": 6,
-            "state": {
-              "params": {
-                "name": "Didier"
-              }
-            },
+            "h": 4,
             "groups": []
           },
           {
-            "i": "dropdown_dependent_widget",
-            "x": 20,
+            "i": "markdown_widget_with_str_and_int",
+            "x": 0,
             "y": 18,
             "w": 20,
             "h": 5,
+            "groups": []
+          },
+          {
+            "i": "table_widget_with_str_filter_param",
+            "x": 20,
+            "y": 18,
+            "w": 20,
+            "h": 10,
             "state": {
-              "params": {
-                "category": "finance"
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
               }
             },
             "groups": []
+          }
+        ]
+      },
+      "grouping": {
+        "id": "grouping",
+        "name": "Grouping",
+        "layout": [
+          {
+            "i": "company_details",
+            "x": 0,
+            "y": 2,
+            "w": 19,
+            "h": 9,
+            "groups": ["Group 2", "Group 3"]
+          },
+          {
+            "i": "company_performance",
+            "x": 19,
+            "y": 2,
+            "w": 21,
+            "h": 9,
+            "state": {
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": ["metric", "value", "change"]
+                  }
+                }
+              }
+            },
+            "groups": ["Group 2", "Group 3"]
+          },
+          {
+            "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
+            "x": 19,
+            "y": 11,
+            "w": 21,
+            "h": 9,
+            "groups": ["Group 4"]
           },
           {
             "i": "table_widget_with_grouping_by_cell_click",
             "x": 0,
-            "y": 26,
-            "w": 20,
-            "h": 8,
+            "y": 11,
+            "w": 19,
+            "h": 9,
             "state": {
               "chartView": {
                 "enabled": false,
@@ -295,90 +388,14 @@
                     "leftColIds": ["symbol"],
                     "rightColIds": []
                   },
-                  "rowSelection": ["0"]
+                  "columnOrder": {
+                    "orderedColIds": ["symbol", "price", "change", "volume"]
+                  },
+                  "rowSelection": ["3"]
                 }
               }
             },
-            "groups": ["Group 3"]
-          },
-          {
-            "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
-            "x": 20,
-            "y": 31,
-            "w": 20,
-            "h": 8,
-            "state": {
-              "params": {
-                "symbol": "AMZN"
-              }
-            },
-            "groups": ["Group 3"]
-          },
-          {
-            "i": "company_performance",
-            "x": 0,
-            "y": 18,
-            "w": 20,
-            "h": 8,
-            "state": {
-              "chartView": {
-                "enabled": false,
-                "chartType": "line"
-              },
-              "columnState": {
-                "default": {
-                  "rowSelection": ["1"]
-                }
-              }
-            },
-            "groups": ["Group 1", "Group 2"]
-          },
-          {
-            "i": "company_details",
-            "x": 20,
-            "y": 23,
-            "w": 20,
-            "h": 8,
-            "groups": ["Group 1", "Group 2"]
-          },
-          {
-            "i": "markdown_widget_with_organized_params",
-            "x": 0,
-            "y": 39,
-            "w": 40,
-            "h": 13,
-            "state": {
-              "params": {
-                "enable_feature": "true",
-                "lookback_period": "32"
-              }
-            },
-            "groups": []
-          },
-          {
-            "i": "/vendor1/markdown_widget_with_str_and_int",
-            "x": 0,
-            "y": 52,
-            "w": 20,
-            "h": 8,
-            "groups": []
-          },
-          {
-            "i": "/vendor1/table_widget_with_str_param",
-            "x": 20,
-            "y": 52,
-            "w": 20,
-            "h": 8,
-            "state": {
-              "params": {
-                "filter_text": "C"
-              },
-              "chartView": {
-                "enabled": false,
-                "chartType": "line"
-              }
-            },
-            "groups": []
+            "groups": ["Group 4"]
           }
         ]
       },
@@ -802,8 +819,9 @@
     "groups": [
       {
         "name": "Group 1",
-        "type": "endpointParam",
-        "paramName": "company"
+        "type": "param",
+        "paramName": "company",
+        "defaultValue": "AAPL"
       },
       {
         "name": "Group 2",
@@ -814,7 +832,14 @@
       {
         "name": "Group 3",
         "type": "endpointParam",
-        "paramName": "symbol"
+        "paramName": "company",
+        "defaultValue": "TM"
+      },
+      {
+        "name": "Group 4",
+        "type": "endpointParam",
+        "paramName": "symbol",
+        "defaultValue": null
       }
     ]
   }

@@ -18,6 +18,7 @@ from core import app, ROOT_PATH, WIDGETS
 from widgets_types import router as types_router
 from widgets_settings import router as settings_router
 from widgets_input_params import router as input_params_router
+from widgets_grouping import router as widgets_grouping_router
 from widgets_aggrid_table import router as aggrid_router
 from widgets_plotly_chart import router as plotly_router
 from widgets_input_form import router as form_router
@@ -58,6 +59,7 @@ def get_apps():
 app.include_router(types_router)
 app.include_router(settings_router)
 app.include_router(input_params_router)
+app.include_router(widgets_grouping_router)
 app.include_router(aggrid_router)
 app.include_router(plotly_router)
 app.include_router(form_router)
