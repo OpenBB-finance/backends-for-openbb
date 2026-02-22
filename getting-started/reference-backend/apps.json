@@ -7,9 +7,9 @@
     "description": "This is a template app that demonstrates how to create a simple app with the OpenBB Workspace. It highlights the different types of widgets that can be used in the OpenBB Workspace, the different ways to customize the widgets and the different ways to use parameters.",
     "allowCustomization": true,
     "tabs": {
-      "types-of-widgets": {
-        "id": "types-of-widgets",
-        "name": "Types of widgets",
+      "types": {
+        "id": "types",
+        "name": "Types",
         "layout": [
           {
             "i": "metric_widget",
@@ -193,9 +193,9 @@
           }
         ]
       },
-      "input_parameters": {
-        "id": "input_parameters",
-        "name": "Input parameters",
+      "input-params": {
+        "id": "input-params",
+        "name": "Input Params",
         "layout": [
           {
             "i": "markdown_widget_with_boolean",
@@ -402,9 +402,9 @@
           }
         ]
       },
-      "aggrid_table": {
-        "id": "aggrid_table",
-        "name": "AgGrid Table",
+      "aggrid": {
+        "id": "aggrid",
+        "name": "AgGrid",
         "layout": [
           {
             "i": "table_widget_with_hover_card",
@@ -515,9 +515,9 @@
           }
         ]
       },
-      "plotly_chart": {
-        "id": "plotly_chart",
-        "name": "Plotly Chart",
+      "plotly": {
+        "id": "plotly",
+        "name": "Plotly",
         "layout": [
           {
             "i": "plotly_chart",
@@ -608,16 +608,16 @@
           }
         ]
       },
-      "omni": {
-        "id": "omni",
-        "name": "Omni",
+      "omni-sql-python": {
+        "id": "omni-sql-python",
+        "name": "Omni SQL Python",
         "layout": [
           {
             "i": "omni-widget",
             "x": 0,
             "y": 2,
-            "w": 19,
-            "h": 22,
+            "w": 13,
+            "h": 13,
             "state": {
               "params": {
                 "prompt": "Hello World",
@@ -627,25 +627,59 @@
             "groups": []
           },
           {
-            "i": "omni-widget-with-citations",
-            "x": 19,
-            "y": 2,
-            "w": 21,
-            "h": 22,
+            "i": "omni-sql-widget",
+            "x": 0,
+            "y": 15,
+            "w": 20,
+            "h": 18,
             "state": {
               "params": {
-                "prompt": "ABC",
-                "type": "table",
-                "include_metadata": "true"
+                "prompt": "SELECT \n    Symbol, Name, Price\nFROM\n    DATA\nLIMIT\n    5"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni-python-widget",
+            "x": 20,
+            "y": 15,
+            "w": 20,
+            "h": 18,
+            "groups": []
+          },
+          {
+            "i": "omni-widget",
+            "x": 13,
+            "y": 2,
+            "w": 14,
+            "h": 13,
+            "state": {
+              "params": {
+                "prompt": "Hello World",
+                "type": "table"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni-widget",
+            "x": 27,
+            "y": 2,
+            "w": 13,
+            "h": 13,
+            "state": {
+              "params": {
+                "prompt": "Hello World",
+                "type": "chart"
               }
             },
             "groups": []
           }
         ]
       },
-      "chart-in-table": {
-        "id": "chart-in-table",
-        "name": "Chart in table",
+      "sparkline": {
+        "id": "sparkline",
+        "name": "Sparkline",
         "layout": [
           {
             "i": "sparkline",
@@ -875,7 +909,7 @@
         "name": "Group 3",
         "type": "endpointParam",
         "paramName": "symbol",
-        "defaultValue": null
+        "defaultValue": "AAPL"
       }
     ]
   }

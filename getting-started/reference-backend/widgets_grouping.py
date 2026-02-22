@@ -18,6 +18,132 @@ def get_company_options():
         {"label": "Tesla Inc.", "value": "TSLA"}
     ]
 
+
+@register_widget({
+    "name": "Car Manufacturer Details",
+    "description": "Displays detailed information about the selected car manufacturer",
+    "type": "markdown",
+    "endpoint": "company_details",
+    "gridData": {"w": 16, "h": 8},
+    "params": [
+        {
+            "paramName": "company",  # Shared paramName with company_performance widget
+            "description": "Select a car manufacturer to view details",
+            "value": "TM",
+            "label": "Manufacturer",
+            "type": "endpoint",
+            "optionsEndpoint": "/company_options"  # Shared endpoint with company_performance widget
+        },
+        {
+            "paramName": "year",  # Shared paramName with company_performance widget
+            "description": "Select model year to view details",
+            "value": "2024",
+            "label": "Model Year",
+            "type": "text",
+            "options": [
+                {"label": "2024", "value": "2024"},
+                {"label": "2023", "value": "2023"},
+                {"label": "2022", "value": "2022"}
+            ]
+        }
+    ]
+})
+@router.get("/company_details")
+def get_company_details(company: str, year: str = "2024"):
+    """Returns car manufacturer details in markdown format"""
+    company_info = {
+        "TM": {
+            "name": "Toyota Motor Corporation",
+            "sector": "Automotive",
+            "market_cap": "280B",
+            "pe_ratio": 9.5,
+            "dividend_yield": 2.1,
+            "description": "Toyota Motor Corporation designs, manufactures, assembles, and sells passenger vehicles, minivans, commercial vehicles, and related parts and accessories worldwide.",
+            "models": {
+                "2024": ["Camry", "Corolla", "RAV4", "Highlander"],
+                "2023": ["Camry", "Corolla", "RAV4", "Highlander"],
+                "2022": ["Camry", "Corolla", "RAV4", "Highlander"]
+            }
+        },
+        "VWAGY": {
+            "name": "Volkswagen Group",
+            "sector": "Automotive",
+            "market_cap": "75B",
+            "pe_ratio": 4.2,
+            "dividend_yield": 3.5,
+            "description": "Volkswagen Group manufactures and sells automobiles worldwide. The company offers passenger cars, commercial vehicles, and power engineering systems.",
+            "models": {
+                "2024": ["Golf", "Passat", "Tiguan", "ID.4"],
+                "2023": ["Golf", "Passat", "Tiguan", "ID.4"],
+                "2022": ["Golf", "Passat", "Tiguan", "ID.4"]
+            }
+        },
+        "GM": {
+            "name": "General Motors",
+            "sector": "Automotive",
+            "market_cap": "45B",
+            "pe_ratio": 5.8,
+            "dividend_yield": 1.2,
+            "description": "General Motors designs, builds, and sells cars, trucks, crossovers, and automobile parts worldwide.",
+            "models": {
+                "2024": ["Silverado", "Equinox", "Malibu", "Corvette"],
+                "2023": ["Silverado", "Equinox", "Malibu", "Corvette"],
+                "2022": ["Silverado", "Equinox", "Malibu", "Corvette"]
+            }
+        },
+        "F": {
+            "name": "Ford Motor Company",
+            "sector": "Automotive",
+            "market_cap": "48B",
+            "pe_ratio": 7.2,
+            "dividend_yield": 4.8,
+            "description": "Ford Motor Company designs, manufactures, markets, and services a line of Ford trucks, cars, sport utility vehicles, electrified vehicles, and Lincoln luxury vehicles.",
+            "models": {
+                "2024": ["F-150", "Mustang", "Explorer", "Mach-E"],
+                "2023": ["F-150", "Mustang", "Explorer", "Mach-E"],
+                "2022": ["F-150", "Mustang", "Explorer", "Mach-E"]
+            }
+        },
+        "TSLA": {
+            "name": "Tesla Inc.",
+            "sector": "Automotive",
+            "market_cap": "800B",
+            "pe_ratio": 65.3,
+            "dividend_yield": 0.0,
+            "description": "Tesla Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally.",
+            "models": {
+                "2024": ["Model 3", "Model Y", "Model S", "Model X"],
+                "2023": ["Model 3", "Model Y", "Model S", "Model X"],
+                "2022": ["Model 3", "Model Y", "Model S", "Model X"]
+            }
+        }
+    }
+
+    details = company_info.get(company, {
+        "name": "Unknown",
+        "sector": "Unknown",
+        "market_cap": "N/A",
+        "pe_ratio": 0,
+        "dividend_yield": 0,
+        "description": "No information available for this manufacturer.",
+        "models": {"2024": [], "2023": [], "2022": []}
+    })
+
+    models = details['models'].get(year, [])
+
+    return f"""# {details['name']} ({company}) - {year} Models
+**Sector:** {details['sector']}
+**Market Cap:** ${details['market_cap']}
+**P/E Ratio:** {details['pe_ratio']}
+**Dividend Yield:** {details['dividend_yield']}%
+
+{details['description']}
+
+## {year} Model Lineup
+{', '.join(models)}
+"""
+
+
 @register_widget({
     "name": "Car Manufacturer Performance",
     "description": "Displays performance metrics for the selected car manufacturer",
@@ -183,130 +309,6 @@ def get_company_performance(company: str, year: str = "2024"):
     return performance_data.get(company, {}).get(year, [
         {"metric": "No Data", "value": "N/A", "change": 0}
     ])
-
-@register_widget({
-    "name": "Car Manufacturer Details",
-    "description": "Displays detailed information about the selected car manufacturer",
-    "type": "markdown",
-    "endpoint": "company_details",
-    "gridData": {"w": 16, "h": 8},
-    "params": [
-        {
-            "paramName": "company",  # Shared paramName with company_performance widget
-            "description": "Select a car manufacturer to view details",
-            "value": "TM",
-            "label": "Manufacturer",
-            "type": "endpoint",
-            "optionsEndpoint": "/company_options"  # Shared endpoint with company_performance widget
-        },
-        {
-            "paramName": "year",  # Shared paramName with company_performance widget
-            "description": "Select model year to view details",
-            "value": "2024",
-            "label": "Model Year",
-            "type": "text",
-            "options": [
-                {"label": "2024", "value": "2024"},
-                {"label": "2023", "value": "2023"},
-                {"label": "2022", "value": "2022"}
-            ]
-        }
-    ]
-})
-@router.get("/company_details")
-def get_company_details(company: str, year: str = "2024"):
-    """Returns car manufacturer details in markdown format"""
-    company_info = {
-        "TM": {
-            "name": "Toyota Motor Corporation",
-            "sector": "Automotive",
-            "market_cap": "280B",
-            "pe_ratio": 9.5,
-            "dividend_yield": 2.1,
-            "description": "Toyota Motor Corporation designs, manufactures, assembles, and sells passenger vehicles, minivans, commercial vehicles, and related parts and accessories worldwide.",
-            "models": {
-                "2024": ["Camry", "Corolla", "RAV4", "Highlander"],
-                "2023": ["Camry", "Corolla", "RAV4", "Highlander"],
-                "2022": ["Camry", "Corolla", "RAV4", "Highlander"]
-            }
-        },
-        "VWAGY": {
-            "name": "Volkswagen Group",
-            "sector": "Automotive",
-            "market_cap": "75B",
-            "pe_ratio": 4.2,
-            "dividend_yield": 3.5,
-            "description": "Volkswagen Group manufactures and sells automobiles worldwide. The company offers passenger cars, commercial vehicles, and power engineering systems.",
-            "models": {
-                "2024": ["Golf", "Passat", "Tiguan", "ID.4"],
-                "2023": ["Golf", "Passat", "Tiguan", "ID.4"],
-                "2022": ["Golf", "Passat", "Tiguan", "ID.4"]
-            }
-        },
-        "GM": {
-            "name": "General Motors",
-            "sector": "Automotive",
-            "market_cap": "45B",
-            "pe_ratio": 5.8,
-            "dividend_yield": 1.2,
-            "description": "General Motors designs, builds, and sells cars, trucks, crossovers, and automobile parts worldwide.",
-            "models": {
-                "2024": ["Silverado", "Equinox", "Malibu", "Corvette"],
-                "2023": ["Silverado", "Equinox", "Malibu", "Corvette"],
-                "2022": ["Silverado", "Equinox", "Malibu", "Corvette"]
-            }
-        },
-        "F": {
-            "name": "Ford Motor Company",
-            "sector": "Automotive",
-            "market_cap": "48B",
-            "pe_ratio": 7.2,
-            "dividend_yield": 4.8,
-            "description": "Ford Motor Company designs, manufactures, markets, and services a line of Ford trucks, cars, sport utility vehicles, electrified vehicles, and Lincoln luxury vehicles.",
-            "models": {
-                "2024": ["F-150", "Mustang", "Explorer", "Mach-E"],
-                "2023": ["F-150", "Mustang", "Explorer", "Mach-E"],
-                "2022": ["F-150", "Mustang", "Explorer", "Mach-E"]
-            }
-        },
-        "TSLA": {
-            "name": "Tesla Inc.",
-            "sector": "Automotive",
-            "market_cap": "800B",
-            "pe_ratio": 65.3,
-            "dividend_yield": 0.0,
-            "description": "Tesla Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally.",
-            "models": {
-                "2024": ["Model 3", "Model Y", "Model S", "Model X"],
-                "2023": ["Model 3", "Model Y", "Model S", "Model X"],
-                "2022": ["Model 3", "Model Y", "Model S", "Model X"]
-            }
-        }
-    }
-
-    details = company_info.get(company, {
-        "name": "Unknown",
-        "sector": "Unknown",
-        "market_cap": "N/A",
-        "pe_ratio": 0,
-        "dividend_yield": 0,
-        "description": "No information available for this manufacturer.",
-        "models": {"2024": [], "2023": [], "2022": []}
-    })
-
-    models = details['models'].get(year, [])
-
-    return f"""# {details['name']} ({company}) - {year} Models
-**Sector:** {details['sector']}
-**Market Cap:** ${details['market_cap']}
-**P/E Ratio:** {details['pe_ratio']}
-**Dividend Yield:** {details['dividend_yield']}%
-
-{details['description']}
-
-## {year} Model Lineup
-{', '.join(models)}
-"""
 
 
 @router.get("/get_tickers_list")

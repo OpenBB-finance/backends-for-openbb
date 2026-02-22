@@ -144,6 +144,29 @@ def markdown_widget_with_multi_select_dropdown(stock_picker: str = "AAPL"):
     return f"**Selected tickers:** {stock_picker}"
 
 
+@register_widget({
+    "name": "Markdown Widget with Multi Text Input",
+    "description": "A markdown widget with a text input parameter",
+    "endpoint": "markdown_widget_with_multi_text_input",
+    "gridData": {"w": 16, "h": 6},
+    "type": "markdown",
+    "params": [
+        {
+            "paramName": "text_box",
+            "value": "var1,var2,var3",
+            "label": "Enter Text",
+            "description": "Type something to display",
+            "multiple": True,
+            "type": "text"
+        }
+    ]
+})
+@router.get("/markdown_widget_with_multi_text_input")
+def markdown_widget_with_multi_text_input(text_box: str):
+    """Returns a markdown widget with text input parameter"""
+    return f"**Vars:** {text_box}"
+
+
 @router.get("/advanced_dropdown_options")
 def advanced_dropdown_options():
     """Returns a list of stocks with their details"""
@@ -173,29 +196,6 @@ def advanced_dropdown_options():
             }
         }
     ]
-
-
-@register_widget({
-    "name": "Markdown Widget with Multi Text Input",
-    "description": "A markdown widget with a text input parameter",
-    "endpoint": "markdown_widget_with_multi_text_input",
-    "gridData": {"w": 16, "h": 6},
-    "type": "markdown",
-    "params": [
-        {
-            "paramName": "text_box",
-            "value": "var1,var2,var3",
-            "label": "Enter Text",
-            "description": "Type something to display",
-            "multiple": True,
-            "type": "text"
-        }
-    ]
-})
-@router.get("/markdown_widget_with_multi_text_input")
-def markdown_widget_with_multi_text_input(text_box: str):
-    """Returns a markdown widget with text input parameter"""
-    return f"**Vars:** {text_box}"
 
 
 @register_widget({
