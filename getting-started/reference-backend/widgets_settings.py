@@ -1,15 +1,3 @@
-"""
-Widget Settings for OpenBB Workspace
-
-This module demonstrates various widget configuration options:
-- Auto-refresh with configurable intervals (refetchInterval)
-- Data freshness control (staleTime)
-- Manual run button for on-demand updates
-- Structured API output formats
-
-These settings control widget behavior and data fetching patterns.
-"""
-
 from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

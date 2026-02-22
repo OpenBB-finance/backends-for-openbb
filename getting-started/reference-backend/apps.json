@@ -340,7 +340,7 @@
             "y": 2,
             "w": 19,
             "h": 9,
-            "groups": ["Group 2", "Group 3"]
+            "groups": ["Group 1", "Group 2"]
           },
           {
             "i": "company_performance",
@@ -361,7 +361,7 @@
                 }
               }
             },
-            "groups": ["Group 2", "Group 3"]
+            "groups": ["Group 1", "Group 2"]
           },
           {
             "i": "widget_managed_by_parameter_from_cell_click_on_table_widget",
@@ -369,7 +369,7 @@
             "y": 11,
             "w": 21,
             "h": 9,
-            "groups": ["Group 4"]
+            "groups": ["Group 3"]
           },
           {
             "i": "table_widget_with_grouping_by_cell_click",
@@ -395,7 +395,7 @@
                 }
               }
             },
-            "groups": ["Group 4"]
+            "groups": ["Group 3"]
           }
         ]
       },
@@ -819,9 +819,9 @@
     "groups": [
       {
         "name": "Group 1",
-        "type": "param",
+        "type": "endpointParam",
         "paramName": "company",
-        "defaultValue": "AAPL"
+        "defaultValue": "TM"
       },
       {
         "name": "Group 2",
@@ -831,12 +831,6 @@
       },
       {
         "name": "Group 3",
-        "type": "endpointParam",
-        "paramName": "company",
-        "defaultValue": "TM"
-      },
-      {
-        "name": "Group 4",
         "type": "endpointParam",
         "paramName": "symbol",
         "defaultValue": null

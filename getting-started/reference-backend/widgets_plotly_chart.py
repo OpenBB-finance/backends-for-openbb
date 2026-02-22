@@ -1,17 +1,3 @@
-"""
-Plotly Chart Widgets for OpenBB Workspace
-
-This module demonstrates Plotly charting capabilities:
-- Basic charts: Line, bar, scatter, area charts
-- Theme support: Dark and light theme configurations
-- Toolbar customization: Add/remove chart interaction tools
-- Multiple chart types: Heatmaps, dual-axis charts
-- Raw data support: Provide underlying data for AI analysis
-- Config file usage: Reusable chart configuration helpers
-
-Plotly charts provide rich, interactive visualizations with zoom, pan, and hover.
-"""
-
 import json
 from datetime import datetime
 from fastapi import APIRouter

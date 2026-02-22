@@ -1,20 +1,3 @@
-"""
-Input Parameters for OpenBB Workspace Widgets
-
-This module demonstrates various input parameter types for widgets:
-- Text input: Basic text fields
-- Number input: Numeric fields with min/max constraints
-- Date input: Date pickers with various formats
-- Dropdown/Select: Single and multi-select options
-- Parameter grouping: Organizing parameters visually
-- Dynamic options: Dropdowns populated from endpoints
-- Boolean toggles: On/off switches
-- Cell click interactions: Parameters managed by table clicks
-- Widget groups: Multiple widgets sharing parameters
-
-These parameters allow users to customize widget behavior and data queries.
-"""
-
 from datetime import datetime, timedelta
 from typing import List
 from fastapi import APIRouter, Query

@@ -1,17 +1,3 @@
-"""
-Basic Widget Types for OpenBB Workspace
-
-This module contains examples of the fundamental widget types available:
-- Markdown widgets: Display formatted text content
-- Table widgets: Display data in tabular format
-- Metric widgets: Display key metrics/KPIs
-- PDF widgets: Display PDF documents (base64 and URL)
-- HTML widgets: Display custom HTML content
-- Newsfeed widgets: Display news articles with filtering
-
-These widgets demonstrate the core functionality without advanced parameters.
-"""
-
 import base64
 import requests
 from pathlib import Path

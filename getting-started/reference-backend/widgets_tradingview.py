@@ -1,17 +1,3 @@
-"""
-TradingView UDF Widgets for OpenBB Workspace
-
-This module implements TradingView's Universal Data Feed (UDF) protocol:
-- Config endpoint: Define supported features and resolutions
-- Symbol search: Allow users to search for available symbols
-- Symbol info: Provide detailed information about symbols
-- Historical data: Return OHLCV (Open, High, Low, Close, Volume) data
-- Server time: Synchronize chart with server time
-
-The UDF protocol enables TradingView's advanced charting library to display
-your custom data with full interactivity (zoom, pan, indicators, drawings).
-"""
-
 import random
 from datetime import datetime
 from fastapi import APIRouter, Query, HTTPException

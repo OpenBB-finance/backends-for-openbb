@@ -1,15 +1,3 @@
-"""
-YouTube Widgets for OpenBB Workspace
-
-This module demonstrates YouTube video widgets:
-- Basic video player: Display YouTube videos
-- Transcript support: Provide video transcripts for AI context
-- Video selection: Dynamic video selection from options endpoint
-
-YouTube widgets allow embedding videos with optional transcript support
-for AI assistants to understand video content.
-"""
-
 from typing import List
 from fastapi import APIRouter, Query
 from fastapi.responses import PlainTextResponse

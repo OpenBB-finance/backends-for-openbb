@@ -1,16 +1,3 @@
-"""
-Input Form Widgets for OpenBB Workspace
-
-This module demonstrates form widgets for data entry:
-- Form submission: POST endpoints for data submission
-- Form validation: Required field validation
-- Add/Update actions: Different button actions for CRUD operations
-- Form fields: Text inputs, dropdowns, multi-select
-- Table display: Show form submissions in table format
-
-Forms allow users to enter and manage data within the workspace.
-"""
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
