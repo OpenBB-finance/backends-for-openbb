@@ -574,6 +574,20 @@
           }
         ]
       },
+      "highcharts": {
+        "id": "highcharts",
+        "name": "Highcharts",
+        "layout": [
+          {
+            "i": "chains_highchart",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 14,
+            "groups": []
+          }
+        ]
+      },
       "input-form": {
         "id": "input-form",
         "name": "Input Form",
@@ -620,7 +634,7 @@
             "h": 13,
             "state": {
               "params": {
-                "prompt": "Hello World",
+                "prompt": "Hello",
                 "type": "markdown"
               }
             },
@@ -634,7 +648,7 @@
             "h": 18,
             "state": {
               "params": {
-                "prompt": "SELECT \n    Symbol, Name, Price\nFROM\n    DATA\nLIMIT\n    5"
+                "prompt": "SELECT \n    *\nFROM\n    DATA\nLIMIT\n    3"
               }
             },
             "groups": []
@@ -856,6 +870,40 @@
                   "columnPinning": {
                     "leftColIds": ["company"],
                     "rightColIds": []
+                  }
+                }
+              }
+            },
+            "groups": []
+          }
+        ]
+      },
+      "live-grid": {
+        "id": "live-grid",
+        "name": "Live Grid",
+        "layout": [
+          {
+            "i": "live_grid_data",
+            "x": 0,
+            "y": 2,
+            "w": 40,
+            "h": 11,
+            "state": {
+              "params": {
+                "symbol": ["TSLA", "MSFT", "AMZN"]
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": [
+                      "symbol",
+                      "price",
+                      "change_percent",
+                      "volume",
+                      "date",
+                      "change",
+                      "market_cap"
+                    ]
                   }
                 }
               }

@@ -27,6 +27,7 @@ from widgets_omni_sql_python import router as omni_sql_python_router
 from widgets_sparkline import router as sparkline_router
 from widgets_youtube import router as youtube_router
 from widgets_highchart import router as highchart_router
+from widgets_live_grid import router as live_grid_router
 
 
 # ============================================================================
@@ -69,6 +70,7 @@ app.include_router(omni_sql_python_router)
 app.include_router(sparkline_router)
 app.include_router(youtube_router)
 app.include_router(highchart_router)
+app.include_router(live_grid_router)
 
 
 if __name__ == "__main__":
