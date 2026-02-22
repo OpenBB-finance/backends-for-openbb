@@ -23,11 +23,6 @@ from core import register_widget, WIDGETS, FileOption
 
 router = APIRouter()
 
-
-# ============================================================================
-# TEXT INPUT PARAMETERS
-# ============================================================================
-
 @register_widget({
     "name": "Markdown Widget with Text Input",
     "description": "A markdown widget with a text input parameter",
@@ -45,12 +40,8 @@ router = APIRouter()
 @router.get("/markdown_widget_with_text_input")
 def markdown_widget_with_text_input(name: str = "OpenBB"):
     """Returns a markdown widget with a text input parameter"""
-    return f"# Hello {name}!"
+    return f"**Text:** {name}"
 
-
-# ============================================================================
-# NUMBER INPUT PARAMETERS
-# ============================================================================
 
 @register_widget({
     "name": "Markdown Widget with Number Input",
@@ -69,12 +60,30 @@ def markdown_widget_with_text_input(name: str = "OpenBB"):
 @router.get("/markdown_widget_with_number_input")
 def markdown_widget_with_number_input(value: int = 100):
     """Returns a markdown widget with a number input parameter"""
-    return f"# The amount is {value}"
+    return f"**Number:** {value}"
 
 
-# ============================================================================
-# DATE INPUT PARAMETERS
-# ============================================================================
+@register_widget({
+    "name": "Markdown Widget with Boolean",
+    "description": "A markdown widget with a boolean toggle parameter",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_boolean",
+    "gridData": {"w": 20, "h": 5},
+    "params": [{
+        "paramName": "condition",
+        "description": "Enable or disable the condition",
+        "value": True,
+        "label": "Condition",
+        "type": "boolean",
+    }],
+})
+@router.get("/markdown_widget_with_boolean")
+def markdown_widget_with_boolean(condition: bool = True):
+    """Returns a markdown widget with a boolean parameter"""
+    if condition:
+        return "**Toggle:** enabled"
+    return "**Toggle:** disabled"
+
 
 @register_widget({
     "name": "Markdown Widget with Date Picker",
@@ -95,12 +104,8 @@ def markdown_widget_with_date_picker(
     date: str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 ):
     """Returns a markdown widget with a date picker parameter"""
-    return f"# The selected date is {date}"
+    return f"**Date:** {date}"
 
-
-# ============================================================================
-# DROPDOWN/SELECT PARAMETERS
-# ============================================================================
 
 @register_widget({
     "name": "Markdown Widget with Dropdown",
@@ -189,27 +194,6 @@ def dropdown_dependent_widget(category: str = "tech"):
 # ============================================================================
 # BOOLEAN PARAMETERS
 # ============================================================================
-
-@register_widget({
-    "name": "Markdown Widget with Boolean",
-    "description": "A markdown widget with a boolean toggle parameter",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_boolean",
-    "gridData": {"w": 20, "h": 5},
-    "params": [{
-        "paramName": "condition",
-        "description": "Enable or disable the condition",
-        "value": True,
-        "label": "Condition",
-        "type": "boolean",
-    }],
-})
-@router.get("/markdown_widget_with_boolean")
-def markdown_widget_with_boolean(condition: bool = True):
-    """Returns a markdown widget with a boolean parameter"""
-    if condition:
-        return "# Condition is TRUE\n\nThe toggle is enabled."
-    return "# Condition is FALSE\n\nThe toggle is disabled."
 
 
 # ============================================================================
