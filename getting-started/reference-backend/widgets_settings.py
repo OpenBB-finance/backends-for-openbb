@@ -18,11 +18,6 @@ from core import register_widget, WIDGETS
 
 router = APIRouter()
 
-
-# ============================================================================
-# STALE TIME SETTINGS
-# ============================================================================
-
 @register_widget({
     "name": "Markdown Widget with Stale Time",
     "description": "A markdown widget with stale time. The widget will show stale data before fetching new data.",
@@ -34,12 +29,8 @@ router = APIRouter()
 @router.get("/markdown_widget_with_stale_time")
 def markdown_widget_with_stale_time():
     """Returns a markdown widget with stale time"""
-    return f"# Markdown Widget with Stale Time\n\n{datetime.now().replace(microsecond=0)}"
+    return f"# Stale 10s Time\n\n{datetime.now().replace(microsecond=0)}"
 
-
-# ============================================================================
-# AUTO-REFRESH SETTINGS
-# ============================================================================
 
 @register_widget({
     "name": "Markdown Widget with Short Refetch Interval",
@@ -52,7 +43,7 @@ def markdown_widget_with_stale_time():
 @router.get("/markdown_widget_with_short_refetch_interval")
 def markdown_widget_with_short_refetch_interval():
     """Returns a markdown widget that auto-refreshes every 5 seconds"""
-    return f"# Markdown Widget with Short Refetch Interval\n\n{datetime.now().replace(microsecond=0)}"
+    return f"# Short 5s Refetch Interval\n\n{datetime.now().replace(microsecond=0)}"
 
 
 @register_widget({
@@ -67,12 +58,8 @@ def markdown_widget_with_short_refetch_interval():
 @router.get("/markdown_widget_with_refetch_interval_and_shorter_stale_time")
 def markdown_widget_with_refetch_interval_and_shorter_stale_time():
     """Returns a markdown widget with refetch interval and shorter stale time"""
-    return f"# Markdown Widget with Refetch Interval and Shorter Stale Time\n\n{datetime.now().replace(microsecond=0)}"
+    return f"# Refetch 10s Interval and Shorter 5s Stale Time\n\n{datetime.now().replace(microsecond=0)}"
 
-
-# ============================================================================
-# RUN BUTTON SETTINGS
-# ============================================================================
 
 @register_widget({
     "name": "Markdown Widget with Run Button",
@@ -85,7 +72,7 @@ def markdown_widget_with_refetch_interval_and_shorter_stale_time():
 @router.get("/markdown_widget_with_run_button")
 def markdown_widget_with_run_button():
     """Returns a markdown widget with a run button"""
-    return f"# Markdown Widget with Run Button\n\n{datetime.now().replace(microsecond=0)}"
+    return f"# Run Button\n\n{datetime.now().replace(microsecond=0)}"
 
 
 @register_widget({
@@ -100,4 +87,4 @@ def markdown_widget_with_run_button():
 @router.get("/markdown_widget_with_short_refetch_interval_and_run_button")
 def markdown_widget_with_short_refetch_interval_and_run_button():
     """Returns a markdown widget with short refetch interval and run button"""
-    return f"# Markdown Widget with Short Refetch Interval and Run Button\n\n{datetime.now().replace(microsecond=0)}"
+    return f"# Short 5s Refetch Interval and Run Button\n\n{datetime.now().replace(microsecond=0)}"
