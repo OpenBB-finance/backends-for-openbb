@@ -1,27 +1,65 @@
-"""
-Sparkline Widgets for OpenBB Workspace
-
-This module demonstrates sparkline charts embedded in table cells:
-- Line sparklines: Price trends with first/last point highlighting
-- Area sparklines: Volume trends with min/max highlighting
-- Bar sparklines: Monthly returns with positive/negative coloring
-- Column sparklines: Quarterly earnings data
-- Custom formatters: Dynamic styling based on values
-- Points of interest: Highlight specific data points
-
-Sparklines provide compact visualizations within table rows for quick data analysis.
-"""
-
 from fastapi import APIRouter
 
 from core import register_widget, WIDGETS
 
 router = APIRouter()
 
+@register_widget({
+    "name": "Table Widget with Basic Sparklines",
+    "description": "A table widget with basic sparklines showing min/max points",
+    "type": "table",
+    "endpoint": "table_widget_basic_sparklines",
+    "gridData": {"w": 20, "h": 6},
+    "data": {
+        "table": {
+            "columnsDefs": [
+                {"field": "stock", "headerName": "Stock", "cellDataType": "text", "width": 120, "pinned": "left"},
+                {
+                    "field": "price_history",
+                    "headerName": "Price History",
+                    "width": 200,
+                    "sparkline": {
+                        "type": "line",
+                        "options": {
+                            "stroke": "#2563eb",
+                            "strokeWidth": 2,
+                            "markers": {"enabled": True, "size": 3},
+                            "pointsOfInterest": {
+                                "maximum": {"fill": "#22c55e", "stroke": "#16a34a", "size": 6},
+                                "minimum": {"fill": "#ef4444", "stroke": "#dc2626", "size": 6},
+                            },
+                        },
+                    },
+                },
+                {
+                    "field": "volume",
+                    "headerName": "Volume",
+                    "width": 150,
+                    "sparkline": {
+                        "type": "bar",
+                        "options": {
+                            "fill": "#6b7280",
+                            "stroke": "#4b5563",
+                            "pointsOfInterest": {
+                                "maximum": {"fill": "#22c55e", "stroke": "#16a34a"},
+                                "minimum": {"fill": "#ef4444", "stroke": "#dc2626"},
+                            },
+                        },
+                    },
+                },
+            ]
+        }
+    },
+})
+@router.get("/table_widget_basic_sparklines")
+def table_widget_basic_sparklines():
+    """Returns mock data with sparklines"""
+    return [
+        {"stock": "AAPL", "price_history": [150, 155, 148, 162, 158, 165, 170], "volume": [1000, 1200, 900, 1500, 1100, 1300, 1800]},
+        {"stock": "GOOGL", "price_history": [2800, 2750, 2900, 2850, 2950, 3000, 2980], "volume": [800, 950, 700, 1200, 850, 1100, 1400]},
+        {"stock": "MSFT", "price_history": [340, 335, 350, 345, 360, 355, 365], "volume": [900, 1100, 800, 1300, 950, 1200, 1600]},
+    ]
 
-# ============================================================================
-# AREA SPARKLINES WITH MIN/MAX POINTS
-# ============================================================================
 
 @register_widget({
     "name": "Stock Sparkline Data - With Min/Max Points",
@@ -81,10 +119,6 @@ async def get_sparkline_data():
     ]
 
 
-# ============================================================================
-# LINE SPARKLINES WITH FIRST/LAST POINTS
-# ============================================================================
-
 @register_widget({
     "name": "Stock Price Trends - Line Sparklines with First/Last Points",
     "description": "Display stock price trends using line sparklines highlighting first and last points",
@@ -138,10 +172,6 @@ async def get_line_sparkline_data():
     ]
 
 
-# ============================================================================
-# AREA SPARKLINES - TRADING VOLUME
-# ============================================================================
-
 @register_widget({
     "name": "Trading Volume - Area Sparklines",
     "description": "Display trading volume data using area sparklines with maximum point highlighting",
@@ -193,17 +223,13 @@ async def get_area_sparkline_data():
     ]
 
 
-# ============================================================================
-# BAR SPARKLINES WITH CUSTOM FORMATTER
-# ============================================================================
-
 @register_widget({
-    "name": "P&L Analysis - Bar Sparklines with Custom Formatter",
-    "description": "Display profit/loss data using bar sparklines with custom positive/negative coloring",
+    "name": "Quarterly Earnings - Column Sparklines",
+    "description": "Display quarterly earnings data using column sparklines",
     "category": "Widgets",
-    "subCategory": "sparkline-custom",
+    "subCategory": "sparkline-column",
     "defaultViz": "table",
-    "endpoint": "sparkline-custom",
+    "endpoint": "sparkline-column",
     "gridData": {"w": 16, "h": 10},
     "data": {
         "table": {
@@ -211,41 +237,43 @@ async def get_area_sparkline_data():
             "columnsDefs": [
                 {"headerName": "Symbol", "field": "symbol", "cellDataType": "text", "chartDataType": "category"},
                 {"headerName": "Company Name", "field": "name", "cellDataType": "text", "chartDataType": "category"},
-                {"headerName": "Net P&L ($M)", "field": "netPL", "cellDataType": "number", "chartDataType": "series"},
+                {"headerName": "Market Cap", "field": "marketCap", "cellDataType": "number", "chartDataType": "series"},
                 {
-                    "headerName": "Monthly P&L Trend",
-                    "field": "monthlyPL",
+                    "headerName": "8-Quarter EPS",
+                    "field": "quarterlyEps",
                     "cellDataType": "object",
                     "chartDataType": "excluded",
                     "sparkline": {
                         "type": "bar",
                         "options": {
-                            "direction": "vertical",
+                            "direction": "horizontal",
+                            "fill": "#f59e0b",
+                            "stroke": "#d97706",
+                            "strokeWidth": 1,
                             "padding": {"top": 5, "right": 5, "bottom": 5, "left": 5},
-                            "customFormatter": "(params) => ({ fill: params.yValue >= 0 ? '#22c55e' : '#ef4444', stroke: params.yValue >= 0 ? '#16a34a' : '#dc2626', strokeWidth: 1 })",
+                            "highlightStyle": {"fill": "#fbbf24", "stroke": "#f59e0b"},
                         },
                     },
                 },
-                {"headerName": "Best Month ($M)", "field": "bestMonth", "cellDataType": "number", "chartDataType": "series"},
+                {"headerName": "EPS Growth %", "field": "epsGrowth", "cellDataType": "number", "chartDataType": "series"},
             ],
         }
     },
 })
-@router.get("/sparkline-custom")
-async def get_custom_sparkline_data():
-    """Get P&L sparkline data demonstrating custom formatter for positive/negative values"""
+@router.get("/sparkline-column")
+async def get_column_sparkline_data():
+    """Get column sparkline data for quarterly earnings per share"""
     return [
-        {"symbol": "AAPL", "name": "Apple Inc.", "netPL": 145.2, "monthlyPL": [12.5, -8.2, 15.7, -3.4, 22.1, -11.8, 18.9, -5.6, 24.3, -1.2, 19.8, 7.4], "bestMonth": 24.3},
-        {"symbol": "GOOGL", "name": "Alphabet Inc. Class A", "netPL": 89.6, "monthlyPL": [18.3, -12.1, 8.7, 14.5, -6.9, 21.2, -9.4, 16.8, -4.2, 25.1, -7.8, 13.4], "bestMonth": 25.1},
-        {"symbol": "MSFT", "name": "Microsoft Corporation", "netPL": 167.8, "monthlyPL": [14.2, 18.5, -7.3, 12.9, 20.1, -4.8, 15.6, -9.2, 23.4, 11.7, -6.1, 19.3], "bestMonth": 23.4},
-        {"symbol": "AMZN", "name": "Amazon.com Inc.", "netPL": -23.4, "monthlyPL": [8.9, -15.3, 6.2, -18.7, 11.4, -22.1, 4.8, -13.9, 9.7, -20.5, 3.2, -16.8], "bestMonth": 11.4},
-        {"symbol": "TSLA", "name": "Tesla Inc.", "netPL": 67.9, "monthlyPL": [25.8, -18.4, 12.3, 19.7, -14.2, 8.9, -21.6, 15.1, 22.4, -11.8, 6.5, 18.2], "bestMonth": 25.8},
+        {"symbol": "AAPL", "name": "Apple Inc.", "marketCap": 2675150000000, "quarterlyEps": [1.46, 1.52, 1.29, 1.88, 1.56, 1.64, 1.39, 1.97], "epsGrowth": 6.85},
+        {"symbol": "GOOGL", "name": "Alphabet Inc. Class A", "marketCap": 1834250000000, "quarterlyEps": [1.05, 1.21, 1.06, 1.33, 1.17, 1.32, 1.15, 1.44], "epsGrowth": 8.57},
+        {"symbol": "MSFT", "name": "Microsoft Corporation", "marketCap": 3086420000000, "quarterlyEps": [2.32, 2.45, 2.51, 2.72, 2.48, 2.62, 2.69, 2.93], "epsGrowth": 6.90},
+        {"symbol": "AMZN", "name": "Amazon.com Inc.", "marketCap": 1702830000000, "quarterlyEps": [0.31, 0.42, 0.52, 0.68, 0.45, 0.58, 0.71, 0.85], "epsGrowth": 25.0},
+        {"symbol": "TSLA", "name": "Tesla Inc.", "marketCap": 788960000000, "quarterlyEps": [0.73, 0.85, 1.05, 1.19, 0.91, 1.12, 1.29, 1.45], "epsGrowth": 24.66},
+        {"symbol": "META", "name": "Meta Platforms Inc.", "marketCap": 1247650000000, "quarterlyEps": [2.72, 2.88, 3.03, 3.67, 2.98, 3.21, 3.35, 4.01], "epsGrowth": 9.27},
+        {"symbol": "NFLX", "name": "Netflix Inc.", "marketCap": 187450000000, "quarterlyEps": [2.80, 3.19, 3.53, 4.28, 3.29, 3.75, 4.13, 4.82], "epsGrowth": 17.50},
+        {"symbol": "NVDA", "name": "NVIDIA Corporation", "marketCap": 2158730000000, "quarterlyEps": [1.01, 1.36, 2.48, 5.16, 4.28, 6.12, 8.92, 12.96], "epsGrowth": 324.75},
     ]
 
-
-# ============================================================================
-# BAR SPARKLINES WITH POSITIVE/NEGATIVE STYLING
-# ============================================================================
 
 @register_widget({
     "name": "Monthly Performance - Bar Sparklines with Positive/Negative",
@@ -302,127 +330,6 @@ async def get_bar_sparkline_data():
         {"symbol": "NVDA", "name": "NVIDIA Corporation", "ytdReturn": 87.23, "monthlyReturns": [{"x": "Jan", "y": 12.3}, {"x": "Feb", "y": -6.8}, {"x": "Mar", "y": 9.4}, {"x": "Apr", "y": 7.2}, {"x": "May", "y": -3.9}, {"x": "Jun", "y": 11.6}, {"x": "Jul", "y": 8.1}, {"x": "Aug", "y": -9.2}, {"x": "Sep", "y": 13.7}, {"x": "Oct", "y": 9.8}, {"x": "Nov", "y": 11.2}, {"x": "Dec", "y": 7.9}], "bestMonth": 13.7},
     ]
 
-
-# ============================================================================
-# COLUMN SPARKLINES - QUARTERLY EPS
-# ============================================================================
-
-@register_widget({
-    "name": "Quarterly Earnings - Column Sparklines",
-    "description": "Display quarterly earnings data using column sparklines",
-    "category": "Widgets",
-    "subCategory": "sparkline-column",
-    "defaultViz": "table",
-    "endpoint": "sparkline-column",
-    "gridData": {"w": 16, "h": 10},
-    "data": {
-        "table": {
-            "showAll": True,
-            "columnsDefs": [
-                {"headerName": "Symbol", "field": "symbol", "cellDataType": "text", "chartDataType": "category"},
-                {"headerName": "Company Name", "field": "name", "cellDataType": "text", "chartDataType": "category"},
-                {"headerName": "Market Cap", "field": "marketCap", "cellDataType": "number", "chartDataType": "series"},
-                {
-                    "headerName": "8-Quarter EPS",
-                    "field": "quarterlyEps",
-                    "cellDataType": "object",
-                    "chartDataType": "excluded",
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "direction": "horizontal",
-                            "fill": "#f59e0b",
-                            "stroke": "#d97706",
-                            "strokeWidth": 1,
-                            "padding": {"top": 5, "right": 5, "bottom": 5, "left": 5},
-                            "highlightStyle": {"fill": "#fbbf24", "stroke": "#f59e0b"},
-                        },
-                    },
-                },
-                {"headerName": "EPS Growth %", "field": "epsGrowth", "cellDataType": "number", "chartDataType": "series"},
-            ],
-        }
-    },
-})
-@router.get("/sparkline-column")
-async def get_column_sparkline_data():
-    """Get column sparkline data for quarterly earnings per share"""
-    return [
-        {"symbol": "AAPL", "name": "Apple Inc.", "marketCap": 2675150000000, "quarterlyEps": [1.46, 1.52, 1.29, 1.88, 1.56, 1.64, 1.39, 1.97], "epsGrowth": 6.85},
-        {"symbol": "GOOGL", "name": "Alphabet Inc. Class A", "marketCap": 1834250000000, "quarterlyEps": [1.05, 1.21, 1.06, 1.33, 1.17, 1.32, 1.15, 1.44], "epsGrowth": 8.57},
-        {"symbol": "MSFT", "name": "Microsoft Corporation", "marketCap": 3086420000000, "quarterlyEps": [2.32, 2.45, 2.51, 2.72, 2.48, 2.62, 2.69, 2.93], "epsGrowth": 6.90},
-        {"symbol": "AMZN", "name": "Amazon.com Inc.", "marketCap": 1702830000000, "quarterlyEps": [0.31, 0.42, 0.52, 0.68, 0.45, 0.58, 0.71, 0.85], "epsGrowth": 25.0},
-        {"symbol": "TSLA", "name": "Tesla Inc.", "marketCap": 788960000000, "quarterlyEps": [0.73, 0.85, 1.05, 1.19, 0.91, 1.12, 1.29, 1.45], "epsGrowth": 24.66},
-        {"symbol": "META", "name": "Meta Platforms Inc.", "marketCap": 1247650000000, "quarterlyEps": [2.72, 2.88, 3.03, 3.67, 2.98, 3.21, 3.35, 4.01], "epsGrowth": 9.27},
-        {"symbol": "NFLX", "name": "Netflix Inc.", "marketCap": 187450000000, "quarterlyEps": [2.80, 3.19, 3.53, 4.28, 3.29, 3.75, 4.13, 4.82], "epsGrowth": 17.50},
-        {"symbol": "NVDA", "name": "NVIDIA Corporation", "marketCap": 2158730000000, "quarterlyEps": [1.01, 1.36, 2.48, 5.16, 4.28, 6.12, 8.92, 12.96], "epsGrowth": 324.75},
-    ]
-
-
-# ============================================================================
-# BASIC TABLE SPARKLINES
-# ============================================================================
-
-@register_widget({
-    "name": "Table Widget with Basic Sparklines",
-    "description": "A table widget with basic sparklines showing min/max points",
-    "type": "table",
-    "endpoint": "table_widget_basic_sparklines",
-    "gridData": {"w": 20, "h": 6},
-    "data": {
-        "table": {
-            "columnsDefs": [
-                {"field": "stock", "headerName": "Stock", "cellDataType": "text", "width": 120, "pinned": "left"},
-                {
-                    "field": "price_history",
-                    "headerName": "Price History",
-                    "width": 200,
-                    "sparkline": {
-                        "type": "line",
-                        "options": {
-                            "stroke": "#2563eb",
-                            "strokeWidth": 2,
-                            "markers": {"enabled": True, "size": 3},
-                            "pointsOfInterest": {
-                                "maximum": {"fill": "#22c55e", "stroke": "#16a34a", "size": 6},
-                                "minimum": {"fill": "#ef4444", "stroke": "#dc2626", "size": 6},
-                            },
-                        },
-                    },
-                },
-                {
-                    "field": "volume",
-                    "headerName": "Volume",
-                    "width": 150,
-                    "sparkline": {
-                        "type": "bar",
-                        "options": {
-                            "fill": "#6b7280",
-                            "stroke": "#4b5563",
-                            "pointsOfInterest": {
-                                "maximum": {"fill": "#22c55e", "stroke": "#16a34a"},
-                                "minimum": {"fill": "#ef4444", "stroke": "#dc2626"},
-                            },
-                        },
-                    },
-                },
-            ]
-        }
-    },
-})
-@router.get("/table_widget_basic_sparklines")
-def table_widget_basic_sparklines():
-    """Returns mock data with sparklines"""
-    return [
-        {"stock": "AAPL", "price_history": [150, 155, 148, 162, 158, 165, 170], "volume": [1000, 1200, 900, 1500, 1100, 1300, 1800]},
-        {"stock": "GOOGL", "price_history": [2800, 2750, 2900, 2850, 2950, 3000, 2980], "volume": [800, 950, 700, 1200, 850, 1100, 1400]},
-        {"stock": "MSFT", "price_history": [340, 335, 350, 345, 360, 355, 365], "volume": [900, 1100, 800, 1300, 950, 1200, 1600]},
-    ]
-
-
-# ============================================================================
-# TABLE WITH CUSTOM FORMATTER
-# ============================================================================
 
 @register_widget({
     "name": "Table Widget with Custom Formatter",

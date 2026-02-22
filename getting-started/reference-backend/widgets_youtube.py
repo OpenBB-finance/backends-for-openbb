@@ -6,11 +6,6 @@ from core import register_widget, WIDGETS, FileOption
 
 router = APIRouter()
 
-
-# ============================================================================
-# SAMPLE VIDEO DATA
-# ============================================================================
-
 SAMPLE_VIDEOS = [
     {
         "name": "OpenBB Workspace Demo",
@@ -24,11 +19,6 @@ SAMPLE_VIDEOS = [
     }
 ]
 
-
-# ============================================================================
-# VIDEO OPTIONS ENDPOINT
-# ============================================================================
-
 @router.get("/get_video_options")
 async def get_video_options() -> List[FileOption]:
     """Get list of available videos for dropdown selection"""
@@ -37,10 +27,6 @@ async def get_video_options() -> List[FileOption]:
         for video in SAMPLE_VIDEOS
     ]
 
-
-# ============================================================================
-# YOUTUBE WIDGET (BASIC)
-# ============================================================================
 
 @register_widget({
     "name": "Video Library",
@@ -72,11 +58,6 @@ async def get_video(
         return PlainTextResponse(content="")
 
     return PlainTextResponse(content=video["url"])
-
-
-# ============================================================================
-# YOUTUBE WIDGET WITH TRANSCRIPT
-# ============================================================================
 
 @register_widget({
     "name": "Video Library with Transcript",

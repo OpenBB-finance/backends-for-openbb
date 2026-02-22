@@ -6,11 +6,6 @@ from core import register_widget, WIDGETS
 
 router = APIRouter()
 
-
-# ============================================================================
-# MOCK SYMBOL DATA
-# ============================================================================
-
 MOCK_SYMBOLS = {
     "AAPL": {
         "name": "Apple Inc.",
@@ -41,10 +36,6 @@ MOCK_SYMBOLS = {
     },
 }
 
-
-# ============================================================================
-# MOCK DATA GENERATOR
-# ============================================================================
 
 def generate_mock_price_data(
     symbol: str, from_time: int, to_time: int, resolution: str
@@ -130,10 +121,6 @@ def generate_mock_price_data(
         "v": volumes,
     }
 
-
-# ============================================================================
-# UDF ENDPOINTS
-# ============================================================================
 
 @router.get("/udf/config")
 async def get_config():
@@ -249,10 +236,6 @@ async def get_server_time():
     """
     return int(datetime.now().timestamp())
 
-
-# ============================================================================
-# TRADINGVIEW WIDGET REGISTRATION
-# ============================================================================
 
 @register_widget({
     "name": "TradingView Chart",

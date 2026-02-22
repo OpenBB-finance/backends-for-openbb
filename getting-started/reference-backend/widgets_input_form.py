@@ -5,19 +5,9 @@ from core import register_widget, WIDGETS
 
 router = APIRouter()
 
-
-# ============================================================================
-# FORM DATA STORAGE
-# ============================================================================
-
 # Global variable to store form submissions
 # This acts as a simple in-memory database for our form entries
 ALL_FORMS = []
-
-
-# ============================================================================
-# FORM SUBMISSION ENDPOINT
-# ============================================================================
 
 @router.post("/form_submit")
 async def form_submit(params: dict) -> JSONResponse:
@@ -59,10 +49,6 @@ async def form_submit(params: dict) -> JSONResponse:
 
     return JSONResponse(content={"success": True})
 
-
-# ============================================================================
-# FORM WIDGET
-# ============================================================================
 
 @register_widget({
     "name": "Entry Form",
