@@ -18,6 +18,19 @@ uvicorn main:app --reload --host 0.0.0.0 --port 7779
 
 The application will be available at `http://localhost:7779`
 
+## Connecting from OpenBB Workspace
+
+Use the backend root URL when connecting this app to OpenBB Workspace.
+
+- Works: `http://localhost:7779`
+- Works: `http://192.168.1.100:7779`
+- Works: `https://vstocks.example.com`
+- Not supported as the backend base URL: `https://example.com/vstock`
+
+OpenBB Workspace expects `widgets.json` to be available at `<base-url>/widgets.json`.
+
+If you need to expose other endpoints under a prefix, keep `widgets.json` at the root and mount your application routes separately. For LAN deployments, run uvicorn with `--host 0.0.0.0` so the backend is reachable from other machines.
+
 ## Architecture
 
 This FastAPI application is designed to work as a backend for OpenBB Workspace. Here's a breakdown of its architecture:
