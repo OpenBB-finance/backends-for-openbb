@@ -912,6 +912,36 @@
           }
         ]
       },
+      "vega-lite": {
+        "id": "vega-lite",
+        "name": "Vega-Lite",
+        "layout": [
+          {
+            "i": "vega_bar",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 12,
+            "groups": []
+          },
+          {
+            "i": "vega_line",
+            "x": 20,
+            "y": 2,
+            "w": 20,
+            "h": 12,
+            "groups": []
+          },
+          {
+            "i": "vega_scatter",
+            "x": 0,
+            "y": 14,
+            "w": 40,
+            "h": 12,
+            "groups": []
+          }
+        ]
+      },
       "youtube": {
         "id": "youtube",
         "name": "YouTube",
