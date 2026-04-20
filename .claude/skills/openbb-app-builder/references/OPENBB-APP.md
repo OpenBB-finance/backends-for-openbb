@@ -29,7 +29,7 @@ Your backend must:
    - `http://localhost:1420`
 3. **Implement required endpoints**:
    - `GET /widgets.json` - Return dict of widget configurations (NOT array)
-   - `GET /apps.json` - (Optional) Return dashboard configurations
+   - `GET /apps.json` - (Optional) Return an array of app configurations
 4. **Return proper Content-Type**: `application/json`
 
 ---
@@ -206,34 +206,38 @@ def news():
 
 ## apps.json Structure
 
-**CRITICAL**: apps.json must be an OBJECT, not an array. The backend must serve this via `GET /apps.json`.
+**CRITICAL**: apps.json must be an ARRAY of app objects. The backend must serve this via `GET /apps.json`.
 
 ```json
-{
-  "name": "My Dashboard",
-  "description": "Dashboard description",
-  "img": "",
-  "img_dark": "",
-  "img_light": "",
-  "allowCustomization": true,
-  "tabs": {
-    "": {
-      "id": "",
-      "name": "",
-      "layout": [
-        {"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}
-      ]
-    }
-  },
-  "groups": [
-    {
-      "name": "Group 1",
-      "type": "param",
-      "paramName": "symbol",
-      "defaultValue": "AAPL"
-    }
-  ]
-}
+[
+  {
+    "name": "My Dashboard",
+    "description": "Dashboard description",
+    "img": "",
+    "img_dark": "",
+    "img_light": "",
+    "allowCustomization": true,
+    "tabs": {
+      "": {
+        "id": "",
+        "name": "",
+        "layout": [
+          {"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}
+        ]
+      }
+    },
+    "groups": [
+      {
+        "name": "Group 1",
+        "type": "param",
+        "paramName": "symbol",
+        "widgetIds": ["widget_id"],
+        "defaultValue": "AAPL"
+      }
+    ],
+    "prompts": []
+  }
+]
 ```
 
 ### Required App Fields
@@ -245,7 +249,8 @@ def news():
 | `img`, `img_dark`, `img_light` | string | Image URLs (can be empty `""`) |
 | `allowCustomization` | boolean | Whether users can modify layout |
 | `tabs` | object | Tab configurations |
-| `groups` | array | Parameter synchronization groups (can be empty `[]`) |
+| `groups` | array | Optional parameter synchronization groups. Use `[]` when no sync is needed |
+| `prompts` | array | Suggested prompts for the agent; safest default is `[]` |
 
 ### Tab Configuration
 
@@ -338,6 +343,12 @@ Pre-configure how widgets display using the `state` object:
 
 ### Groups with Parameter Sync
 
+Only add group objects when widgets need synchronized parameters. If the app does not use grouping, prefer:
+
+```json
+"groups": []
+```
+
 **CRITICAL**: Group objects MUST include the `name` field.
 
 ```json
@@ -347,6 +358,7 @@ Pre-configure how widgets display using the `state` object:
       "name": "Group 1",
       "type": "param",
       "paramName": "symbol",
+      "widgetIds": ["watchlist", "price_chart"],
       "defaultValue": "AAPL"
     }
   ]
@@ -358,6 +370,7 @@ Pre-configure how widgets display using the `state` object:
 | `name` | Must follow "Group N" pattern: `"Group 1"`, `"Group 2"`, etc. |
 | `type` | Use `"param"` for static dropdowns with options |
 | `paramName` | The parameter name to sync across widgets |
+| `widgetIds` | Widget IDs that participate in the synchronized group |
 | `defaultValue` | Default value (must match an option value) |
 
 Then reference in layout items: `{"i": "widget_id", "x": 0, "y": 0, "w": 20, "h": 12, "groups": ["Group 1"]}`
@@ -370,27 +383,34 @@ For table widgets:
 
 ```json
 {
-  "columns": [
-    {
-      "field": "symbol",
-      "headerName": "Symbol",
-      "cellDataType": "text",
-      "pinned": "left"
-    },
-    {
-      "field": "price",
-      "headerName": "Price",
-      "cellDataType": "number",
-      "formatterFn": "int"
-    },
-    {
-      "field": "change",
-      "headerName": "Change %",
-      "cellDataType": "number",
-      "formatterFn": "percent",
-      "renderFn": "greenRed"
+  "data": {
+    "table": {
+      "columnsDefs": [
+        {
+          "field": "symbol",
+          "headerName": "Symbol",
+          "chartDataType": "category",
+          "cellDataType": "text",
+          "pinned": "left"
+        },
+        {
+          "field": "price",
+          "headerName": "Price",
+          "chartDataType": "series",
+          "cellDataType": "number",
+          "formatterFn": "int"
+        },
+        {
+          "field": "change",
+          "headerName": "Change %",
+          "chartDataType": "series",
+          "cellDataType": "number",
+          "formatterFn": "percent",
+          "renderFn": "greenRed"
+        }
+      ]
     }
-  ]
+  }
 }
 ```
 
@@ -427,6 +447,11 @@ Return object with widget IDs as keys, NOT an array.
 
 ### 6. Group Names Pattern
 Use "Group 1", "Group 2" etc. - custom names fail silently.
+
+### 7. Use Exact Schema Paths
+- Table columns go under `data.table.columnsDefs`
+- Group click actions use `renderFnParams.groupBy.paramName`
+- Group objects should include `widgetIds`
 
 ---
 

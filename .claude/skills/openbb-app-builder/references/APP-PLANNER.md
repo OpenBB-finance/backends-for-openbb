@@ -85,6 +85,14 @@ def get_apps():
         return json.load(f)
 ```
 
+### Schema Notes
+
+- `widgets.json` must be an object keyed by widget id
+- `apps.json` must be an array of app objects
+- Table column metadata belongs under `data.table.columnsDefs`
+- Use `groups: []` when no synchronized parameters are needed
+- If groups are used, group definitions should include `widgetIds`
+
 ### Theme Colors Helper
 
 ```python
@@ -229,7 +237,11 @@ After implementation, verify:
 - [ ] GET / returns status ok
 - [ ] GET /widgets.json returns valid dict
 - [ ] GET /apps.json returns valid config
+- [ ] Table widgets use `data.table.columnsDefs`
+- [ ] Apps use array root shape and groups include `widgetIds`
 - [ ] All widget endpoints return expected data
+- [ ] Ask the user whether to run live endpoint validation before browser testing
+- [ ] Recommended default: run `validate_endpoints.py` so the app does not open with empty widgets
 
 ---
 
@@ -243,7 +255,8 @@ After implementation, verify:
 6. Create requirements.txt
 7. Create Dockerfile and .env.example
 8. Run validation scripts
-9. Test locally with uvicorn
+9. Ask whether to run live endpoint validation and, if yes, start `uvicorn` and run `validate_endpoints.py`
+10. Test locally with uvicorn
 ```
 
 ---

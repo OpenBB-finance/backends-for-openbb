@@ -31,6 +31,7 @@ Guide for designing visual dashboard layouts with tabs and widget positioning.
       "name": "Group 1",
       "type": "param",
       "paramName": "symbol",
+      "widgetIds": ["watchlist", "price_chart"],
       "defaultValue": "AAPL"
     }
   ]
@@ -42,6 +43,7 @@ Guide for designing visual dashboard layouts with tabs and widget positioning.
 | `name` | Required. Must be "Group 1", "Group 2", etc. |
 | `type` | Use `"param"` for syncing parameters |
 | `paramName` | The parameter name to sync across widgets |
+| `widgetIds` | Widget IDs included in the group |
 | `defaultValue` | Default value (must match an option value) |
 
 Widgets reference the group via `groups: ["Group 1"]` in their layout items.
@@ -130,9 +132,10 @@ Convert ASCII to coordinates:
 
 **Key requirements for this pattern:**
 1. Both widgets in same group: `"groups": ["Group 1"]`
-2. Watchlist symbol column has `renderFn: "cellOnClick"` with `groupByParamName`
-3. Chart MUST be `type: "chart"` (Plotly) - TradingView doesn't support grouping
-4. Both widgets have matching `paramName` and `optionsEndpoint`
+2. The table column uses `renderFn: "cellOnClick"` with `renderFnParams.groupBy`
+3. Chart SHOULD be `type: "chart"` (Plotly) for this interaction pattern
+4. The group object should include both widget IDs in `widgetIds`
+5. Both widgets have matching `paramName`
 
 ### Template: Data Analysis
 ```
@@ -161,7 +164,7 @@ Convert ASCII to coordinates:
 
 ## apps.json Structure
 
-**CRITICAL**: apps.json is an OBJECT, not an array. Must be served via `GET /apps.json` endpoint.
+**CRITICAL**: apps.json is an ARRAY of app objects. Must be served via `GET /apps.json` endpoint.
 
 For complete apps.json structure, see [OPENBB-APP.md](OPENBB-APP.md#appsjson-structure).
 
@@ -176,16 +179,26 @@ For complete apps.json structure, see [OPENBB-APP.md](OPENBB-APP.md#appsjson-str
 Use empty strings for id/name to hide the tab bar:
 
 ```json
-{
-  "name": "My App",
-  "tabs": {
-    "": {
-      "id": "",
-      "name": "",
-      "layout": [...]
-    }
+[
+  {
+    "name": "My App",
+    "description": "App description",
+    "img": "",
+    "img_dark": "",
+    "img_light": "",
+    "allowCustomization": true,
+    "tabs": {
+      "": {
+        "id": "",
+        "name": "",
+        "layout": [...]
+      }
+    },
+    "groups": [],
+    "prompts": []
   }
-}
+]
+```
 ```
 
 ### Layout Item State

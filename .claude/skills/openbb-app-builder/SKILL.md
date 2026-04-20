@@ -120,6 +120,16 @@ For core implementation patterns and widget type details, see [OPENBB-APP.md](re
 
 For validation commands and error handling, see [VALIDATE.md](references/VALIDATE.md).
 
+Run schema validation first. Then, by default, ask the user if they want endpoint validation as well so you can confirm each API route returns data before they open the app in Workspace.
+
+Recommended phrasing:
+- "Do you want me to start the backend and validate the live endpoints too? That catches cases where the app loads but widgets show no data."
+
+If the user agrees:
+- Start the backend locally
+- Run `validate_endpoints.py`
+- Fix and re-validate if endpoint errors are found
+
 If errors, fix and re-validate (max 3 retries).
 
 ---
@@ -183,7 +193,7 @@ def get_widgets():
 
 @app.get("/apps.json")
 def get_apps():
-    return APPS_CONFIG  # MUST be object, NOT array
+    return APPS_CONFIG  # MUST be an array of app objects
 ```
 
 ### Widget Types
@@ -201,9 +211,10 @@ def get_apps():
 1. **No `runButton: true`** unless heavy computation (>5 seconds)
 2. **Reasonable heights**: metrics h=4-6, tables h=12-18, charts h=12-15
 3. **widgets.json must be dict** format with widget IDs as keys
-4. **apps.json must be object** format (NOT array), served via `/apps.json` endpoint
+4. **apps.json must be array** format, served via `/apps.json` endpoint - app objects are served here.
 5. **Plotly charts**: No title (widget provides it), support `raw` param
 6. **Group names**: Must be "Group 1", "Group 2" etc. with `name` field in group object
+7. **Table metadata**: Use `data.table.columnsDefs`, not `columns` or `data.columnsDefs`
 
 For complete apps.json structure and required fields, see [OPENBB-APP.md](references/OPENBB-APP.md#appsjson-structure).
 

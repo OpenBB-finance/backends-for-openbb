@@ -14,7 +14,7 @@ python scripts/validate_widgets.py {app-path}/
 - Required fields (name, type, endpoint)
 - Valid widget types (table, chart, metric, markdown, newsfeed, etc.)
 - Parameter configurations and types
-- Column definitions for tables
+- Column definitions for tables under `data.table.columnsDefs`
 - Grid data ranges (w: 10-40, h: 4-100)
 - Valid formatterFn and renderFn values
 
@@ -56,6 +56,28 @@ python scripts/validate_endpoints.py {app-path}/ --base-url http://localhost:777
 - Each widget endpoint responds
 - Response format matches widget type
 
+### Offer Endpoint Validation By Default
+
+After schema validation passes, ask the user if they want live endpoint validation before they open the app in OpenBB Workspace.
+
+Recommended prompt:
+
+```text
+Do you want me to start the backend and validate the live endpoints too? That usually catches "the app opened but nothing loaded" problems before browser testing.
+```
+
+Why this should be the default recommendation:
+- Static JSON validation does not prove that endpoint handlers return data
+- A widget can be schema-valid but still render nothing because its API route is empty, broken, or timing out
+- Endpoint validation catches backend-level issues earlier and gives more direct failure messages
+
+Recommended order:
+1. Run `validate_widgets.py`
+2. Run `validate_apps.py`
+3. Ask whether to run live endpoint validation
+4. If yes, start the backend and run `validate_endpoints.py`
+5. Only then move to browser validation
+
 ---
 
 ## Common Errors and Fixes
@@ -65,8 +87,9 @@ python scripts/validate_endpoints.py {app-path}/ --base-url http://localhost:777
 | Error | Cause | Fix |
 |-------|-------|-----|
 | `Missing required field: name` | Widget missing name | Add `"name": "Widget Name"` |
-| `Invalid widget type: xxx` | Typo or unsupported type | Use: table, chart, metric, markdown, newsfeed |
+| `Invalid widget type: xxx` | Typo or unsupported type | Use exact doc values like `table`, `chart`, `table_ssrm`, `advanced-chart`, `chart-highcharts` |
 | `Invalid formatterFn: currency` | "currency" not valid | Use `"none"` for currency display |
+| `data.columnsDefs must be an array` | Wrong nesting | Move columns to `data.table.columnsDefs` |
 | `gridData.w must be 10-40` | Width out of range | Adjust w to valid range |
 | `widgets.json must be object` | Array format used | Change `[{...}]` to `{"id": {...}}` |
 
@@ -76,7 +99,7 @@ python scripts/validate_endpoints.py {app-path}/ --base-url http://localhost:777
 |-------|-------|-----|
 | `Widget 'xxx' not found` | Widget ID mismatch | Ensure ID matches widgets.json key |
 | `Widgets overlap at (x,y)` | Layout collision | Adjust x, y coordinates |
-| `Invalid group name` | Custom group name | Use "Group 1", "Group 2", etc. |
+| `Group missing widgetIds` | Incomplete group definition | Add all grouped widget IDs to `widgetIds` |
 
 ### Endpoint Errors
 
@@ -171,7 +194,8 @@ When validation fails, apply these fixes automatically:
 | `widgets.json is array` | Convert to object with IDs as keys |
 | `apps.json is object` | Convert to array: `[{...}]` |
 | `Missing endpoint field` | Add `"endpoint": "{widget_id}"` |
-| `Group name invalid` | Replace with `"Group 1"`, `"Group 2"`, etc. |
+| `data.columnsDefs used` | Move to `data.table.columnsDefs` |
+| `Missing group widgetIds` | Add widget IDs for all widgets sharing the group |
 | `Widget not found` | Check for typos, fix ID reference |
 
 ---
@@ -196,8 +220,8 @@ Static JSON validation cannot catch all issues. OpenBB Workspace has its own sch
 | `[tabs]: Required` | Missing tabs or wrong structure | Ensure each tab has `id`, `name`, `layout` |
 | `Widget 'x' not found` | Layout references non-existent widget | Check `i` values match widgets.json keys |
 | `allowCustomization: Required` | Missing required field | Add `"allowCustomization": true` |
-| `groups: Required` | Missing groups field | Add `"groups": []` |
-| `prompts: Required` | Missing prompts field | Add `"prompts": []` |
+| `groups: Recommended` | Missing groups field | Add `"groups": []` as the safe default |
+| `prompts: Required` | Deployment-specific validator expects prompts | Add `"prompts": []` as safest default |
 
 ### Why Browser Validation Matters
 
@@ -212,7 +236,8 @@ Static JSON validation cannot catch all issues. OpenBB Workspace has its own sch
 
 1. **Static validation** - Check JSON syntax and basic structure
 2. **Cross-reference validation** - Ensure widget IDs in apps.json exist in widgets.json
-3. **Browser validation (if available)** - Test against actual OpenBB Workspace
+3. **Live endpoint validation (recommended default ask)** - Confirm the backend actually returns data
+4. **Browser validation (if available)** - Test against actual OpenBB Workspace
    - This is the most reliable validation method
    - OpenBB's validator will catch schema mismatches
    - Always trust browser errors over documentation
@@ -233,10 +258,13 @@ If browser validation fails but files match documentation:
 Before deploying, verify:
 
 - [ ] apps.json is an ARRAY (starts with `[`)
-- [ ] Each app has: `name`, `description`, `allowCustomization`, `tabs`, `groups`, `prompts`
+- [ ] Each app has: `name`, `allowCustomization`, `tabs`
+- [ ] Add `"groups": []` when the app does not use synchronized parameters
+- [ ] Add `prompts: []` as the safest default when serving apps
 - [ ] Each tab has: `id`, `name`, `layout`
 - [ ] Layout uses `i` for widget ID (not `id`)
 - [ ] Layout uses `x`, `y`, `w`, `h` directly (not nested in `gridData`)
 - [ ] All widget IDs in layout exist in widgets.json
 - [ ] widgets.json is an OBJECT (starts with `{`)
+- [ ] Table column metadata is under `data.table.columnsDefs`
 - [ ] Browser validation passes (if available)
