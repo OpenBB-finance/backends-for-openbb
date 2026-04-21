@@ -4,35 +4,36 @@ Validate widgets.json for OpenBB Workspace compatibility.
 
 Usage:
     python scripts/validate_widgets.py <app_path>
-    python scripts/validate_widgets.py apps/my-app/
-
-Returns exit code 0 on success, 1 on validation errors.
 """
+
+from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Set
+from typing import Any
 
-# Valid widget types
-VALID_WIDGET_TYPES = [
+VALID_WIDGET_TYPES = {
     "table",
     "chart",
-    "chart-highcharts",
+    "table_ssrm",
     "markdown",
     "metric",
-    "newsfeed",
-    "html",
-    "pdf",
+    "note",
     "multi_file_viewer",
-    "advanced_charting",
     "live_grid",
-    "omni",
-    "ssrm_table",
-]
+    "newsfeed",
+    "advanced-chart",
+    "chart-highcharts",
+    "youtube",
+}
 
-# Valid parameter types
-VALID_PARAM_TYPES = [
+WIDGET_TYPE_ALIASES = {
+    "advanced_charting": "advanced-chart",
+    "ssrm_table": "table_ssrm",
+}
+
+VALID_PARAM_TYPES = {
     "text",
     "number",
     "boolean",
@@ -41,367 +42,330 @@ VALID_PARAM_TYPES = [
     "ticker",
     "tabs",
     "form",
-]
+}
 
-# Valid cell data types for tables
-VALID_CELL_DATA_TYPES = [
+VALID_CELL_DATA_TYPES = {
     "text",
     "number",
     "boolean",
     "date",
     "dateString",
     "object",
-]
+}
 
-# Valid chart data types
-VALID_CHART_DATA_TYPES = [
+VALID_CHART_DATA_TYPES = {
     "category",
     "series",
     "time",
     "excluded",
-]
+}
 
-# Valid formatter functions
-VALID_FORMATTER_FNS = [
+VALID_FORMATTER_FNS = {
     "int",
     "none",
     "percent",
     "normalized",
     "normalizedPercent",
     "dateToYear",
-]
+}
 
-# Valid render functions
-VALID_RENDER_FNS = [
+VALID_RENDER_FNS = {
     "greenRed",
     "titleCase",
     "hoverCard",
     "cellOnClick",
     "columnColor",
     "showCellChange",
-]
+}
+
+
+def flatten_params(params: Any) -> list[dict[str, Any]]:
+    flat: list[dict[str, Any]] = []
+    if not isinstance(params, list):
+        return flat
+    for item in params:
+        if isinstance(item, dict):
+            flat.append(item)
+        elif isinstance(item, list):
+            flat.extend(p for p in item if isinstance(p, dict))
+    return flat
 
 
 class WidgetValidator:
-    """Validates widgets.json files for OpenBB Workspace compatibility."""
-
     def __init__(self, app_path: Path):
         self.app_path = app_path
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
-        self.widget_ids: Set[str] = set()
-        self.endpoint_names: Set[str] = set()
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.widget_ids: set[str] = set()
 
     def validate(self) -> bool:
-        """
-        Run all validations.
-
-        Returns:
-            True if validation passed (no errors), False otherwise.
-        """
         widgets_path = self.app_path / "widgets.json"
-
         if not widgets_path.exists():
             self.errors.append(f"widgets.json not found at {widgets_path}")
             return False
 
         try:
-            with open(widgets_path, "r", encoding="utf-8") as f:
-                widgets = json.load(f)
-        except json.JSONDecodeError as e:
-            self.errors.append(f"Invalid JSON: {e}")
+            with open(widgets_path, "r", encoding="utf-8") as file:
+                widgets = json.load(file)
+        except json.JSONDecodeError as exc:
+            self.errors.append(f"Invalid JSON: {exc}")
             return False
 
-        # widgets.json MUST be an object/dict with widget IDs as keys
-        # OpenBB Workspace rejects array format
-        if isinstance(widgets, list):
+        if not isinstance(widgets, dict):
             self.errors.append(
-                "widgets.json must be an OBJECT with widget IDs as keys, not an array.\n"
-                "   Expected: {\"widget_id\": {\"name\": \"Widget Name\", ...}}\n"
-                "   Received: [{\"name\": \"Widget Name\", ...}]"
-            )
-            return False
-        elif isinstance(widgets, dict):
-            widgets_dict = widgets
-        else:
-            self.errors.append(
-                f"widgets.json must be a dict, got {type(widgets).__name__}"
+                "widgets.json must be an OBJECT with widget IDs as keys"
             )
             return False
 
-        if not widgets_dict:
-            self.warnings.append("widgets.json is empty")
-            return True
+        self.widget_ids = set(widgets.keys())
 
-        # Collect all widget IDs and endpoints first
-        for widget_id, widget in widgets_dict.items():
-            self.widget_ids.add(widget_id)
-            if "endpoint" in widget:
-                self.endpoint_names.add(widget["endpoint"])
-
-        # Validate each widget
-        for widget_id, widget in widgets_dict.items():
+        for widget_id, widget in widgets.items():
+            if not isinstance(widget, dict):
+                self.errors.append(f"[{widget_id}] Widget definition must be an object")
+                continue
             self._validate_widget(widget_id, widget)
 
-        return len(self.errors) == 0
+        return not self.errors
 
-    def _validate_widget(self, widget_id: str, widget: Dict[str, Any]) -> None:
-        """Validate a single widget configuration."""
+    def _validate_widget(self, widget_id: str, widget: dict[str, Any]) -> None:
         prefix = f"[{widget_id}]"
 
-        # Required fields
-        required_fields = ["name", "type", "endpoint"]
-        for field in required_fields:
+        for field in ("name", "type", "endpoint"):
             if field not in widget:
                 self.errors.append(f"{prefix} Missing required field: {field}")
 
-        # Widget type validation
         widget_type = widget.get("type")
-        if widget_type and widget_type not in VALID_WIDGET_TYPES:
-            self.errors.append(
-                f"{prefix} Invalid widget type: '{widget_type}'. "
-                f"Valid types: {VALID_WIDGET_TYPES}"
-            )
+        if isinstance(widget_type, str):
+            if widget_type in WIDGET_TYPE_ALIASES:
+                self.errors.append(
+                    f"{prefix} Invalid widget type '{widget_type}'. "
+                    f"Use '{WIDGET_TYPE_ALIASES[widget_type]}' instead."
+                )
+            elif widget_type not in VALID_WIDGET_TYPES:
+                self.errors.append(
+                    f"{prefix} Invalid widget type '{widget_type}'. "
+                    f"Valid types: {sorted(VALID_WIDGET_TYPES)}"
+                )
 
-        # Grid data validation
-        grid_data = widget.get("gridData", {})
-        if grid_data:
+        grid_data = widget.get("gridData")
+        if grid_data is not None:
             self._validate_grid_data(prefix, grid_data)
 
-        # Parameter validation
-        params = widget.get("params", [])
-        if params:
+        params = widget.get("params")
+        if params is not None:
             self._validate_params(prefix, params)
 
-        # Table-specific validation
+        source = widget.get("source")
+        if source is not None and (
+            not isinstance(source, list) or not all(isinstance(item, str) for item in source)
+        ):
+            self.errors.append(f"{prefix} source must be an array of strings")
+
         if widget_type == "table":
             self._validate_table_widget(prefix, widget)
 
-        # Chart-specific validation
-        if widget_type == "chart":
-            self._validate_chart_widget(prefix, widget)
+        if widget_type == "chart" and widget.get("raw") not in (None, True, False):
+            self.errors.append(f"{prefix} raw must be a boolean when provided")
 
-        # MCP tool matching validation
         if "mcp_tool" in widget:
             self._validate_mcp_tool(prefix, widget["mcp_tool"])
 
-        # Refresh interval validation
         refetch = widget.get("refetchInterval")
         if refetch is not None:
             if not isinstance(refetch, (int, float, bool)):
-                self.errors.append(
-                    f"{prefix} refetchInterval must be number or false"
-                )
+                self.errors.append(f"{prefix} refetchInterval must be number or false")
             elif isinstance(refetch, (int, float)) and refetch < 1000:
                 self.warnings.append(
-                    f"{prefix} refetchInterval {refetch}ms is very low (min 1000ms)"
+                    f"{prefix} refetchInterval {refetch}ms is very low"
                 )
 
-    def _validate_grid_data(self, prefix: str, grid_data: Dict[str, Any]) -> None:
-        """Validate grid layout data."""
-        w = grid_data.get("w", 12)
-        h = grid_data.get("h", 8)
-
-        if not isinstance(w, (int, float)):
-            self.errors.append(f"{prefix} gridData.w must be a number")
-        elif not (10 <= w <= 40):
-            self.warnings.append(
-                f"{prefix} gridData.w={w} outside recommended range (10-40)"
-            )
-
-        if not isinstance(h, (int, float)):
-            self.errors.append(f"{prefix} gridData.h must be a number")
-        elif not (4 <= h <= 100):
-            self.warnings.append(
-                f"{prefix} gridData.h={h} outside recommended range (4-100)"
-            )
-
-        # Validate min/max if provided
-        for key in ["minW", "maxW", "minH", "maxH"]:
-            if key in grid_data:
-                val = grid_data[key]
-                if not isinstance(val, (int, float)):
-                    self.errors.append(f"{prefix} gridData.{key} must be a number")
-
-    def _validate_params(self, prefix: str, params: Any) -> None:
-        """Validate widget parameters."""
-        # Handle nested array format (parameter positioning)
-        flat_params = []
-        if isinstance(params, list):
-            for p in params:
-                if isinstance(p, list):
-                    flat_params.extend(p)
-                elif isinstance(p, dict):
-                    flat_params.append(p)
-        else:
+    def _validate_grid_data(self, prefix: str, grid_data: Any) -> None:
+        if not isinstance(grid_data, dict):
+            self.errors.append(f"{prefix} gridData must be an object")
             return
 
-        for param in flat_params:
-            if not isinstance(param, dict):
-                continue
+        for key in ("w", "h", "minW", "maxW", "minH", "maxH"):
+            if key in grid_data and not isinstance(grid_data[key], (int, float)):
+                self.errors.append(f"{prefix} gridData.{key} must be a number")
 
-            param_name = param.get("paramName", "unknown")
-            param_prefix = f"{prefix} param '{param_name}'"
+        w = grid_data.get("w")
+        h = grid_data.get("h")
+        if isinstance(w, (int, float)) and not (10 <= w <= 40):
+            self.warnings.append(f"{prefix} gridData.w={w} outside recommended range")
+        if isinstance(h, (int, float)) and not (4 <= h <= 100):
+            self.warnings.append(f"{prefix} gridData.h={h} outside recommended range")
 
-            # Required param fields
+    def _validate_params(self, prefix: str, params: Any) -> None:
+        for param in flatten_params(params):
             if "paramName" not in param:
                 self.errors.append(f"{prefix} param missing paramName")
                 continue
 
+            param_name = param["paramName"]
+            param_prefix = f"{prefix} param '{param_name}'"
             param_type = param.get("type")
-            if not param_type:
-                self.errors.append(f"{param_prefix} missing type")
-                continue
 
             if param_type not in VALID_PARAM_TYPES:
                 self.errors.append(
-                    f"{param_prefix} invalid type: '{param_type}'. "
-                    f"Valid: {VALID_PARAM_TYPES}"
+                    f"{param_prefix} invalid type '{param_type}'. "
+                    f"Valid: {sorted(VALID_PARAM_TYPES)}"
                 )
-
-            # Endpoint type requires optionsEndpoint
-            if param_type == "endpoint":
-                if "optionsEndpoint" not in param:
-                    self.errors.append(
-                        f"{param_prefix} (endpoint type) missing optionsEndpoint"
-                    )
-
-            # Static dropdown with options
-            if param_type == "text" and "options" in param:
-                options = param["options"]
-                if not isinstance(options, list):
-                    self.errors.append(f"{param_prefix} options must be an array")
-                else:
-                    for i, opt in enumerate(options):
-                        if not isinstance(opt, dict):
-                            self.errors.append(
-                                f"{param_prefix} option[{i}] must be an object"
-                            )
-                        elif "value" not in opt:
-                            self.errors.append(
-                                f"{param_prefix} option[{i}] missing 'value'"
-                            )
-
-            # Date type with dynamic value
-            if param_type == "date":
-                value = param.get("value", "")
-                if isinstance(value, str) and value.startswith("$"):
-                    valid_modifiers = [
-                        "$currentDate",
-                        "$currentDate-",
-                    ]
-                    if not any(value.startswith(m) for m in valid_modifiers):
-                        self.warnings.append(
-                            f"{param_prefix} date modifier '{value}' may be invalid"
-                        )
-
-    def _validate_table_widget(self, prefix: str, widget: Dict[str, Any]) -> None:
-        """Validate table-specific configuration."""
-        data = widget.get("data", {})
-        columns = data.get("columnsDefs", [])
-
-        if not columns:
-            # Columns are optional if they're inferred from data
-            return
-
-        if not isinstance(columns, list):
-            self.errors.append(f"{prefix} data.columnsDefs must be an array")
-            return
-
-        fields_seen = set()
-        for i, col in enumerate(columns):
-            if not isinstance(col, dict):
-                self.errors.append(f"{prefix} column[{i}] must be an object")
                 continue
 
-            field = col.get("field", f"column_{i}")
-            col_prefix = f"{prefix} column '{field}'"
-
-            if "field" not in col:
-                self.errors.append(f"{prefix} column[{i}] missing 'field'")
-
-            # Check for duplicate fields
-            if field in fields_seen:
-                self.warnings.append(f"{col_prefix} duplicate field name")
-            fields_seen.add(field)
-
-            # Validate cellDataType
-            cell_type = col.get("cellDataType")
-            if cell_type and cell_type not in VALID_CELL_DATA_TYPES:
+            if param_type == "endpoint" and "optionsEndpoint" not in param:
                 self.errors.append(
-                    f"{col_prefix} invalid cellDataType: '{cell_type}'. "
-                    f"Valid: {VALID_CELL_DATA_TYPES}"
+                    f"{param_prefix} missing optionsEndpoint for endpoint param"
                 )
 
-            # Validate chartDataType
-            chart_type = col.get("chartDataType")
-            if chart_type and chart_type not in VALID_CHART_DATA_TYPES:
-                self.warnings.append(
-                    f"{col_prefix} unknown chartDataType: '{chart_type}'"
-                )
+            if "options" in param and not isinstance(param["options"], list):
+                self.errors.append(f"{param_prefix} options must be an array")
 
-            # Validate formatterFn
-            formatter = col.get("formatterFn")
-            if formatter and formatter not in VALID_FORMATTER_FNS:
-                self.warnings.append(
-                    f"{col_prefix} unknown formatterFn: '{formatter}'"
-                )
-
-            # Validate renderFn
-            render_fn = col.get("renderFn")
-            if render_fn:
-                render_fns = render_fn if isinstance(render_fn, list) else [render_fn]
-                for fn in render_fns:
-                    if fn not in VALID_RENDER_FNS:
-                        self.warnings.append(
-                            f"{col_prefix} unknown renderFn: '{fn}'"
+            if isinstance(param.get("options"), list):
+                for idx, option in enumerate(param["options"]):
+                    if not isinstance(option, dict):
+                        self.errors.append(
+                            f"{param_prefix} option[{idx}] must be an object"
+                        )
+                    elif "value" not in option:
+                        self.errors.append(
+                            f"{param_prefix} option[{idx}] missing value"
                         )
 
-            # Validate sparkline config
-            if "sparkline" in col:
-                self._validate_sparkline(col_prefix, col["sparkline"])
+            value = param.get("value")
+            if param_type == "date" and isinstance(value, str) and value.startswith("$"):
+                if not (
+                    value.startswith("$currentDate-")
+                    or value.startswith("$currentDate+")
+                    or value == "$currentDate"
+                ):
+                    self.warnings.append(
+                        f"{param_prefix} uses an unrecognized date modifier '{value}'"
+                    )
 
-    def _validate_sparkline(self, prefix: str, sparkline: Dict[str, Any]) -> None:
-        """Validate sparkline configuration."""
-        valid_types = ["line", "area", "bar"]
-        spark_type = sparkline.get("type")
+    def _validate_table_widget(self, prefix: str, widget: dict[str, Any]) -> None:
+        data = widget.get("data", {})
+        if data and not isinstance(data, dict):
+            self.errors.append(f"{prefix} data must be an object")
+            return
 
-        if spark_type and spark_type not in valid_types:
-            self.warnings.append(
-                f"{prefix} sparkline type '{spark_type}' should be one of: {valid_types}"
+        if isinstance(data, dict) and "columnsDefs" in data:
+            self.errors.append(
+                f"{prefix} data.columnsDefs is invalid; use data.table.columnsDefs"
             )
 
-        if "dataField" not in sparkline:
-            self.warnings.append(f"{prefix} sparkline missing dataField")
+        if "columns" in widget:
+            self.errors.append(
+                f"{prefix} columns is invalid; use data.table.columnsDefs"
+            )
 
-    def _validate_chart_widget(self, prefix: str, widget: Dict[str, Any]) -> None:
-        """Validate chart-specific configuration."""
-        # Charts should support theme parameter
-        params = widget.get("params", [])
-        flat_params = []
-        for p in params:
-            if isinstance(p, list):
-                flat_params.extend(p)
-            elif isinstance(p, dict):
-                flat_params.append(p)
+        table = data.get("table", {}) if isinstance(data, dict) else {}
+        if table and not isinstance(table, dict):
+            self.errors.append(f"{prefix} data.table must be an object")
+            return
 
-        param_names = [p.get("paramName") for p in flat_params if isinstance(p, dict)]
+        formatter = table.get("formatterFn")
+        if formatter and formatter not in VALID_FORMATTER_FNS:
+            self.warnings.append(
+                f"{prefix} data.table.formatterFn '{formatter}' is not recognized"
+            )
 
-        # theme is auto-injected, but good to be aware
-        if "raw" in widget and widget["raw"]:
-            # raw mode should be handled in endpoint
-            pass
+        columns = table.get("columnsDefs", [])
+        if not columns:
+            return
+        if not isinstance(columns, list):
+            self.errors.append(f"{prefix} data.table.columnsDefs must be an array")
+            return
 
-    def _validate_mcp_tool(self, prefix: str, mcp_tool: Dict[str, Any]) -> None:
-        """Validate MCP tool matching configuration."""
+        seen_fields: set[str] = set()
+        for idx, column in enumerate(columns):
+            if not isinstance(column, dict):
+                self.errors.append(f"{prefix} column[{idx}] must be an object")
+                continue
+
+            field = column.get("field", f"column_{idx}")
+            column_prefix = f"{prefix} column '{field}'"
+
+            if "field" not in column:
+                self.errors.append(f"{prefix} column[{idx}] missing field")
+
+            if field in seen_fields:
+                self.warnings.append(f"{column_prefix} duplicates a previous field")
+            seen_fields.add(field)
+
+            cell_data_type = column.get("cellDataType")
+            if cell_data_type and cell_data_type not in VALID_CELL_DATA_TYPES:
+                self.errors.append(
+                    f"{column_prefix} invalid cellDataType '{cell_data_type}'"
+                )
+
+            chart_data_type = column.get("chartDataType")
+            if chart_data_type and chart_data_type not in VALID_CHART_DATA_TYPES:
+                self.warnings.append(
+                    f"{column_prefix} unknown chartDataType '{chart_data_type}'"
+                )
+
+            formatter_fn = column.get("formatterFn")
+            if formatter_fn and formatter_fn not in VALID_FORMATTER_FNS:
+                self.warnings.append(
+                    f"{column_prefix} unknown formatterFn '{formatter_fn}'"
+                )
+
+            render_fn = column.get("renderFn")
+            render_fns = []
+            if isinstance(render_fn, str):
+                render_fns = [render_fn]
+            elif isinstance(render_fn, list):
+                render_fns = [fn for fn in render_fn if isinstance(fn, str)]
+
+            for fn in render_fns:
+                if fn not in VALID_RENDER_FNS:
+                    self.warnings.append(f"{column_prefix} unknown renderFn '{fn}'")
+
+            if "cellOnClick" in render_fns:
+                params = column.get("renderFnParams")
+                if not isinstance(params, dict):
+                    self.errors.append(
+                        f"{column_prefix} renderFnParams must be an object for cellOnClick"
+                    )
+                else:
+                    if "groupByParamName" in params:
+                        self.errors.append(
+                            f"{column_prefix} uses deprecated groupByParamName; "
+                            "use renderFnParams.groupBy.paramName"
+                        )
+                    if params.get("actionType") == "groupBy":
+                        group_by = params.get("groupBy")
+                        if not isinstance(group_by, dict):
+                            self.errors.append(
+                                f"{column_prefix} renderFnParams.groupBy must be an object"
+                            )
+                        elif "paramName" not in group_by:
+                            self.errors.append(
+                                f"{column_prefix} renderFnParams.groupBy missing paramName"
+                            )
+
+            if "sparkline" in column:
+                self._validate_sparkline(column_prefix, column["sparkline"])
+
+    def _validate_sparkline(self, prefix: str, sparkline: Any) -> None:
+        if not isinstance(sparkline, dict):
+            self.errors.append(f"{prefix} sparkline must be an object")
+            return
+
+        spark_type = sparkline.get("type")
+        if spark_type and spark_type not in {"line", "area", "bar"}:
+            self.warnings.append(f"{prefix} sparkline type '{spark_type}' is unknown")
+
+    def _validate_mcp_tool(self, prefix: str, mcp_tool: Any) -> None:
+        if not isinstance(mcp_tool, dict):
+            self.errors.append(f"{prefix} mcp_tool must be an object")
+            return
         if "mcp_server" not in mcp_tool:
-            self.errors.append(f"{prefix} mcp_tool missing 'mcp_server'")
-
+            self.errors.append(f"{prefix} mcp_tool missing mcp_server")
         if "tool_id" not in mcp_tool:
-            self.errors.append(f"{prefix} mcp_tool missing 'tool_id'")
+            self.errors.append(f"{prefix} mcp_tool missing tool_id")
 
     def report(self) -> None:
-        """Print validation report to stdout."""
         print("\n" + "=" * 60)
         print("WIDGET VALIDATION REPORT")
         print("=" * 60)
@@ -409,44 +373,38 @@ class WidgetValidator:
         print(f"Widgets found: {len(self.widget_ids)}")
 
         if self.errors:
-            print(f"\n❌ ERRORS ({len(self.errors)}):")
+            print(f"\n[ERRORS] ({len(self.errors)}):")
             for error in self.errors:
-                print(f"   • {error}")
+                print(f"  - {error}")
 
         if self.warnings:
-            print(f"\n⚠️  WARNINGS ({len(self.warnings)}):")
+            print(f"\n[WARNINGS] ({len(self.warnings)}):")
             for warning in self.warnings:
-                print(f"   • {warning}")
+                print(f"  - {warning}")
 
         if not self.errors and not self.warnings:
-            print("\n✅ All validations passed!")
+            print("\n[OK] All validations passed!")
         elif not self.errors:
-            print("\n✅ Validation passed with warnings")
+            print("\n[OK] Validation passed with warnings")
 
         print("\n" + "=" * 60)
 
 
-def main():
-    """Main entry point."""
+def main() -> None:
     if len(sys.argv) < 2:
         print("Usage: python validate_widgets.py <app_path>")
-        print("Example: python validate_widgets.py apps/my-app/")
         sys.exit(1)
 
     app_path = Path(sys.argv[1])
-
     if not app_path.exists():
         print(f"Error: Path does not exist: {app_path}")
         sys.exit(1)
-
     if not app_path.is_dir():
-        # If file passed, use parent directory
         app_path = app_path.parent
 
     validator = WidgetValidator(app_path)
     is_valid = validator.validate()
     validator.report()
-
     sys.exit(0 if is_valid else 1)
 
 

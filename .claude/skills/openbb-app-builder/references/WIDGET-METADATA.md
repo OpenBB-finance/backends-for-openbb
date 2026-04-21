@@ -4,22 +4,36 @@ Complete guide for defining widget metadata specifications.
 
 ## Widget Types Reference
 
+Use the exact widget type strings from the current OpenBB docs. Do not invent aliases.
+
 Choose the appropriate widget type for each data view:
 
 | Type | Use Case | Example | Grouping Support |
 |------|----------|---------|------------------|
-| `table` | Tabular data with rows/columns | Holdings, Transactions, Stock lists | Yes |
-| `chart` | Plotly visualizations | Price charts, Performance graphs | Yes |
-| `metric` | KPI values with deltas | Portfolio value, Daily P&L | Yes |
-| `markdown` | Formatted text content | Summaries, Reports, Analysis | Yes |
-| `newsfeed` | Article lists | News, Research reports | Yes |
-| `html` | Custom HTML (no JS) | Custom visualizations | Yes |
-| `pdf` | PDF viewer | Documents, Reports | Yes |
-| `advanced_charting` | TradingView charts | Professional charting | **NO** |
-| `live_grid` | Real-time table | Live prices, Order book | Yes |
-| `omni` | Dynamic content | AI responses, Mixed content | Yes |
+| `table` | Standard AgGrid table for sortable/filterable tabular data | Holdings, transactions, stock lists | Yes |
+| `chart` | Plotly visualization with raw-data toggle support | Price charts, performance graphs, time series | Yes |
+| `table_ssrm` | Large or server-side table datasets | Paged screener results, large audit logs | Yes, but use only when SSRM behavior is needed |
+| `metric` | KPI values and compact stat cards | Portfolio value, daily P&L, win rate | Usually yes, if driven by params |
+| `markdown` | Formatted analysis or summaries | Summaries, reports, generated commentary | Usually yes, if driven by params |
+| `note` | Simple static or semi-static text blocks | Instructions, disclaimers, quick context | Usually unnecessary |
+| `newsfeed` | Article and update lists | News, research reports, filings feed | Usually yes, if filtered by params |
+| `live_grid` | Real-time table with websocket updates | Live prices, order book, streaming tape | Yes |
+| `advanced-chart` | TradingView-style charting experience | Technical charting, trading-focused views | Avoid for watchlist-style group sync |
+| `chart-highcharts` | Highcharts visualization | Specialized chart packages, dashboard charts | Likely yes, but prefer `chart` unless needed |
+| `multi_file_viewer` | File/document collection viewer | Multi-document review, attachments, reports | Parameter support is possible; grouping is uncommon |
+| `youtube` | Embedded video content | Walkthroughs, explainers, tutorials | Grouping is uncommon |
 
-**Warning**: `advanced_charting` (TradingView) does NOT support parameter-based grouping. Use `chart` (Plotly) if you need a chart that updates when clicking a watchlist row.
+**Common mistakes to avoid:**
+- Use `advanced-chart`, not `advanced_charting`
+- Use `table_ssrm`, not `ssrm_table`
+- Do not add unofficial types unless the current docs explicitly allow them
+
+**Grouping Support meaning**:
+- This column is practical planning guidance for app design, not a hard schema enum
+- Most widgets can participate in app-level param sync if they expose matching params
+- For click-through watchlist flows, the safest recommended pattern is `table` -> `chart`
+
+**Watchlist/grouping note**: If a chart needs to update from table cell clicks, prefer `chart` over `advanced-chart`.
 
 ---
 
@@ -89,7 +103,7 @@ Date modifiers: `$currentDate`, `$currentDate-1d`, `$currentDate-1w`, `$currentD
   "type": "endpoint",
   "label": "Select Symbol",
   "optionsEndpoint": "/symbols",
-  "multiSelect": false
+  "multiple": false
 }
 ```
 
@@ -107,6 +121,20 @@ Date modifiers: `$currentDate`, `$currentDate-1d`, `$currentDate-1w`, `$currentD
 ---
 
 ## Column Definition Guide
+
+For table widgets, column definitions belong at:
+
+```json
+{
+  "data": {
+    "table": {
+      "columnsDefs": []
+    }
+  }
+}
+```
+
+Do not place `columnsDefs` directly under `data`, and do not use a top-level `columns` key.
 
 ### Cell Data Types
 - `text` - String values
@@ -142,23 +170,26 @@ Make table cells clickable to update other widgets in the same group:
 
 ```json
 {
-    "field": "symbol",
-    "headerName": "Symbol",
-    "cellDataType": "text",
-    "pinned": "left",
-    "renderFn": "cellOnClick",
-    "renderFnParams": {
-        "actionType": "groupBy",
-        "groupByParamName": "symbol"
+  "field": "companyName",
+  "headerName": "Company",
+  "cellDataType": "text",
+  "pinned": "left",
+  "renderFn": "cellOnClick",
+  "renderFnParams": {
+    "actionType": "groupBy",
+    "groupBy": {
+      "paramName": "companyId",
+      "valueField": "companyId"
     }
+  }
 }
 ```
 
 **Requirements for this pattern:**
 1. Both table and target widget must be in the same group (`"groups": ["Group 1"]`)
-2. Target widget MUST support param grouping (NOT `advanced_charting`)
-3. Both widgets need matching `paramName` with `type: "endpoint"`
-4. Group names MUST follow "Group N" pattern
+2. The target widget must have a matching parameter name
+3. Use `renderFnParams.groupBy.paramName`, not `groupByParamName`
+4. Use `valueField` when the displayed cell value differs from the parameter value
 
 ---
 
@@ -199,13 +230,41 @@ For each widget, define:
 {example response}
 ```
 
-#### For Table Widgets: Column Definitions
+#### For Table Widgets: Exact JSON Shape
 
-| Field | Header | Type | Format | Render |
-|-------|--------|------|--------|--------|
-| symbol | Symbol | text | - | pinned: left |
-| price | Price | number | int | - |
-| change | Change % | number | percent | greenRed |
+```json
+{
+  "data": {
+    "table": {
+      "enableCharts": true,
+      "columnsDefs": [
+        {
+          "field": "symbol",
+          "headerName": "Symbol",
+          "chartDataType": "category",
+          "cellDataType": "text",
+          "pinned": "left"
+        },
+        {
+          "field": "price",
+          "headerName": "Price",
+          "chartDataType": "series",
+          "cellDataType": "number",
+          "formatterFn": "int",
+          "decimalPlaces": 2
+        },
+        {
+          "field": "change_pct",
+          "headerName": "Change %",
+          "chartDataType": "series",
+          "cellDataType": "number",
+          "formatterFn": "percent",
+          "renderFn": "greenRed"
+        }
+      ]
+    }
+  }
+}
 ```
 
 ---
@@ -246,3 +305,5 @@ Avoid heights above 20 unless specifically needed.
 - **Must be object format**: `{"widget_id": {...}}`
 - **NOT array format**: `[{...}]` will be rejected
 - Widget IDs become the keys
+- Table metadata belongs under `data.table.columnsDefs`
+- `source` is an array of strings, e.g. `["API"]`
