@@ -38,14 +38,14 @@ This starts an MCP server on `http://localhost:<port>/mcp` (default `7769`) that
 ### 1. Add the Iframe widget
 
 1. In Workspace, add an **Iframe** widget
-2. Paste the Streamlit URL (e.g. `http://localhost:8501`)
+2. Paste the Streamlit URL: `http://localhost:8501` (adjust port if you used a different `--server.port`)
 3. A grid icon with a count badge appears in the widget navbar — click it to see available sub-widgets
 4. Click **Add** to export a sub-widget as a standalone table or note on your dashboard
 
 ### 2. Connect the MCP server to the Iframe widget
 
 1. On the Iframe widget, click the **MCP** icon in the widget navbar
-2. Enter the MCP server URL: `http://127.0.0.1:7762/mcp` (adjust port if you used a different `--port`)
+2. Enter the MCP server URL: `http://127.0.0.1:7769/mcp` (adjust port if you used a different `--port`)
 3. The MCP tools (`get_portfolio_holdings`, `get_sector_allocation`, etc.) are now available to the Copilot when this widget is in context
 
 ## Available Sub-Widgets
