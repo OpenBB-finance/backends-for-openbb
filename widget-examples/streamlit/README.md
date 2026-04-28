@@ -58,12 +58,30 @@ This starts an MCP server on `http://localhost:<port>/mcp` (default `7769`) that
 
 ## MCP Tools
 
-| Tool | Description |
-|------|-------------|
-| `get_portfolio_holdings` | Positions with filters (sector, min shares, PnL %) |
-| `get_sector_allocation` | Allocation breakdown by sector |
-| `get_market_summary` | Weekly market analysis and outlook |
-| `rebalance_portfolio` | Randomly rebalance and simulate market movement |
+| Tool | Description | Refreshes iframe |
+|------|-------------|:---:|
+| `get_portfolio_holdings` | Positions with filters (sector, min shares, PnL %) | — |
+| `get_sector_allocation` | Allocation breakdown by sector | — |
+| `get_market_summary` | Weekly market analysis and outlook | — |
+| `rebalance_portfolio` | Randomly rebalance and simulate market movement | ✓ |
+
+### Auto-refresh on mutating tools
+
+When an MCP tool is connected to an iframe widget, OpenBB Workspace can automatically remount the iframe after a tool call so the UI reflects new state. Mark mutating tools with `destructiveHint=True`:
+
+```python
+from mcp.types import ToolAnnotations
+
+# Read-only tools — no annotation needed (default: no refresh)
+@mcp.tool()
+def get_portfolio_holdings(...): ...
+
+# Mutating tools — opt in to iframe refresh
+@mcp.tool(annotations=ToolAnnotations(destructiveHint=True))
+def rebalance_portfolio(): ...
+```
+
+**Default is no refresh.** Only tools that explicitly set `destructiveHint=True` will trigger an iframe remount after they run. This avoids unwanted reloads during read-only operations.
 
 ## Parameters
 

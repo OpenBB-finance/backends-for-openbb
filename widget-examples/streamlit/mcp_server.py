@@ -8,6 +8,7 @@ Connect in the iframe widget MCP popover: http://localhost:7769/mcp
 import json
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from portfolio import load_holdings, rebalance
 
@@ -84,7 +85,7 @@ def get_market_summary() -> str:
     )
 
 
-@mcp.tool()
+@mcp.tool(annotations=ToolAnnotations(destructiveHint=True))
 def rebalance_portfolio() -> str:
     """Rebalance the portfolio by randomly adjusting position sizes and simulating market movement.
     Returns the new portfolio state after rebalancing."""
