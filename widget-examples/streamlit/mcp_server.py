@@ -1,16 +1,47 @@
 """
-MCP server exposing portfolio dashboard data as tools.
+MCP server + OpenBB Workspace backend serving portfolio data.
+
+Routes:
+  /mcp            — MCP tools for the portfolio (FastMCP)
+  /widgets.json   — widget definitions for OpenBB Workspace
+  /apps.json      — app layout for OpenBB Workspace
+  /portfolio_note — markdown content for the note widget
 
 Run: cd widget-examples/streamlit && uv run python mcp_server.py
-Connect in the iframe widget MCP popover: http://localhost:7769/mcp
+Add backend in OpenBB Workspace: http://localhost:7769
 """
 
 import json
+from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
+from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.routing import Route
 
 from portfolio import load_holdings, rebalance
+
+HERE = Path(__file__).parent
+
+PORTFOLIO_NOTE_MD = (
+    "# Streamlit Portfolio Demo\n\n"
+    "This dashboard embeds a Streamlit app via the **iframe widget protocol** "
+    "with an MCP server connected for tool calls.\n\n"
+    "Try asking Copilot **\"rebalance my portfolio\"** — the iframe auto-refreshes "
+    "after the destructive MCP tool runs.\n"
+)
+
+
+async def get_widgets(_):
+    return JSONResponse(json.loads((HERE / "widgets.json").read_text()))
+
+
+async def get_apps(_):
+    return JSONResponse(json.loads((HERE / "apps.json").read_text()))
+
+
+async def get_portfolio_note(_):
+    return PlainTextResponse(PORTFOLIO_NOTE_MD)
 
 mcp = FastMCP("Portfolio Dashboard", host="0.0.0.0", port=7769)
 
@@ -111,4 +142,12 @@ if __name__ == "__main__":
         allow_headers=["*"],
         expose_headers=["mcp-session-id"],
     )
+
+    # Add OpenBB Workspace backend routes alongside the MCP transport
+    app.router.routes[:0] = [
+        Route("/widgets.json", get_widgets),
+        Route("/apps.json", get_apps),
+        Route("/portfolio_note", get_portfolio_note),
+    ]
+
     uvicorn.run(app, host="0.0.0.0", port=args.port)
