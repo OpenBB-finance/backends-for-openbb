@@ -13,25 +13,19 @@ uv sync
 
 ## Running
 
-### 1. Streamlit app (iframe widgets)
+### Path A — Full backend with pre-built app (recommended)
+
+Run both the Streamlit app and the MCP server. The MCP server serves `apps.json`, `widgets.json`, and MCP tools — giving you a one-click app in OpenBB Workspace.
 
 ```bash
-uv run streamlit run app.py                        # default port 8501
-uv run streamlit run app.py --server.port 8502     # custom port
+# Terminal 1 — Streamlit app
+uv run streamlit run app.py
+
+# Terminal 2 — MCP server + Workspace backend
+uv run python mcp_server.py
 ```
 
-This starts the portfolio dashboard on `http://localhost:8501` (or your custom port).
-
-### 2. MCP server + Workspace backend
-
-In a separate terminal:
-
-```bash
-uv run python mcp_server.py            # default port 7769
-uv run python mcp_server.py --port 7762 # custom port
-```
-
-This single process serves:
+The MCP server (default port 7769) serves:
 
 | Route | Purpose |
 |-------|---------|
@@ -40,11 +34,9 @@ This single process serves:
 | `/apps.json` | Pre-built "Streamlit Portfolio" app layout |
 | `/portfolio_note` | Markdown content for the dashboard's note widget |
 
-## Connecting to OpenBB Workspace
+Then in OpenBB Workspace:
 
-### Option A — One-click via apps.json (recommended)
-
-1. In Workspace, open the **Connections** panel and add `http://localhost:7769` as a backend
+1. Open the **Connections** panel and add `http://localhost:7769` as a backend
 2. Open the apps panel — you'll see **"Streamlit Portfolio"**
 3. Click it. The dashboard loads with:
    - A markdown intro note at the top
@@ -52,14 +44,27 @@ This single process serves:
    - The MCP server **auto-connected** (no manual URL entry)
 4. Ask Copilot: *"rebalance my portfolio"* — the iframe refreshes after the destructive tool call
 
-### Option B — Manual setup
+### Path B — Standalone Streamlit app (manual setup)
 
-If you want to add an iframe widget manually instead of using the prebuilt app:
+Run only the Streamlit app — no MCP server, no `apps.json`/`widgets.json`. You configure everything manually in Workspace.
 
-1. In Workspace, add a built-in **Iframe** widget
+```bash
+uv run streamlit run app.py
+```
+
+Then in OpenBB Workspace:
+
+1. Add a built-in **Iframe** widget
 2. Paste the Streamlit URL: `http://localhost:8501`
 3. A grid icon with a count badge appears in the widget navbar — click it to see available sub-widgets
-4. Click the **MCP** icon, paste `http://localhost:7769/mcp`, and connect
+4. (Optional) To add MCP tools, start the MCP server in a separate terminal (`uv run python mcp_server.py`), then click the **MCP** icon in the widget and paste `http://localhost:7769/mcp`
+
+Custom ports:
+
+```bash
+uv run streamlit run app.py --server.port 8502     # custom Streamlit port
+uv run python mcp_server.py --port 7762            # custom MCP server port
+```
 
 ## Available Sub-Widgets
 
