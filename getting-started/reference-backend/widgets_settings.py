@@ -23,15 +23,6 @@ def last_daily_data_update(hour: int, minute: int):
     return scheduled_update
 
 
-def data_update_markdown(title: str, updated_at: datetime, schedule: str):
-    return (
-        f"# {title}\n\n"
-        f"Data updated at: {updated_at}\n\n"
-        f"Backend data schedule: {schedule}\n\n"
-        "This timestamp is controlled by the backend data schedule, not request time."
-    )
-
-
 @register_widget({
     "name": "Markdown Widget with Stale Time",
     "description": "A markdown widget with stale time. The widget will show stale data before fetching new data.",
@@ -61,6 +52,26 @@ def markdown_widget_with_short_refetch_interval():
 
 
 @register_widget({
+    "name": "Markdown Widget with Cron Refetch Only",
+    "description": "A markdown widget that auto-refreshes on cron schedule boundaries without displaying a separate data update schedule.",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_cron_refetch_only",
+    "refetchInterval": "*/1 * * * *",  # Every minute, using standard 5-field cron syntax
+    "gridData": {"w": 20, "h": 6},
+})
+@router.get("/markdown_widget_with_cron_refetch_only")
+def markdown_widget_with_cron_refetch_only():
+    """Returns a markdown widget that auto-refreshes every minute via cron without display metadata"""
+    updated_at = last_minute_data_update()
+    return (
+        "# Cron Refetch Only\n\n"
+        f"Data updated at: {updated_at}\n\n"
+        "Backend data schedule: Every minute\n\n"
+        "This timestamp is controlled by the backend data schedule, not request time."
+    )
+
+
+@register_widget({
     "name": "Markdown Widget with Cron Refetch Interval",
     "description": "A markdown widget that auto-refreshes on cron schedule boundaries and displays its data update schedule in widget metadata.",
     "type": "markdown",
@@ -72,10 +83,12 @@ def markdown_widget_with_short_refetch_interval():
 @router.get("/markdown_widget_with_cron_refetch_interval")
 def markdown_widget_with_cron_refetch_interval():
     """Returns a markdown widget that auto-refreshes every minute via cron"""
-    return data_update_markdown(
-        "Cron Refetch Interval",
-        last_minute_data_update(),
-        "Every minute",
+    updated_at = last_minute_data_update()
+    return (
+        "# Cron Refetch Interval\n\n"
+        f"Data updated at: {updated_at}\n\n"
+        "Backend data schedule: Every minute\n\n"
+        "This timestamp is controlled by the backend data schedule, not request time."
     )
 
 
@@ -90,28 +103,12 @@ def markdown_widget_with_cron_refetch_interval():
 @router.get("/markdown_widget_with_data_update_display_only")
 def markdown_widget_with_data_update_display_only():
     """Returns a markdown widget with display-only data update metadata"""
-    return data_update_markdown(
-        "Data Update Display Only",
-        last_daily_data_update(hour=10, minute=0),
-        "Every day at 10:00",
-    )
-
-
-@register_widget({
-    "name": "Markdown Widget with Cron Refetch Only",
-    "description": "A markdown widget that auto-refreshes on cron schedule boundaries without displaying a separate data update schedule.",
-    "type": "markdown",
-    "endpoint": "markdown_widget_with_cron_refetch_only",
-    "refetchInterval": "*/1 * * * *",  # Every minute, using standard 5-field cron syntax
-    "gridData": {"w": 20, "h": 6},
-})
-@router.get("/markdown_widget_with_cron_refetch_only")
-def markdown_widget_with_cron_refetch_only():
-    """Returns a markdown widget that auto-refreshes every minute via cron without display metadata"""
-    return data_update_markdown(
-        "Cron Refetch Only",
-        last_minute_data_update(),
-        "Every minute",
+    updated_at = last_daily_data_update(hour=10, minute=0)
+    return (
+        "# Data Update Display Only\n\n"
+        f"Data updated at: {updated_at}\n\n"
+        "Backend data schedule: Every day at 10:00\n\n"
+        "This timestamp is controlled by the backend data schedule, not request time."
     )
 
 
