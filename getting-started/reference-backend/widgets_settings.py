@@ -35,6 +35,21 @@ def markdown_widget_with_short_refetch_interval():
 
 
 @register_widget({
+    "name": "Markdown Widget with Cron Refetch Interval",
+    "description": "A markdown widget that auto-refreshes on cron schedule boundaries and displays its data update schedule in widget metadata.",
+    "type": "markdown",
+    "endpoint": "markdown_widget_with_cron_refetch_interval",
+    "refetchInterval": "*/1 * * * *",  # Every minute, using standard 5-field cron syntax
+    "dataUpdateDisplay": "*/1 * * * *",  # Shows last update and next scheduled update in the title metadata tooltip
+    "gridData": {"w": 20, "h": 5},
+})
+@router.get("/markdown_widget_with_cron_refetch_interval")
+def markdown_widget_with_cron_refetch_interval():
+    """Returns a markdown widget that auto-refreshes every minute via cron"""
+    return f"# Cron Refetch Interval\n\n{datetime.now().replace(microsecond=0)}"
+
+
+@register_widget({
     "name": "Markdown Widget with Refetch Interval and Shorter Stale Time",
     "description": "A markdown widget with both refetch interval and shorter stale time",
     "type": "markdown",

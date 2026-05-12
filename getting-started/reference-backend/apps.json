@@ -168,6 +168,14 @@
             "groups": []
           },
           {
+            "i": "markdown_widget_with_cron_refetch_interval",
+            "x": 0,
+            "y": 17,
+            "w": 40,
+            "h": 5,
+            "groups": []
+          },
+          {
             "i": "markdown_widget_with_short_refetch_interval",
             "x": 20,
             "y": 2,
