@@ -612,6 +612,36 @@
           }
         ]
       },
+      "vegalite": {
+        "id": "vegalite",
+        "name": "Vega-Lite",
+        "layout": [
+          {
+            "i": "vega_bar",
+            "x": 0,
+            "y": 2,
+            "w": 20,
+            "h": 12,
+            "groups": []
+          },
+          {
+            "i": "vega_line",
+            "x": 20,
+            "y": 2,
+            "w": 20,
+            "h": 12,
+            "groups": []
+          },
+          {
+            "i": "vega_scatter",
+            "x": 10,
+            "y": 14,
+            "w": 20,
+            "h": 12,
+            "groups": []
+          }
+        ]
+      },
       "input-form": {
         "id": "input-form",
         "name": "Input Form",
