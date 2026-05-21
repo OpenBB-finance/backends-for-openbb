@@ -168,6 +168,30 @@
             "groups": []
           },
           {
+            "i": "markdown_widget_with_cron_refetch_only",
+            "x": 0,
+            "y": 17,
+            "w": 40,
+            "h": 7,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_cron_refetch_interval",
+            "x": 0,
+            "y": 24,
+            "w": 20,
+            "h": 7,
+            "groups": []
+          },
+          {
+            "i": "markdown_widget_with_data_update_display_only",
+            "x": 20,
+            "y": 24,
+            "w": 20,
+            "h": 7,
+            "groups": []
+          },
+          {
             "i": "markdown_widget_with_short_refetch_interval",
             "x": 20,
             "y": 2,
