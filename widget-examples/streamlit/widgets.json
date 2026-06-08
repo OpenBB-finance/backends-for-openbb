@@ -1,0 +1,23 @@
+{
+  "portfolio_note": {
+    "name": "Portfolio Note",
+    "description": "Dashboard introduction",
+    "category": "Portfolio",
+    "type": "markdown",
+    "endpoint": "portfolio_note",
+    "gridData": { "w": 40, "h": 4 },
+    "source": "Streamlit Demo"
+  },
+  "portfolio_iframe": {
+    "name": "Portfolio Dashboard (Streamlit)",
+    "description": "Embedded Streamlit portfolio app with MCP tools",
+    "category": "Portfolio",
+    "type": "iframe",
+    "endpoint": "http://localhost:8501",
+    "storage": {
+      "mcpUrl": "http://localhost:7769/mcp"
+    },
+    "gridData": { "w": 40, "h": 16 },
+    "source": "Streamlit Demo"
+  }
+}
