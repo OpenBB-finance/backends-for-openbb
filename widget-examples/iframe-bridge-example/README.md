@@ -9,39 +9,7 @@ This is the **outbound** direction (widget → Workspace). The inbound direction
 (Workspace → iframe, where Workspace sends params *into* an embedded app) is shown
 in the [`streamlit`](../streamlit) example.
 
-Two widget types are demonstrated because they forward the update differently:
-
-| Widget type | How it sends the update |
-|-------------|-------------------------|
-| `iframe`    | The embedded page posts the message **directly**: `window.parent.postMessage(...)` |
-| `html`      | The page dispatches a **CustomEvent**; the bridge script Workspace injects into the HtmlViewer forwards it for you (you do **not** postMessage) |
-
-## The message
-
-Both paths use the same payload. Either send all params at once:
-
-```js
-{ type: "openbb:widget-params:update", params: { ticker: "NVDA" } }
-```
-
-…or a single named param:
-
-```js
-{ type: "openbb:widget-params:update", paramName: "ticker", value: "NVDA" }
-```
-
-- **Iframe widget** posts it to the parent:
-  ```js
-  window.parent.postMessage({ type: "openbb:widget-params:update", params: { ticker: "NVDA" } }, "*");
-  ```
-- **HtmlViewer widget** dispatches it as an event and lets the injected bridge forward it:
-  ```js
-  window.dispatchEvent(new CustomEvent("openbb:widget-params:update", {
-    detail: { type: "openbb:widget-params:update", params: { ticker: "NVDA" } }
-  }));
-  ```
-
-## Run
+## Setup
 
 ```bash
 pip install -r requirements.txt
@@ -55,30 +23,25 @@ Open the **Bridge Demo** app/tab.
 > URL, built from `PUBLIC_URL` (default `http://localhost:5050`). Behind a tunnel,
 > set it: `PUBLIC_URL=https://abc123.ngrok.io uvicorn main:app --port 5050`.
 
-## What to try
+## How it works
 
-The dashboard has three widgets, all grouped on `ticker`:
+Two widget types are demonstrated because they forward the update differently:
 
-- **Quote (mock)** — a metric widget that reads `ticker`.
-- **Iframe Bridge** — ticker buttons (posts directly to the parent).
-- **HtmlViewer Bridge** — ticker buttons (dispatches a CustomEvent).
+| Widget type | How it sends the update |
+|-------------|-------------------------|
+| `iframe`    | The embedded page posts the message **directly**: `window.parent.postMessage(...)` |
+| `html`      | The page dispatches a **CustomEvent**; the bridge script Workspace injects into the HtmlViewer forwards it for you (you do **not** postMessage) |
 
-Click a ticker in either bridge widget → **Quote** updates to that ticker. That
-is the full round-trip: widget pushes the param → Workspace persists it and
-updates the group → the grouped widget re-fetches.
-
-### Zero-UI smoke test
-
-You can fire the message by hand. Open DevTools on the iframe widget's context and run:
+Both paths use the same payload — send all params at once, or a single named param:
 
 ```js
-window.parent.postMessage({
-  type: "openbb:widget-params:update",
-  params: { ticker: "TSLA" }
-}, "*");
+{ type: "openbb:widget-params:update", params: { ticker: "NVDA" } }
+{ type: "openbb:widget-params:update", paramName: "ticker", value: "NVDA" }
 ```
 
-Workspace should persist it and update the group, just like clicking a button.
+The demo app has three widgets grouped on `ticker` (a mock **Quote** plus the two
+bridge widgets). Click a ticker in either bridge → Workspace persists the param and
+the **Quote** widget re-fetches with it.
 
 ## Files
 

@@ -55,6 +55,8 @@ Then Moving on to the [getting-started/reference-backend](getting-started/refere
 
 This will give you a good understanding of how to setup your own backend and connect it to OpenBB Workspace.
 
+For more focused patterns, see the [`widget-examples`](widget-examples/) directory — including the [iframe & HtmlViewer parameter bridge](widget-examples/iframe-bridge-example/README.md), which shows how a widget can push parameter updates back to Workspace to drive a synced widget group.
+
 ### Leveraging AI
 
 If you are utilizing a coding agent to build your OpenBB backend, we recommend:
