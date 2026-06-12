@@ -91,6 +91,10 @@ The application uses a decorator-based approach to register widgets, which combi
    - Default values
    - Validation
 
+   > To see a widget **push** a parameter update back to Workspace (so one widget
+   > can drive the rest of a synced group), see the
+   > [iframe & HtmlViewer parameter bridge example](../../widget-examples/iframe-bridge-example/README.md).
+
 3. **Data Visualization**
    - Table formatting
    - Chart integration
