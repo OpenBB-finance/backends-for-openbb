@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Streamlit Portfolio",
+    "img": "",
+    "img_dark": "https://miro.medium.com/0*BWuN8lNpH7zKKJ6d.jpg",
+    "img_light": "https://miro.medium.com/0*BWuN8lNpH7zKKJ6d.jpg",
+    "description": "Streamlit demo with iframe widget protocol + MCP",
+    "allowCustomization": true,
+    "tabs": {
+      "main": {
+        "id": "main",
+        "name": "Overview",
+        "layout": [
+          {
+            "i": "portfolio_note",
+            "x": 0,
+            "y": 0,
+            "w": 40,
+            "h": 4,
+            "groups": []
+          },
+          {
+            "i": "portfolio_iframe",
+            "x": 0,
+            "y": 4,
+            "w": 40,
+            "h": 16,
+            "groups": []
+          }
+        ]
+      }
+    },
+    "groups": []
+  }
+]
