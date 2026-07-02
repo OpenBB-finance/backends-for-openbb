@@ -1,0 +1,25 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#16213E"/>
+      <stop offset="100%" stop-color="#1A1A2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="200" fill="url(#bg)" rx="12"/>
+  <g fill="#FF3621">
+    <rect x="24" y="22" width="14" height="8" rx="1" opacity="0.9"/>
+    <rect x="24" y="33" width="20" height="8" rx="1" opacity="0.75"/>
+    <rect x="24" y="44" width="26" height="8" rx="1" opacity="0.6"/>
+  </g>
+  <!-- Globe -->
+  <circle cx="228" cy="95" r="34" fill="none" stroke="#2EC4B6" stroke-width="3"/>
+  <ellipse cx="228" cy="95" rx="14" ry="34" fill="none" stroke="#2EC4B6" stroke-width="2" opacity="0.7"/>
+  <line x1="194" y1="95" x2="262" y2="95" stroke="#2EC4B6" stroke-width="2" opacity="0.7"/>
+  <path d="M199 78 Q228 64 257 78" fill="none" stroke="#2EC4B6" stroke-width="2" opacity="0.5"/>
+  <path d="M199 112 Q228 126 257 112" fill="none" stroke="#2EC4B6" stroke-width="2" opacity="0.5"/>
+  <!-- Location pin -->
+  <path d="M262 52 c-8 0 -14 6 -14 14 c0 10 14 24 14 24 s14 -14 14 -24 c0 -8 -6 -14 -14 -14 z" fill="#FF6B6B"/>
+  <circle cx="262" cy="66" r="5" fill="#16213E"/>
+  <text x="24" y="158" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">Wanderbricks Travel</text>
+  <text x="24" y="178" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#8B93A7">samples.wanderbricks</text>
+</svg>

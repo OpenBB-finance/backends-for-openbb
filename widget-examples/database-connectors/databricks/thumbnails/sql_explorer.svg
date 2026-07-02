@@ -1,0 +1,24 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#16213E"/>
+      <stop offset="100%" stop-color="#1A1A2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="200" fill="url(#bg)" rx="12"/>
+  <g fill="#FF3621">
+    <rect x="24" y="22" width="14" height="8" rx="1" opacity="0.9"/>
+    <rect x="24" y="33" width="20" height="8" rx="1" opacity="0.75"/>
+    <rect x="24" y="44" width="26" height="8" rx="1" opacity="0.6"/>
+  </g>
+  <!-- Terminal window -->
+  <rect x="172" y="48" width="104" height="88" rx="8" fill="#0D1526" stroke="#33415C" stroke-width="2"/>
+  <circle cx="186" cy="62" r="3" fill="#FF6B6B"/>
+  <circle cx="197" cy="62" r="3" fill="#FADB14"/>
+  <circle cx="208" cy="62" r="3" fill="#2EC4B6"/>
+  <text x="184" y="92" font-family="Menlo, Consolas, monospace" font-size="13" fill="#2EC4B6">&gt;_ SELECT *</text>
+  <text x="184" y="110" font-family="Menlo, Consolas, monospace" font-size="13" fill="#8B93A7">FROM samples</text>
+  <rect x="184" y="118" width="52" height="3" fill="#FF3621" opacity="0.8"/>
+  <text x="24" y="158" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">SQL Explorer</text>
+  <text x="24" y="178" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#8B93A7">samples catalog</text>
+</svg>
