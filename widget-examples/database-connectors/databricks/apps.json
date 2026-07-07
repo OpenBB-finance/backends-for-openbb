@@ -1,0 +1,236 @@
+[
+  {
+    "name": "NYC Taxi",
+    "img": "http://localhost:5402/thumbnails/nyc_taxi",
+    "img_dark": "http://localhost:5402/thumbnails/nyc_taxi",
+    "img_light": "http://localhost:5402/thumbnails/nyc_taxi",
+    "description": "NYC taxi trips from the Databricks samples catalog - fares, distances and hourly patterns",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {"i": "taxi_metrics", "x": 0, "y": 0, "w": 40, "h": 4, "groups": []},
+          {
+            "i": "taxi_daily",
+            "x": 0, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "line"}},
+            "groups": []
+          },
+          {
+            "i": "taxi_by_hour",
+            "x": 20, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "column"}},
+            "groups": []
+          },
+          {"i": "taxi_trips", "x": 0, "y": 16, "w": 40, "h": 10, "groups": []}
+        ]
+      }
+    },
+    "groups": []
+  },
+  {
+    "name": "Bakehouse Sales",
+    "img": "http://localhost:5402/thumbnails/bakehouse",
+    "img_dark": "http://localhost:5402/thumbnails/bakehouse",
+    "img_light": "http://localhost:5402/thumbnails/bakehouse",
+    "description": "Cookie franchise sales analytics - products, cities, hourly patterns and customer reviews",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {"i": "bakehouse_metrics", "x": 0, "y": 0, "w": 40, "h": 4, "groups": ["Product Filter"]},
+          {
+            "i": "bakehouse_product_sales",
+            "x": 0, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "bar"}},
+            "groups": []
+          },
+          {
+            "i": "bakehouse_city_sales",
+            "x": 20, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "bar"}},
+            "groups": ["Product Filter"]
+          },
+          {
+            "i": "bakehouse_hourly_sales",
+            "x": 0, "y": 16, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "column"}},
+            "groups": ["Product Filter"]
+          },
+          {"i": "bakehouse_reviews", "x": 20, "y": 16, "w": 20, "h": 12, "groups": []}
+        ]
+      }
+    },
+    "groups": [
+      {
+        "name": "Product Filter",
+        "type": "endpointParam",
+        "paramName": "product",
+        "defaultValue": ""
+      }
+    ]
+  },
+  {
+    "name": "Wanderbricks Travel",
+    "img": "http://localhost:5402/thumbnails/wanderbricks",
+    "img_dark": "http://localhost:5402/thumbnails/wanderbricks",
+    "img_light": "http://localhost:5402/thumbnails/wanderbricks",
+    "description": "Vacation rental platform analytics - bookings, destinations and property types",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {"i": "wanderbricks_metrics", "x": 0, "y": 0, "w": 40, "h": 4, "groups": []},
+          {
+            "i": "wanderbricks_monthly_bookings",
+            "x": 0, "y": 4, "w": 40, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "line"}},
+            "groups": ["Country Filter"]
+          },
+          {
+            "i": "wanderbricks_top_destinations",
+            "x": 0, "y": 16, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "bar"}},
+            "groups": ["Country Filter"]
+          },
+          {
+            "i": "wanderbricks_property_types",
+            "x": 20, "y": 16, "w": 20, "h": 12,
+            "groups": []
+          }
+        ]
+      }
+    },
+    "groups": [
+      {
+        "name": "Country Filter",
+        "type": "endpointParam",
+        "paramName": "country",
+        "defaultValue": ""
+      }
+    ]
+  },
+  {
+    "name": "TPC-H Supply Chain",
+    "img": "http://localhost:5402/thumbnails/tpch",
+    "img_dark": "http://localhost:5402/thumbnails/tpch",
+    "img_light": "http://localhost:5402/thumbnails/tpch",
+    "description": "Classic TPC-H benchmark data - orders, revenue by nation and market segment",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {"i": "tpch_metrics", "x": 0, "y": 0, "w": 40, "h": 4, "groups": ["Region Filter"]},
+          {
+            "i": "tpch_yearly_revenue",
+            "x": 0, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "column"}},
+            "groups": ["Region Filter"]
+          },
+          {
+            "i": "tpch_nation_revenue",
+            "x": 20, "y": 4, "w": 20, "h": 12,
+            "state": {"chartView": {"enabled": true, "chartType": "bar"}},
+            "groups": ["Region Filter"]
+          },
+          {"i": "tpch_segment_revenue", "x": 0, "y": 16, "w": 40, "h": 10, "groups": ["Region Filter"]}
+        ]
+      }
+    },
+    "groups": [
+      {
+        "name": "Region Filter",
+        "type": "endpointParam",
+        "paramName": "region",
+        "defaultValue": ""
+      }
+    ]
+  },
+  {
+    "name": "Databricks SQL Explorer",
+    "img": "http://localhost:5402/thumbnails/sql_explorer",
+    "img_dark": "http://localhost:5402/thumbnails/sql_explorer",
+    "img_light": "http://localhost:5402/thumbnails/sql_explorer",
+    "description": "Browse schemas and run read-only SQL against the samples catalog - one curated query per database",
+    "allowCustomization": true,
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {"i": "databricks_tables", "x": 0, "y": 0, "w": 13, "h": 14, "groups": []},
+          {"i": "databricks_omni_sql", "x": 13, "y": 0, "w": 27, "h": 14, "groups": []},
+          {
+            "i": "omni_sql_nyctaxi",
+            "x": 0, "y": 14, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT pickup_zip, COUNT(*) AS trips,\n       ROUND(AVG(fare_amount), 2) AS avg_fare,\n       ROUND(AVG(trip_distance), 2) AS avg_distance\nFROM samples.nyctaxi.trips\nGROUP BY pickup_zip\nORDER BY trips DESC\nLIMIT 15"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni_sql_bakehouse",
+            "x": 20, "y": 14, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT f.name, f.city, f.country,\n       SUM(t.totalPrice) AS revenue, COUNT(*) AS transactions\nFROM samples.bakehouse.sales_transactions t\nJOIN samples.bakehouse.sales_franchises f ON t.franchiseID = f.franchiseID\nGROUP BY f.name, f.city, f.country\nORDER BY revenue DESC\nLIMIT 15"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni_sql_wanderbricks",
+            "x": 0, "y": 26, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT d.destination, d.country,\n       ROUND(AVG(r.rating), 2) AS avg_rating, COUNT(*) AS reviews\nFROM samples.wanderbricks.reviews r\nJOIN samples.wanderbricks.properties p ON r.property_id = p.property_id\nJOIN samples.wanderbricks.destinations d ON p.destination_id = d.destination_id\nWHERE NOT r.is_deleted\nGROUP BY d.destination, d.country\nHAVING COUNT(*) > 100\nORDER BY avg_rating DESC\nLIMIT 15"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni_sql_tpch",
+            "x": 20, "y": 26, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT o_orderpriority AS priority,\n       COUNT(*) AS orders,\n       ROUND(SUM(o_totalprice) / 1e6, 1) AS revenue_m\nFROM samples.tpch.orders\nGROUP BY o_orderpriority\nORDER BY priority"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni_sql_accuweather",
+            "x": 0, "y": 38, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT city_name, country_code,\n       ROUND(AVG(minutes_of_sun_total) / 60, 1) AS avg_sun_hours,\n       ROUND(AVG(humidity_relative_avg), 1) AS avg_humidity\nFROM samples.accuweather.forecast_daily_calendar_metric\nGROUP BY city_name, country_code\nORDER BY avg_sun_hours DESC\nLIMIT 15"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "omni_sql_healthverity",
+            "x": 20, "y": 38, "w": 20, "h": 12,
+            "state": {
+              "params": {
+                "prompt": "SELECT patient_state,\n       COUNT(*) AS claims,\n       COUNT(DISTINCT hvid) AS patients\nFROM samples.healthverity.claims_sample_synthetic\nGROUP BY patient_state\nORDER BY claims DESC\nLIMIT 15"
+              }
+            },
+            "groups": []
+          }
+        ]
+      }
+    },
+    "groups": []
+  }
+]
