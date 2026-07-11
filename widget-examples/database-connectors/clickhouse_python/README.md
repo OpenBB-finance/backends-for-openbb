@@ -1,49 +1,61 @@
-# ClickHouse Python
+# ClickHouse Explorer for OpenBB Workspace
 
-This example will focus on everything that relates with ClickHouse in order to create a backend in Python for OpenBB Pro. For more information, read our main [README.md](/README.md).
+Explore ClickHouse sample datasets (UK Housing Prices & NYC Taxi Trips) inside [OpenBB Workspace](https://pro.openbb.co).
 
-## 1. Get started with ClickHouse
+## Datasets
 
-Check website: https://clickhouse.com/.
+- **UK Housing Prices** — 27M+ property transactions from the UK Land Registry (1995–present)
+- **NYC Taxi Trips** — 3M+ taxi rides with fares, distances, and pickup zones
 
-Create an account at https://clickhouse.cloud.
+## Setup
 
-## 2. ClickHouse and Python
+### 1. ClickHouse Cloud
 
-Read the [official ClickHouse connector for python](https://clickhouse.com/docs/en/integrations/python).
+1. Sign up at [clickhouse.cloud](https://clickhouse.cloud/) and create a new service
+2. When the service is created, you'll be shown the connection credentials — **save the password**, it is only displayed once
+3. Once the service is running, click **Connect** to find your connection details
 
-TL;DR: Install ClickHouse with `pip install clickhouse-connect`
+### 2. Environment variables
 
-## 3. Extract ClickHouse information
-
-<img width="600" alt="Screenshot 2023-10-27 at 12 21 21 AM" src="https://github.com/OpenBB-finance/backend-for-terminal-pro/assets/25267873/6e59755b-577c-4dc9-9975-65b18056efac">
-
-You will need to identify the following from your ClickHouse account
-
-```python
-client =  v.get_client(
-    host="XYZ",
-    port=8443,
-    username="default",
-    password="XYZ",
-)
+```bash
+cp .env.example .env
 ```
 
-By default, the port and username should be `8443` and `"default"`.
+Edit `.env` with your ClickHouse credentials:
 
-The password is the one associated with your ClickHouse account.
+| Variable | Required | Default | Where to find |
+|---|---|---|---|
+| `CLICKHOUSE_HOST` | Yes | — | ClickHouse Cloud console → your service → **Connect** → the hostname (e.g. `abc123.us-east-1.aws.clickhouse.cloud`) |
+| `CLICKHOUSE_PASSWORD` | Yes | — | Shown once when you create the service. If lost, reset it under **Settings** → **Reset password** |
+| `CLICKHOUSE_PORT` | No | `8443` | Default HTTPS native port — no need to change unless your service uses a custom port |
+| `CLICKHOUSE_USER` | No | `default` | The default admin user created with every ClickHouse Cloud service |
 
-The host can be found by going into ClickHouse Services, then clicking on the **Connect** dropdown and selecting **View connection string**.
+### 3. Install dependencies
 
-<img width="600" alt="Screenshot 2023-10-27 at 12 22 59 AM" src="https://github.com/OpenBB-finance/backend-for-terminal-pro/assets/25267873/6d505791-fd75-402d-8e20-c81067c48303">
-
-There you'll see a **Native** tab with the following
-
-```console
-./clickhouse client --host abc123de45.us-east-1.aws.clickhouse.cloud --secure --password
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-where your host will be `abc123de45.us-east-1.aws.clickhouse.cloud`.
+### 4. Load sample data
 
-<img width="600" alt="Screenshot 2023-10-27 at 12 24 36 AM" src="https://github.com/OpenBB-finance/backend-for-terminal-pro/assets/25267873/451056fd-a5b0-4d60-8991-5ba6d4a1fb14">
+```bash
+python setup.py
+```
 
+The setup script reads `.env`, creates two databases (`uk` and `nyc_taxi`), and loads the sample datasets. The UK dataset (~27M rows) may take several minutes.
+
+### 5. Start the server
+
+```bash
+uvicorn main:app --reload --port 7781
+```
+
+The server starts on `http://localhost:7781`.
+
+### 6. Connect to OpenBB Workspace
+
+1. Go to [pro.openbb.co](https://pro.openbb.co)
+2. Add a custom backend with URL `http://localhost:7781`
+3. Two dashboards will appear: **UK Housing Prices** and **NYC Taxi Trips**

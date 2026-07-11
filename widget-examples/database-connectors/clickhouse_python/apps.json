@@ -1,0 +1,242 @@
+[
+  {
+    "name": "UK Housing Prices",
+    "img": "http://localhost:7781/thumbnails/uk_housing",
+    "img_dark": "http://localhost:7781/thumbnails/uk_housing",
+    "img_light": "http://localhost:7781/thumbnails/uk_housing",
+    "description": "UK property prices from the Land Registry - 31M+ transactions since 1995",
+    "allowCustomization": true,
+    "prompts": [],
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {
+            "i": "uk_price_metrics",
+            "x": 0, "y": 0, "w": 40, "h": 4,
+            "groups": []
+          },
+          {
+            "i": "uk_avg_price_by_year",
+            "x": 16, "y": 4, "w": 24, "h": 19,
+            "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "customCombo",
+                "chartOptions": {},
+                "cellRange": {
+                  "columns": ["year", "avg_price", "min_price", "max_price", "transactions"]
+                },
+                "suppressChartRanges": true,
+                "seriesChartTypes": [
+                  {"colId": "avg_price", "chartType": "line", "secondaryAxis": false},
+                  {"colId": "min_price", "chartType": "line", "secondaryAxis": false},
+                  {"colId": "max_price", "chartType": "line", "secondaryAxis": false},
+                  {"colId": "transactions", "chartType": "area", "secondaryAxis": true}
+                ]
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "uk_top_towns",
+            "x": 0, "y": 4, "w": 16, "h": 19,
+            "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "groupedBar",
+                "chartOptions": {},
+                "cellRange": {
+                  "columns": ["town", "avg_price", "transactions"]
+                },
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
+            },
+            "groups": []
+          },
+          {
+            "i": "uk_price_by_type",
+            "x": 0, "y": 23, "w": 40, "h": 14,
+            "state": {
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "line",
+                "chartOptions": {},
+                "cellRange": {
+                  "columns": ["year", "detached", "semi_detached", "terraced", "flat", "other"]
+                },
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnOrder": {
+                    "orderedColIds": ["year", "detached", "semi_detached", "terraced", "flat", "other"]
+                  }
+                }
+              }
+            },
+            "groups": []
+          }
+        ]
+      }
+    },
+    "groups": []
+  },
+  {
+    "name": "NYC Taxi Trips",
+    "img": "http://localhost:7781/thumbnails/nyc_taxi",
+    "img_dark": "http://localhost:7781/thumbnails/nyc_taxi",
+    "img_light": "http://localhost:7781/thumbnails/nyc_taxi",
+    "description": "NYC taxi trip data - 3M+ rides with fares, distances, and pickup zones",
+    "allowCustomization": true,
+    "prompts": [],
+    "tabs": {
+      "overview": {
+        "id": "overview",
+        "name": "overview",
+        "layout": [
+          {
+            "i": "nyc_trip_metrics",
+            "x": 0, "y": 19, "w": 40, "h": 4,
+            "groups": ["Zone Filter"]
+          },
+          {
+            "i": "nyc_trips_per_zone",
+            "x": 0, "y": 0, "w": 18, "h": 19,
+            "state": {
+              "paramOrder": ["limit", "zone"],
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "groupedBar",
+                "chartOptions": {},
+                "cellRange": {
+                  "columns": ["zone", "trips"]
+                },
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": ["zone"],
+                    "rightColIds": []
+                  },
+                  "columnOrder": {
+                    "orderedColIds": ["zone", "trips"]
+                  }
+                }
+              }
+            },
+            "groups": ["Zone Filter"]
+          },
+          {
+            "i": "nyc_avg_fare_per_zone",
+            "x": 18, "y": 0, "w": 22, "h": 19,
+            "state": {
+              "paramOrder": ["limit", "zone"],
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "groupedBar",
+                "chartOptions": {},
+                "cellRange": {
+                  "columns": ["zone", "avg_fare"]
+                },
+                "suppressChartRanges": true
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              },
+              "columnState": {
+                "default": {
+                  "columnPinning": {
+                    "leftColIds": ["zone"],
+                    "rightColIds": []
+                  },
+                  "columnOrder": {
+                    "orderedColIds": ["zone", "avg_fare"]
+                  }
+                }
+              }
+            },
+            "groups": ["Zone Filter"]
+          },
+          {
+            "i": "nyc_trips_by_hour",
+            "x": 0, "y": 23, "w": 40, "h": 13,
+            "state": {
+              "params": {
+                "zone": "West Village"
+              },
+              "chartModel": {
+                "modelType": "range",
+                "chartType": "customCombo",
+                "chartOptions": {
+                  "line": {
+                    "legend": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "cellRange": {
+                  "columns": ["trips", "avg_fare", "avg_distance", "avg_passengers"]
+                },
+                "suppressChartRanges": true,
+                "seriesChartTypes": [
+                  {"colId": "trips", "chartType": "groupedColumn", "secondaryAxis": false},
+                  {"colId": "avg_fare", "chartType": "line", "secondaryAxis": true},
+                  {"colId": "hour", "chartType": "line", "secondaryAxis": false},
+                  {"colId": "avg_distance", "chartType": "line", "secondaryAxis": true},
+                  {"colId": "avg_passengers", "chartType": "line", "secondaryAxis": true}
+                ]
+              },
+              "chartView": {
+                "enabled": true,
+                "chartType": "line"
+              }
+            },
+            "groups": ["Zone Filter"]
+          },
+          {
+            "i": "nyc_fare_distribution",
+            "x": 0, "y": 36, "w": 40, "h": 15,
+            "state": {
+              "params": {
+                "zone": "West Village"
+              },
+              "chartView": {
+                "enabled": false,
+                "chartType": "line"
+              }
+            },
+            "groups": ["Zone Filter"]
+          }
+        ]
+      }
+    },
+    "groups": [
+      {
+        "name": "Zone Filter",
+        "type": "endpointParam",
+        "paramName": "zone",
+        "defaultValue": "West Village"
+      }
+    ]
+  }
+]
