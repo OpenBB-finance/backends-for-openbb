@@ -47,6 +47,30 @@ The Main tenants are:
 
 4. **Adding Authentication (optional)** : If your backend requires authentication we offer the ability to set a query param or header when you connect to it through OpenBB Pro. These values are sent on every request when configured. If you require another method - please reach out to us.
 
+## Backend URL requirements
+
+When you add a backend in OpenBB Workspace, use the root base URL for that backend.
+
+- Expected: `http://192.168.1.100:7777`
+- Expected: `https://vstocks.example.com`
+- Not supported as the backend base URL: `https://example.com/vstock`
+
+OpenBB Workspace expects to find `widgets.json` at:
+
+```text
+<base-url>/widgets.json
+```
+
+That means the backend configuration must be served from the root of the backend base URL.
+
+If you are deploying on another machine in your LAN, make sure your app is listening on all interfaces, for example:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 7777
+```
+
+If you need to serve additional application routes under a prefix such as `/vstock`, keep `widgets.json` at the backend root and put the rest of your routes behind the prefix. If your deployment requires a path prefix for the entire backend, use a dedicated host or subdomain instead of a subpath.
+
 ## Getting Started
 
 We recommend starting with the [getting-started/hello-world](getting-started/hello-world/README.md) example.
