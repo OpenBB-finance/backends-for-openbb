@@ -1,0 +1,74 @@
+{
+  "live_news_feed": {
+    "name": "Live News Feed",
+    "description": "Real-time aggregated news from BWE, Phoenix, and TreeOfAlpha",
+    "type": "live_feed",
+    "wsEndpoint": "ws",
+    "params": [
+      {
+        "paramName": "feeds",
+        "description": "Select which feeds to subscribe to",
+        "value": ["toa", "phx", "bwe"],
+        "label": "News Sources",
+        "type": "text",
+        "multiSelect": true,
+        "options": [
+          { "label": "Tree of Alpha", "value": "toa" },
+          { "label": "Phoenix", "value": "phx" },
+          { "label": "BWE", "value": "bwe" }
+        ]
+      }
+    ],
+    "data": {
+      "table": {
+        "columnsDefs": [
+          { "field": "time", "headerName": "Time", "width": 70, "maxWidth": 70 },
+          { "field": "source", "headerName": "Source", "width": 70, "maxWidth": 70 },
+          { "field": "title", "headerName": "Title", "flex": 1, "minWidth": 200 },
+          { "field": "url", "headerName": "", "width": 36, "maxWidth": 36 }
+        ]
+      }
+    },
+    "gridData": {
+      "w": 40,
+      "h": 12
+    }
+  },
+  "big_trades": {
+    "name": "BTC Big Trades",
+    "description": "Real-time large trades on BTCUSDT perpetual (Binance Futures)",
+    "type": "live_feed",
+    "wsEndpoint": "ws/trades",
+    "params": [
+      {
+        "paramName": "min_notional",
+        "description": "Minimum trade size in USD to display",
+        "value": "100000",
+        "label": "Min Trade Size ($)",
+        "type": "text",
+        "options": [
+          { "label": "$50k", "value": "50000" },
+          { "label": "$100k", "value": "100000" },
+          { "label": "$250k", "value": "250000" },
+          { "label": "$500k", "value": "500000" },
+          { "label": "$1M", "value": "1000000" }
+        ]
+      }
+    ],
+    "data": {
+      "table": {
+        "columnsDefs": [
+          { "field": "time", "headerName": "Time", "width": 70, "maxWidth": 70 },
+          { "field": "side", "headerName": "Side", "width": 60, "maxWidth": 60 },
+          { "field": "price", "headerName": "Price", "width": 100 },
+          { "field": "quantity", "headerName": "Qty", "width": 90 },
+          { "field": "notional", "headerName": "Notional ($)", "flex": 1, "minWidth": 100 }
+        ]
+      }
+    },
+    "gridData": {
+      "w": 30,
+      "h": 12
+    }
+  }
+}
