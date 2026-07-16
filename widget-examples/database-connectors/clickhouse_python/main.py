@@ -1,66 +1,49 @@
+import asyncio
 import json
 from pathlib import Path
 
-import clickhouse_connect
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
-client = clickhouse_connect.get_client(
-    host="",
-    port=8443,
-    username="default",
-    password="",
-)
+from core import app, WIDGETS, warm_cache
+from widgets_uk_housing import router as uk_router
+from widgets_nyc_taxi import router as nyc_router
 
-app = FastAPI()
+app.include_router(uk_router)
+app.include_router(nyc_router)
 
-origins = [
-    "http://localhost",
-    "http://localhost:1420",
-    "http://localhost:5050",
-    "https://pro.openbb.dev",
-    "https://pro.openbb.co",
-    "https://excel.openbb.co",
-    "https://excel.openbb.dev",
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.on_event("startup")
+async def startup():
+    asyncio.create_task(warm_cache())
+
+THUMBNAILS_DIR = Path(__file__).parent / "thumbnails"
 
 
 @app.get("/")
-def read_root():
-    return {"Info": "ClickHouse backend template for OpenBB Pro"}
+def root():
+    return {"status": "ok", "app": "ClickHouse Explorer", "version": "1.0.0"}
 
 
 @app.get("/widgets.json")
 def get_widgets():
-    """Widgets configuration file for OpenBB Pro"""
-    return JSONResponse(
-        content=json.load((Path(__file__).parent.resolve() / "widgets.json").open())
-    )
+    return WIDGETS
 
 
-@app.get("/avg_price_per_year_london")
-def avg_price_per_year_london():
-    """Return clickhouse data"""
+@app.get("/apps.json")
+def get_apps():
+    with (Path(__file__).parent / "apps.json").open(encoding="utf-8") as file:
+        return json.load(file)
 
-    results = client.query_df(
-        """SELECT
-   toYear(date) AS year,
-   round(avg(price)) AS price
-FROM uk_price_paid
-WHERE town = 'LONDON'
-GROUP BY year
-ORDER BY year
-"""
-    )
 
-    # convert df to json
-    return json.loads(results.to_json(orient="records"))
+@app.get("/thumbnails/{name}")
+def get_thumbnail(name: str):
+    path = THUMBNAILS_DIR / f"{Path(name).name}.svg"
+    if not path.is_file():
+        return JSONResponse(status_code=404, content={"error": "not found"})
+    return FileResponse(path, media_type="image/svg+xml")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=7781)

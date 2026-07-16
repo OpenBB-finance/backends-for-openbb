@@ -1,0 +1,5 @@
+.env
+.git
+.venv
+__pycache__
+*.pyc
