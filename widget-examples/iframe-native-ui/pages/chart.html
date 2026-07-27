@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>Relative performance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/openbb-theme.css" />
+    <script src="/static/openbb-iframe.js"></script>
+    <style>
+      /* Fill the widget: the wrapper is the only thing between html and the chart. */
+      body { height: 100vh; }
+      .obb-wrap { display: flex; flex-direction: column; position: relative; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div class="obb-wrap">
+      <p class="obb-subtitle">Illustrative sample data — rebased to 100.</p>
+      <div class="obb-chart" id="chart">
+        <svg id="svg"></svg>
+        <div class="obb-legend" id="legend"></div>
+      </div>
+      <div class="obb-tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+      const svg = document.getElementById("svg");
+      const legend = document.getElementById("legend");
+      const tooltip = document.getElementById("tooltip");
+      const PAD = { top: 10, right: 10, bottom: 20, left: 40 };
+
+      let data = { labels: [], series: [] };
+      let geometry = null; // { x(i), y(v), count } — reused by the crosshair
+
+      const num = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+      const day = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+
+      /** Round the y-domain out to a readable step (1/2/5 x 10^n). */
+      function niceTicks(min, max, count) {
+        const raw = (max - min) / count || 1;
+        const mag = 10 ** Math.floor(Math.log10(raw));
+        const step = [1, 2, 5, 10].find((m) => m * mag >= raw) * mag;
+        const start = Math.floor(min / step) * step;
+        const ticks = [];
+        for (let v = start; v <= max + step / 2; v += step) ticks.push(v);
+        return ticks;
+      }
+
+      function render() {
+        const { width, height } = svg.getBoundingClientRect();
+        if (!width || !height || !data.series.length) return;
+
+        const values = data.series.flatMap((s) => s.values);
+        const ticks = niceTicks(Math.min(...values), Math.max(...values), 4);
+        const lo = ticks[0];
+        const hi = ticks[ticks.length - 1];
+        const n = data.labels.length;
+
+        const x = (i) => PAD.left + (i / (n - 1)) * (width - PAD.left - PAD.right);
+        const y = (v) =>
+          PAD.top + (1 - (v - lo) / (hi - lo || 1)) * (height - PAD.top - PAD.bottom);
+        geometry = { x, y, count: n };
+
+        const gridlines = ticks
+          .map(
+            (t) =>
+              `<line class="obb-gridline" x1="${PAD.left}" x2="${width - PAD.right}" y1="${y(t)}" y2="${y(t)}"/>` +
+              `<text class="obb-axis" x="${PAD.left - 6}" y="${y(t) + 3}" text-anchor="end">${num.format(t)}</text>`,
+          )
+          .join("");
+
+        const step = Math.max(1, Math.floor((n - 1) / 4));
+        const xLabels = data.labels
+          .map((label, i) =>
+            i % step === 0 || i === n - 1
+              ? `<text class="obb-axis" x="${x(i)}" y="${height - 5}" text-anchor="middle">${day.format(new Date(label))}</text>`
+              : "",
+          )
+          .join("");
+
+        const lines = data.series
+          .map((s, si) => {
+            const d = s.values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+            return `<path class="obb-line" d="${d}" stroke="${OpenBB.PALETTE[si % OpenBB.PALETTE.length]}"/>`;
+          })
+          .join("");
+
+        svg.innerHTML = `${gridlines}${xLabels}${lines}<line id="cross" class="obb-gridline" y1="${PAD.top}" y2="${height - PAD.bottom}" style="display:none"/>`;
+
+        legend.replaceChildren(
+          ...data.series.map((s, si) => {
+            const item = document.createElement("div");
+            item.className = "obb-legend-item";
+            item.innerHTML = `<span class="obb-legend-swatch" style="background:${OpenBB.PALETTE[si % OpenBB.PALETTE.length]}"></span>${s.name}`;
+            return item;
+          }),
+        );
+      }
+
+      svg.addEventListener("mousemove", (event) => {
+        if (!geometry) return;
+        const box = svg.getBoundingClientRect();
+        const ratio = (event.clientX - box.left - PAD.left) / (box.width - PAD.left - PAD.right);
+        const i = Math.max(0, Math.min(geometry.count - 1, Math.round(ratio * (geometry.count - 1))));
+        const cross = document.getElementById("cross");
+        cross.setAttribute("x1", geometry.x(i));
+        cross.setAttribute("x2", geometry.x(i));
+        cross.style.display = "";
+
+        tooltip.innerHTML = [
+          `<b>${day.format(new Date(data.labels[i]))}</b>`,
+          ...data.series.map(
+            (s, si) =>
+              `<span style="color:${OpenBB.PALETTE[si % OpenBB.PALETTE.length]}">■</span> ${s.name} ${num.format(s.values[i])}`,
+          ),
+        ].join("<br/>");
+        tooltip.style.opacity = "1";
+        tooltip.style.left = `${Math.min(event.clientX + 12, box.width - tooltip.offsetWidth - 4)}px`;
+        tooltip.style.top = `${event.clientY - 8}px`;
+      });
+
+      svg.addEventListener("mouseleave", () => {
+        tooltip.style.opacity = "0";
+        const cross = document.getElementById("cross");
+        if (cross) cross.style.display = "none";
+      });
+
+      new ResizeObserver(render).observe(document.getElementById("chart"));
+
+      let inflight = "";
+      async function load() {
+        const url = `/api/series?ticker=${encodeURIComponent(OpenBB.params.ticker || "NVDA")}&count=${encodeURIComponent(OpenBB.params.count || 4)}`;
+        if (url === inflight) return render(); // theme-only change: re-render, no fetch
+        inflight = url;
+        data = await (await fetch(url)).json();
+        render();
+      }
+
+      OpenBB.onParams(load);
+
+      OpenBB.connect({
+        widgets: [
+          {
+            widgetId: "performance",
+            name: "Relative performance",
+            description: "Rebased price series for the selected ticker and its peers.",
+            dataType: "table",
+          },
+        ],
+        // `count` above 10 proves the palette cycles instead of running out.
+        paramDefs: [
+          { paramName: "count", label: "Series", type: "number", value: "4", min: 1, max: 12, step: 1 },
+        ],
+      });
+
+      OpenBB.onRequest(() => ({
+        dataType: "table",
+        data: data.labels.map((label, i) =>
+          Object.fromEntries([["date", label], ...data.series.map((s) => [s.name, s.values[i]])]),
+        ),
+        columns: ["date", ...data.series.map((s) => s.name)],
+      }));
+    </script>
+  </body>
+</html>
