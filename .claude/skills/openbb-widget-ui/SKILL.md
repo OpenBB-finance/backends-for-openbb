@@ -105,32 +105,6 @@ apply();
 Then define both palettes as CSS variables under `html[data-theme="light"]` and
 `html[data-theme="dark"]`, and reference only the variables everywhere else.
 
-## Iframe protocol quick reference
-
-For an `iframe` widget, beyond theming:
-
-| Direction | Message | Purpose |
-|---|---|---|
-| page → Workspace | `{ type: "openbb-connect", widgets, params }` | Declares the copilot-visible manifest and the param defs Workspace renders as navbar controls. Send it a few times on load — the page can be ready before Workspace attaches its listener. |
-| Workspace → page | `{ type: "openbb-request", widgetId }` | The copilot asking for current data. |
-| page → Workspace | `{ type: "openbb-data", widgetId, dataType, data, columns }` | The answer. |
-| page → Workspace | `{ type: "openbb:widget-params:update", paramName, value }` | Pushes a param back; Workspace persists it and forwards it to every widget in the same param group. |
-
-For an `html`/HtmlViewer widget the page must **not** postMessage — it dispatches
-`openbb:widget-params:update` as a `CustomEvent` and Workspace's injected bridge
-forwards it. See `widget-examples/iframe-bridge-example/`.
-
-## Gotchas
-
-- **App ids must start with `custom-`.** Workspace validates `apps.json` `id` against
-  `/^custom-.+/` and rejects the whole connection otherwise, with an unhelpful
-  `[id]: Invalid`. The field is optional — omit it or prefix it.
-- **`iframe` endpoints need an absolute URL.** Build them from a `PUBLIC_URL` env var
-  so the example still works behind a tunnel.
-- Params sent to an iframe land in the URL too, so a param change re-loads the frame
-  *and* fires a postMessage. Make the page idempotent: re-render on param change, and
-  only refetch when the params that affect data actually changed.
-
 ## Checklist before shipping
 
 - [ ] No white or unstyled space anywhere around the content in dark mode.
