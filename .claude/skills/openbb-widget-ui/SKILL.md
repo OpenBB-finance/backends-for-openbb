@@ -47,8 +47,8 @@ padding `7px`. Up/down values use `#57BA6F` / `#D53939`.
 
 ## Rule 3 — series palette: fixed 10 colors, identical in both themes
 
-Assign in this order; past 10 series, cycle back to the first. Only the chrome
-around the series changes between themes — the series colors never do.
+Series use the fixed 10-color palette in order; once exhausted, additional series can use randomly generated colors, unchanged across themes.
+Only the chrome around the series changes between themes — the series colors never do.
 
 1. `#5F8ED6` blue
 2. `#F2A450` orange
