@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>Positions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/openbb-theme.css" />
+    <script src="/static/openbb-iframe.js"></script>
+  </head>
+  <body>
+    <!-- No <h1> here: Workspace already renders the widget name above this page. -->
+    <div class="obb-wrap">
+      <p class="obb-subtitle">Illustrative sample data — click a row to sync the group.</p>
+      <table class="obb-table">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Name</th>
+            <th>Sector</th>
+            <th class="obb-num">Price</th>
+            <th class="obb-num">Chg %</th>
+            <th class="obb-num">Mkt Cap</th>
+            <th class="obb-num">Volume</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const tbody = document.getElementById("rows");
+      let rows = [];
+
+      const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 });
+      const price = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      function render() {
+        const selected = (OpenBB.params.ticker || "").toUpperCase();
+        tbody.replaceChildren(
+          ...rows.map((r) => {
+            const tr = document.createElement("tr");
+            tr.setAttribute("aria-selected", String(r.ticker === selected));
+            tr.onclick = () => OpenBB.setParam("ticker", r.ticker);
+            tr.innerHTML = `
+              <td>${r.ticker}</td>
+              <td>${r.name}</td>
+              <td>${r.sector}</td>
+              <td class="obb-num">${price.format(r.price)}</td>
+              <td class="obb-num ${r.change_pct >= 0 ? "obb-up" : "obb-down"}">${r.change_pct >= 0 ? "+" : ""}${r.change_pct.toFixed(2)}%</td>
+              <td class="obb-num">${compact.format(r.market_cap)}</td>
+              <td class="obb-num">${compact.format(r.volume)}</td>`;
+            return tr;
+          }),
+        );
+      }
+
+      let inflight = "";
+      async function load() {
+        const url = `/api/positions?sector=${encodeURIComponent(OpenBB.params.sector || "All")}`;
+        if (url === inflight) return render(); // only the selection changed
+        inflight = url;
+        rows = await (await fetch(url)).json();
+        render();
+      }
+
+      OpenBB.onParams(load);
+
+      // Manifest -> the copilot can read this table; paramDefs -> navbar controls.
+      OpenBB.connect({
+        widgets: [
+          {
+            widgetId: "positions",
+            name: "Positions",
+            description: "Sample equity positions with price, change and volume.",
+            dataType: "table",
+          },
+        ],
+        paramDefs: [
+          {
+            paramName: "sector",
+            label: "Sector",
+            type: "text",
+            value: "All",
+            options: [
+              { label: "All", value: "All" },
+              { label: "Semiconductors", value: "Semiconductors" },
+              { label: "Internet", value: "Internet" },
+              { label: "Software", value: "Software" },
+              { label: "Consumer Tech", value: "Consumer Tech" },
+              { label: "Energy", value: "Energy" },
+            ],
+          },
+        ],
+      });
+
+      OpenBB.onRequest(() => ({
+        dataType: "table",
+        data: rows,
+        columns: ["ticker", "name", "sector", "price", "change_pct", "market_cap", "volume"],
+      }));
+    </script>
+  </body>
+</html>

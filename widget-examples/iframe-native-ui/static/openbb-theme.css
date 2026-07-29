@@ -1,0 +1,187 @@
+/*
+ * OpenBB Workspace look-and-feel for iframe widgets.
+ *
+ * Colors are sampled from the real Workspace UI (ag-grid theme + chart chrome).
+ * The active theme is applied by openbb-iframe.js, which sets
+ * `data-theme="light|dark"` on <html> from the `theme` param Workspace sends.
+ *
+ * Rule #1: the theme background goes on html/body — not just an inner card —
+ * or you get a white frame around the widget in dark mode.
+ */
+
+html[data-theme="light"] {
+  --obb-page-bg: #ffffff;
+  --obb-row-bg: #ffffff;
+  --obb-row-alt-bg: #f6f6f6;
+  --obb-header-bg: #ebebed;
+  --obb-text: #191d1f;
+  --obb-text-muted: #6a6f72;
+  --obb-grid: #e8e8e9;
+  --obb-hover: #ebebed;
+}
+
+html[data-theme="dark"] {
+  --obb-page-bg: #151518;
+  --obb-row-bg: #1f1e23;
+  --obb-row-alt-bg: #2a2a31;
+  --obb-header-bg: #36363e;
+  --obb-text: #ffffff;
+  --obb-text-muted: #9a9aa2;
+  --obb-grid: #515153;
+  --obb-hover: #36363e;
+}
+
+:root {
+  --obb-up: #57ba6f;
+  --obb-down: #d53939;
+  --obb-font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background: var(--obb-page-bg);
+  color: var(--obb-text);
+  font-family: var(--obb-font);
+  font-size: 12px;
+}
+
+/* Small padding only — the widget should sit close to its chrome, not float. */
+.obb-wrap {
+  width: 100%;
+  min-height: 100%;
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+/* Workspace already renders the widget name in its own title bar, so pages here
+   carry at most a subtitle — never a heading repeating the widget name. */
+.obb-subtitle {
+  color: var(--obb-text-muted);
+  font-size: 11px;
+  margin: 0 0 6px;
+}
+
+/* ---------------------------------------------------------------- table --- */
+
+.obb-table {
+  width: 100%;
+  border-collapse: collapse; /* no borders anywhere — rows separate by fill */
+  font-variant-numeric: tabular-nums;
+}
+
+.obb-table th,
+.obb-table td {
+  padding: 0 7px;
+  height: 28px;
+  text-align: left;
+  white-space: nowrap;
+  border: 0;
+}
+
+.obb-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--obb-header-bg);
+  color: var(--obb-text);
+  font-weight: 500;
+  font-size: 11px;
+  z-index: 1;
+}
+
+.obb-table tbody tr {
+  background: var(--obb-row-bg);
+  cursor: pointer;
+}
+
+.obb-table tbody tr:nth-child(even) {
+  background: var(--obb-row-alt-bg);
+}
+
+.obb-table tbody tr:hover,
+.obb-table tbody tr[aria-selected="true"] {
+  background: var(--obb-hover);
+}
+
+.obb-num {
+  text-align: right;
+}
+
+.obb-up {
+  color: var(--obb-up);
+}
+
+.obb-down {
+  color: var(--obb-down);
+}
+
+/* ---------------------------------------------------------------- chart --- */
+
+.obb-chart {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.obb-chart svg {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.obb-chart .obb-axis {
+  fill: var(--obb-text);
+  font-size: 10px;
+}
+
+.obb-chart .obb-gridline {
+  stroke: var(--obb-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.obb-chart .obb-line {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* Legend: swatch + label, no box, no fill, wraps across rows. */
+.obb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding-top: 6px;
+  color: var(--obb-text);
+  font-size: 10px;
+}
+
+.obb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.obb-legend-swatch {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.obb-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--obb-header-bg);
+  color: var(--obb-text);
+  font-size: 10px;
+  padding: 5px 7px;
+  border-radius: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 80ms linear;
+}
